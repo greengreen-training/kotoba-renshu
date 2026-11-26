@@ -308,7 +308,7 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
     <div class="box">
       <h2>はじめての準備（1回だけ）</h2>
       <ol class="steps">
-        <li><b>アプリを公開する：</b>Netlify の無料アカウントを作ってログインし（ログインしないで置くと1時間で消えます）、受け取った <code>index.html</code>（利用者用アプリ）と <code>seiseki.html</code>（このページ）が入ったフォルダを <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> にフォルダごとドラッグします。表示されたURL（例：https://〇〇〇.netlify.app/）が利用者用アプリ、その後ろに <code>seiseki.html</code> を付けたものがこのページです。<br>あとでアプリを新しくするときは、Netlify のそのサイトの「Deploys」の画面に新しいフォルダをドラッグします（新しいサイトとして置き直すとURLが変わり、渡したリンクが使えなくなります）。</li>
+        <li><b>アプリを公開する：</b>アプリは GitHub Pages で公開しています。利用者用アプリは <a href="https://greengreen-training.github.io/kotoba-renshu/" target="_blank" rel="noopener">https://greengreen-training.github.io/kotoba-renshu/</a>、このページはその後ろに <code>seiseki.html</code> を付けたものです。アプリを新しくするときは Claude に頼めば、同じURLのまま入れかわります（渡したリンクやQRはそのまま使えます）。</li>
         <li><b>スプレッドシートを作る：</b>施設の Google アカウントで Google ドライブを開き、新しいスプレッドシートを作ります（名前の例：ことばの練習 成績）。</li>
         <li><b>スクリプトを入れる：</b>スプレッドシートのメニュー「拡張機能」→「Apps Script」を開きます。もとからある文字を全部消して、下の［スクリプトをコピー］で写したものを貼り付けます。上のほうの <code>STAFF_PASSWORD</code> の「ここを職員用のパスワードに変える」を、職員だけが知る言葉に書きかえて、保存（💾）します。</li>
         <li><b>ウェブアプリとして公開する：</b>右上の「デプロイ」→「新しいデプロイ」→ 歯車から「ウェブアプリ」を選びます。「次のユーザーとして実行」は<b>自分</b>、「アクセスできるユーザー」は<b>全員</b>にして「デプロイ」。はじめてのときは「アクセスを承認」→ アカウントを選ぶ →「詳細」→「（プロジェクト名）に移動」→「許可」と進みます。</li>
