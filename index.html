@@ -58,6 +58,18 @@ h1,h2,h3,p{margin:0}
 .plan-head h2{margin:0;font-family:var(--font-display);font-weight:900;font-size:26px;line-height:1.6;color:var(--leaf-dark)}
 .plan-head small{font-size:15px;color:var(--muted);line-height:1.8}
 .chip.fix{background:var(--leaf-dark);color:#fff}
+/* 宿題：期限・やった回数・できたしるし */
+.hw-due{margin:0;font-size:20px;font-weight:700;line-height:1.8}
+.hw-due b{font-family:var(--font-display);font-weight:900;font-size:24px;color:var(--leaf-dark);background:var(--leaf-soft);border-radius:10px;padding:0 10px}
+.hw-all{display:flex;align-items:center;gap:12px;margin:0;padding:14px 18px;border-radius:18px;background:#fff6d6;border:2px solid #e9c64a;font-family:var(--font-display);font-weight:900;font-size:22px;line-height:1.6}
+.hw-check{flex:none;width:44px;height:44px;border-radius:50%;background:var(--leaf-dark);color:#fff;display:grid;place-items:center;font-size:28px}
+.hw{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:10px}
+.hw-dots{display:flex;gap:6px}
+.hw-dots i{width:20px;height:20px;border-radius:50%;border:3px solid var(--leaf-dark);background:#fff}
+.hw-dots i.on{background:var(--leaf-dark)}
+.hw-n{font-size:19px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.hw.ok .hw-n{color:var(--leaf-dark);font-weight:900}
+.app.hw-done{border-color:var(--leaf-dark);background:linear-gradient(0deg,var(--leaf-soft),var(--card) 70%)}
 .bar-fix{display:inline-block;margin-left:8px;font-family:var(--font-body);font-size:14px;font-weight:700;background:var(--leaf-soft);color:var(--leaf-dark);border-radius:999px;padding:0 10px;line-height:1.9;vertical-align:.15em;white-space:nowrap}
 .lead p{font-size:21px;font-weight:700;line-height:2}
 .lead small{font-size:15px;color:var(--muted)}
@@ -108,6 +120,10 @@ h1,h2,h3,p{margin:0}
   .app-name{font-size:23px}
   .app-desc{font-size:15.5px;line-height:1.85}
   .chip{font-size:13px;padding:2px 9px}
+  .hw-due{font-size:17px} .hw-due b{font-size:20px}
+  .hw-all{font-size:18px;padding:12px 14px}
+  .hw-dots i{width:16px;height:16px;border-width:2.5px}
+  .hw-n{font-size:16px}
   .go{width:36px;height:36px}
   .go svg{width:18px;height:18px}
 }
@@ -693,7 +709,7 @@ const menu = $('menu'), shell = $('shell'), wrap = $('frameWrap'), scrim = $('le
 const LOGO = $('brandLogo').getAttribute('src');
 $('barLogo').src = LOGO;
 
-let current = null, frame = null;
+let current = null, frame = null, currentFix = null;
 
 /* ページの下にしまってある各アプリのHTMLを取り出す */
 function source(id, fix) {
@@ -703,7 +719,8 @@ function source(id, fix) {
   html = html.split('__GG_LOGO__').join(LOGO);
   /* いま練習している人を練習の中へ知らせる（さいこう点・記録を人ごとに分けるため） */
   /* 個人別メニューで決めた難しさ・しゅるい（GG_FIX）も知らせる */
-  const fx = fix && (fix.lv || fix.type) ? { lv: fix.lv || '', type: fix.type || '' } : null;
+  const fx = fix && (fix.lv || fix.type || (fix.topics && fix.topics.length) || fix.n || fix.opts != null)
+    ? { lv: fix.lv || '', type: fix.type || '', topics: (fix.topics || []).slice(), n: fix.n || 0, opts: fix.opts == null ? null : fix.opts } : null;
   html = html.replace(/<head>/i, m => m + '<scr' + 'ipt>window.GG_USER=' + JSON.stringify(SEND.who() || '') + ';window.GG_FIX=' + JSON.stringify(fx) + ';window.GG_VOICE=' + (voiceOn(SEND.who()) ? 'true' : 'false') + ';</scr' + 'ipt>');
   /* 練習画面はいつも明るい配色にそろえる */
   html = html.replace(/<html(?=[\s>])/i, '<html data-theme="light"');
@@ -717,13 +734,41 @@ function cardOf(id) { return document.querySelector('.app[data-app="' + id + '"]
    （電波がないときも前に読んだ分を使う）。決められているときは、その練習だけを出し、押すと決めた難しさですぐ始まる。 */
 const LVNAME = { easy:'簡単', normal:'普通', hard:'難しい' };
 const TYPENAME = { eawase:{ word:'ことばと絵', pic:'同じ絵', shape:'形', color:'色', mix:'まぜる' }, onin:{ single:'一文字を埋める', all:'全部の文字を埋める' }, bun:{ place:'場所から', time:'時間から', thing:'人・ことから', mix:'まぜる' }, goso:{ cat:'カテゴリ', onset:'語頭音' } };
+/* 宿題のお題の名前（練習の中の問題の名前。成績一覧ページと同じ一覧） */
+const TOPICDEF = {"serifu":{"groups":[{"name":"こたえる 場面","items":[["病院の 診察室で","病院の 診察室で"],["タクシーで","タクシーで"],["食堂で（注文する）","食堂で（注文する）"],["電話で","電話で"],["薬局で（お薬手帳）","薬局で（お薬手帳）"],["電車の 中で","電車の 中で"],["郵便局で（荷物）","郵便局で（荷物）"],["洋服の 店で（サイズ）","洋服の 店で（サイズ）"],["家で（電話）","家で（電話）"],["家で（お客さん）","家で（お客さん）"],["デイサービスで（おやつ）","デイサービスで（おやつ）"],["道で（友だちに 会う）","道で（友だちに 会う）"],["バスの 中で","バスの 中で"],["美容院で","美容院で"],["交番で","交番で"],["病院の 受付で（次の 予約）","病院の 受付で（次の 予約）"],["歯医者の 受付で","歯医者の 受付で"],["コンビニの レジで","コンビニの レジで"],["デイサービスの お迎え","デイサービスの お迎え"],["レストランの 入り口で","レストランの 入り口で"],["病院からの 電話","病院からの 電話"],["銀行の 窓口で","銀行の 窓口で"],["市役所の 窓口で","市役所の 窓口で"],["スーパーの レジで","スーパーの レジで"],["デイサービスで（お昼ごはん）","デイサービスで（お昼ごはん）"],["道で（道を 聞かれる）","道で（道を 聞かれる）"],["エレベーターで","エレベーターで"]]},{"name":"自分から 話す 場面","items":[["食堂で（料理が 来た）","食堂で（料理が 来た）"],["スーパーで","スーパーで"],["道で（道を 聞く）","道で（道を 聞く）"],["道で（落とし物）","道で（落とし物）"],["薬局で（薬の 飲み方）","薬局で（薬の 飲み方）"],["駅で","駅で"],["郵便局で（切手）","郵便局で（切手）"],["洋服の 店で（着て みたい）","洋服の 店で（着て みたい）"],["デイサービスで（寒い）","デイサービスで（寒い）"],["待ち合わせで","待ち合わせで"],["バス停で","バス停で"],["美容院に 電話","美容院に 電話"],["レストランで（お水）","レストランで（お水）"],["レストランで（お会計）","レストランで（お会計）"],["タクシーで（降りる）","タクシーで（降りる）"],["デイサービスで（トイレ）","デイサービスで（トイレ）"],["家の 前で（あいさつ）","家の 前で（あいさつ）"],["デイサービスに 電話（お休み）","デイサービスに 電話（お休み）"],["旅行先で（写真）","旅行先で（写真）"]]}]},"serifu2":{"groups":[{"name":"こたえる 場面","items":[["病院の 診察室で","病院の 診察室で"],["タクシーで","タクシーで"],["食堂で（注文する）","食堂で（注文する）"],["電話で","電話で"],["薬局で（お薬手帳）","薬局で（お薬手帳）"],["電車の 中で","電車の 中で"],["郵便局で（荷物）","郵便局で（荷物）"],["洋服の 店で（サイズ）","洋服の 店で（サイズ）"],["家で（電話）","家で（電話）"],["家で（お客さん）","家で（お客さん）"],["デイサービスで（おやつ）","デイサービスで（おやつ）"],["道で（友だちに 会う）","道で（友だちに 会う）"],["バスの 中で","バスの 中で"],["美容院で","美容院で"],["交番で","交番で"],["病院の 受付で（次の 予約）","病院の 受付で（次の 予約）"],["歯医者の 受付で","歯医者の 受付で"],["コンビニの レジで","コンビニの レジで"],["デイサービスの お迎え","デイサービスの お迎え"],["レストランの 入り口で","レストランの 入り口で"],["病院からの 電話","病院からの 電話"],["銀行の 窓口で","銀行の 窓口で"],["市役所の 窓口で","市役所の 窓口で"],["スーパーの レジで","スーパーの レジで"],["デイサービスで（お昼ごはん）","デイサービスで（お昼ごはん）"],["道で（道を 聞かれる）","道で（道を 聞かれる）"],["エレベーターで","エレベーターで"]]},{"name":"自分から 話す 場面","items":[["食堂で（料理が 来た）","食堂で（料理が 来た）"],["スーパーで","スーパーで"],["道で（道を 聞く）","道で（道を 聞く）"],["道で（落とし物）","道で（落とし物）"],["薬局で（薬の 飲み方）","薬局で（薬の 飲み方）"],["駅で","駅で"],["郵便局で（切手）","郵便局で（切手）"],["洋服の 店で（着て みたい）","洋服の 店で（着て みたい）"],["デイサービスで（寒い）","デイサービスで（寒い）"],["待ち合わせで","待ち合わせで"],["バス停で","バス停で"],["美容院に 電話","美容院に 電話"],["レストランで（お水）","レストランで（お水）"],["レストランで（お会計）","レストランで（お会計）"],["タクシーで（降りる）","タクシーで（降りる）"],["デイサービスで（トイレ）","デイサービスで（トイレ）"],["家の 前で（あいさつ）","家の 前で（あいさつ）"],["デイサービスに 電話（お休み）","デイサービスに 電話（お休み）"],["旅行先で（写真）","旅行先で（写真）"]]}]},"bun":{"groups":[{"name":"場所から","items":[["家で","家で"],["外で","外で"],["デイサービスで","デイサービスで"],["お店で","お店で"],["病院で","病院で"],["公園・散歩で","公園・散歩で"],["子どもや 孫の 家で","子どもや 孫の 家で"],["庭・ベランダで","庭・ベランダで"],["近所で","近所で"],["乗り物で","乗り物で"]]},{"name":"時間から","items":[["けさ","けさ"],["お昼","お昼"],["夜","夜"],["きのう","きのう"],["土曜日・日曜日","土曜日・日曜日"],["寝る 前","寝る 前"],["ごはんの あと","ごはんの あと"],["お正月・行事","お正月・行事"],["去年","去年"],["子どもの ころ","子どもの ころ"],["若い ころ（仕事）","若い ころ（仕事）"]]},{"name":"人・ことから","items":[["食べた もの","食べた もの"],["買った もの","買った もの"],["作った 料理","作った 料理"],["家族と","家族と"],["友だちと","友だちと"],["すきな こと","すきな こと"],["テレビ・ラジオ","テレビ・ラジオ"],["電話・手紙","電話・手紙"],["旅行","旅行"],["うれしかった こと","うれしかった こと"]]}]},"nakama":{"groups":[{"name":"仲間","items":[["fruit","くだもの"],["veg","野菜"],["dish","料理"],["drink","飲み物"],["sweets","おかし"],["animal","動物"],["bird","鳥"],["insect","虫"],["sea","海の 生き物"],["flower","花"],["vehicle","乗り物"],["building","建物"],["clothes","服"],["wear","身に つける 物（服の ほか）"],["instrument","楽器"],["sport","スポーツ"],["stationery","文房具"],["kitchen","台所の 道具"],["tools","大工道具"],["body","体"],["weather","天気"]]}]},"goso":{"byType":true,"groups":[{"type":"cat","name":"カテゴリ：簡単で 出る お題","items":[["cat:動物","動物"],["cat:果物","果物"],["cat:野菜","野菜"],["cat:食べ物","食べ物"],["cat:乗り物","乗り物"],["cat:色","色"],["cat:体の 部分","体の 部分"],["cat:花","花"],["cat:飲み物","飲み物"],["cat:魚","魚"],["cat:鳥","鳥"],["cat:家族の 呼び方","家族の 呼び方"]]},{"type":"cat","name":"カテゴリ：普通で 出る お題","items":[["cat:台所に ある もの","台所に ある もの"],["cat:着る もの","着る もの"],["cat:文房具","文房具"],["cat:楽器","楽器"],["cat:スポーツ","スポーツ"],["cat:家具","家具"],["cat:虫","虫"],["cat:海に いる 生き物","海に いる 生き物"],["cat:お店の 種類","お店の 種類"],["cat:仕事（職業）","仕事（職業）"],["cat:料理の 名前","料理の 名前"],["cat:天気の ことば","天気の ことば"]]},{"type":"cat","name":"カテゴリ：難しいで 出る お題","items":[["cat:赤い もの","赤い もの"],["cat:丸い もの","丸い もの"],["cat:冷たい もの","冷たい もの"],["cat:甘い もの","甘い もの"],["cat:電気で 動く もの","電気で 動く もの"],["cat:学校に ある もの","学校に ある もの"],["cat:病院に ある もの","病院に ある もの"],["cat:木で できて いる もの","木で できて いる もの"],["cat:空を 飛ぶ もの","空を 飛ぶ もの"],["cat:春に 関係する もの","春に 関係する もの"],["cat:お祝いに 関係する もの","お祝いに 関係する もの"],["cat:四角い もの","四角い もの"]]},{"type":"onset","name":"語頭音：簡単で 出る 音","items":[["onset:か","か"],["onset:さ","さ"],["onset:た","た"],["onset:は","は"],["onset:ま","ま"],["onset:あ","あ"],["onset:こ","こ"],["onset:し","し"],["onset:と","と"],["onset:き","き"]]},{"type":"onset","name":"語頭音：普通で 出る 音","items":[["onset:い","い"],["onset:う","う"],["onset:お","お"],["onset:く","く"],["onset:け","け"],["onset:せ","せ"],["onset:そ","そ"],["onset:つ","つ"],["onset:な","な"],["onset:に","に"],["onset:の","の"],["onset:ひ","ひ"],["onset:ふ","ふ"],["onset:ほ","ほ"],["onset:み","み"],["onset:も","も"],["onset:や","や"],["onset:り","り"],["onset:わ","わ"]]},{"type":"onset","name":"語頭音：難しいで 出る 音","items":[["onset:ぬ","ぬ"],["onset:へ","へ"],["onset:る","る"],["onset:ろ","ろ"],["onset:ゆ","ゆ"],["onset:よ","よ"],["onset:れ","れ"],["onset:ね","ね"],["onset:む","む"],["onset:め","め"],["onset:え","え"],["onset:ら","ら"]]}]},"gojuonrec":{"groups":[{"name":"清音","items":[["a","あ行"],["ka","か行"],["sa","さ行"],["ta","た行"],["na","な行"],["ha","は行"],["ma","ま行"],["ya","や行"],["ra","ら行"],["wa","わ行"]]},{"name":"濁音・半濁音","items":[["ga","が行"],["za","ざ行"],["da","だ行"],["ba","ば行"],["pa","ぱ行"]]}]},"aisatsu":{"groups":[{"name":"場面","items":[["morning","朝の挨拶"],["noon","昼の挨拶"],["night","夜の挨拶"],["gift","プレゼント"],["meal","食事（ごはん）"],["doorway","玄関（お出かけ）"],["meeting","対面（挨拶）"],["homecoming","帰宅（おうち）"]]}]}};
+function topicName(app, k) {
+  const d = TOPICDEF[app];
+  if (d) for (const g of d.groups) for (const it of g.items) if (it[0] === k) return it[1];
+  return String(k).replace(/^(cat|onset):/, '');
+}
 const PLAN = (() => {
   const key = id => 'gg.plan.' + id;
-  const clean = a => (Array.isArray(a) ? a : []).filter(x => x && APPS[x.app])
-    .map(x => ({ app: x.app, lv: LVNAME[x.lv] ? x.lv : '', type: TYPENAME[x.app] && TYPENAME[x.app][x.type] ? x.type : '' }));
+  const cleanTopics = a => (Array.isArray(a) ? a : []).map(t => String(t == null ? '' : t).slice(0, 40)).filter(Boolean).slice(0, 60);
+  const okDue = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v || '')) ? String(v) : '';
+  /* 宿題：topics＝お題、times＝やる回数、done＝受け取り先が数えた「やった回数」（メニューの順） */
+  function clean(a, done) {
+    const d = Array.isArray(done) ? done : [];
+    const out = [], cnt = [];
+    (Array.isArray(a) ? a : []).forEach((x, i) => {
+      if (!x || !APPS[x.app]) return;
+      const it = { app: x.app, lv: LVNAME[x.lv] ? x.lv : '', type: TYPENAME[x.app] && TYPENAME[x.app][x.type] ? x.type : '' };
+      const tp = cleanTopics(x.topics); if (tp.length) it.topics = tp;
+      const n = Math.max(0, Math.min(30, Math.floor(Number(x.times) || 0))); if (n) it.times = n;
+      const q = Math.floor(Number(x.n)), o = x.opts !== '' && x.opts != null ? Math.floor(Number(x.opts)) : NaN;
+      if (q >= 1 && q <= 30) it.n = q;          // 問題数
+      if (o >= 0 && o <= 12) it.opts = o;       // 選択肢の数
+      out.push(it); cnt.push(Math.max(0, Math.floor(Number(d[i]) || 0)));
+    });
+    return { items: out, done: cnt };
+  }
   function get(id) {
     if (!id) return null;
-    try { const v = JSON.parse(localStorage.getItem(key(id))); return v && Array.isArray(v.items) ? { items: clean(v.items), at: v.at || '', voice: v.voice === true } : null; } catch (e) { return null; }
+    try {
+      const v = JSON.parse(localStorage.getItem(key(id)));
+      if (!v || !Array.isArray(v.items)) return null;
+      const c = clean(v.items, v.done);
+      return { items: c.items, done: c.done, at: v.at || '', voice: v.voice === true, due: okDue(v.due) };
+    } catch (e) { return null; }
   }
   async function load(id) {
     if (!id || !SEND.url) return get(id);
@@ -731,7 +776,8 @@ const PLAN = (() => {
       const res = await fetch(SEND.url + '?menu=' + encodeURIComponent(id), { cache: 'no-store' });
       const j = await res.json();
       if (j && j.ok && j.menu) {
-        const v = { items: clean(j.items), at: String(j.at || ''), voice: j.voice === true };
+        const c = clean(j.items, j.done);
+        const v = { items: c.items, done: c.done, at: String(j.at || ''), voice: j.voice === true, due: okDue(j.due) };
         try { localStorage.setItem(key(id), JSON.stringify(v)); } catch (e) {}
         return v;
       }
@@ -740,17 +786,54 @@ const PLAN = (() => {
   }
   return { get, load };
 })();
+/* 宿題の「やった回数」：この端末で終えた分もすぐ数える（受け取り先の数と多いほうを使う）。
+   メニューを決め直す（変えた日時が変わる）と、0から数え直す */
+const HW = (() => {
+  const key = id => 'gg.hw.' + id;
+  const sig = it => [it.app, it.lv || '', it.type || '', (it.topics || []).join(','), it.n || '', it.opts == null ? '' : it.opts].join('|');
+  function get(id, at) {
+    try { const v = JSON.parse(localStorage.getItem(key(id))); if (v && v.at === at && v.n && typeof v.n === 'object') return v; } catch (e) {}
+    return { at, n: {} };
+  }
+  function add(id, p, it) {
+    const v = get(id, p.at), s = sig(it);
+    v.n[s] = (v.n[s] || 0) + 1;
+    try { localStorage.setItem(key(id), JSON.stringify(v)); } catch (e) {}
+  }
+  function count(id, p, i) {
+    const local = get(id, p.at).n[sig(p.items[i])] || 0;
+    return Math.max(local, (p.done && p.done[i]) || 0);
+  }
+  return { add, count };
+})();
+const hasHW = p => !!p && (!!p.due || p.items.some(it => it.times));
 /* 職員が「声も送る」にした人か（受け取り先があるときだけ） */
 function voiceOn(id) { const p = id ? PLAN.get(id) : null; return !!(SEND.url && p && p.voice); }
 function activePlan() { const id = SEND.who(); const p = id ? PLAN.get(id) : null; return p && p.items.length ? p : null; }
 /* 名前のメモに「さん」などが付いていなければ「さん」を付ける */
 const honor = n => /(さん|様|さま|くん|君|ちゃん)$/.test(n) ? n : n + ' さん';
-const sameFix = (a, b) => a.app === b.app && (a.lv || '') === (b.lv || '') && (a.type || '') === (b.type || '');
+const sameTopics = (a, b) => (a.topics || []).join('\n') === (b.topics || []).join('\n');
+const sameFix = (a, b) => a.app === b.app && (a.lv || '') === (b.lv || '') && (a.type || '') === (b.type || '') && sameTopics(a, b) && (a.n || 0) === (b.n || 0) && (a.opts == null ? -1 : a.opts) === (b.opts == null ? -1 : b.opts);
 function fixLabel(it) { return [it.type ? TYPENAME[it.app][it.type] : '', it.lv ? LVNAME[it.lv] : ''].filter(Boolean).join('・'); }
+/* お題のチップ：3つまでは名前、それより多いときは数 */
+function topicLabel(it) {
+  const t = it.topics || [];
+  if (!t.length) return '';
+  return t.length <= 3 ? 'お題：' + t.map(k => topicName(it.app, k)).join('・') : 'お題 ' + t.length + (t.length < 10 ? 'つ' : 'こ');
+}
+const WEEK = '日月火水木金土';
+const OPTCHIP = { narabe: n => 'まぜる字 ' + n, narabe2: n => 'まぜる字 ' + n, nakama: n => 'カード ' + n + '枚' };
+function dueText(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); if (!m) return '';
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  return (d.getMonth() + 1) + '月' + d.getDate() + '日（' + WEEK[d.getDay()] + '）';
+}
 let planSig = '';
 function renderPlan() {
   const p = activePlan(), box = $('planBox'), id = SEND.who();
-  const sig = p ? id + '|' + JSON.stringify(p.items) : '';
+  const hw = hasHW(p);
+  const counts = p ? p.items.map((it, i) => HW.count(id, p, i)) : [];
+  const sig = p ? id + '|' + JSON.stringify(p.items) + '|' + (p.due || '') + '|' + counts.join(',') : '';
   document.querySelectorAll('#menu .stage').forEach(st => { st.hidden = !!p; });
   $('menuLead').hidden = !!p;
   box.hidden = !p;
@@ -758,21 +841,52 @@ function renderPlan() {
   planSig = sig;
   box.innerHTML = '';
   if (!p) return;
+  const who = SEND.shared ? honor(SEND.nameOf(id) || id) : 'あなた';
   const head = document.createElement('div');
   head.className = 'plan-head';
-  head.innerHTML = '<h2 id="planTitle"></h2><small>職員が えらんだ 練習です。押すと すぐ はじまります。</small>';
-  head.querySelector('h2').textContent = (SEND.shared ? honor(SEND.nameOf(id) || id) : 'あなた') + 'の 練習';
+  if (hw) {
+    const due = dueText(p.due);
+    head.innerHTML = '<h2 id="planTitle"><span></span>の <ruby>宿題<rt>しゅくだい</rt></ruby></h2>' + (due ? '<p class="hw-due"><b></b> までに やりましょう</p>' : '')
+      + '<small><ruby>職員<rt>しょくいん</rt></ruby>が <ruby>出<rt>だ</rt></ruby>した <ruby>宿題<rt>しゅくだい</rt></ruby>です。<ruby>押<rt>お</rt></ruby>すと すぐ はじまります。</small>';
+    head.querySelector('h2 span').textContent = who;
+    if (due) head.querySelector('.hw-due b').textContent = due;
+  } else {
+    head.innerHTML = '<h2 id="planTitle"></h2><small>職員が えらんだ 練習です。押すと すぐ はじまります。</small>';
+    head.querySelector('h2').textContent = who + 'の 練習';
+  }
   box.appendChild(head);
+  const goal = p.items.map((it, i) => it.times ? { need: it.times, did: counts[i] } : null).filter(Boolean);
+  if (goal.length && goal.every(g => g.did >= g.need)) {
+    const all = document.createElement('p');
+    all.className = 'hw-all';
+    all.innerHTML = '<span class="hw-check" aria-hidden="true">✓</span><span><ruby>宿題<rt>しゅくだい</rt></ruby>が ぜんぶ できました。よく がんばりました！</span>';
+    box.appendChild(all);
+  }
   const list = document.createElement('div');
   list.className = 'apps';
-  p.items.forEach(it => {
+  p.items.forEach((it, i) => {
     const src = cardOf(it.app); if (!src) return;
     const b = src.cloneNode(true);
     b.removeAttribute('data-app');
     b.dataset.planApp = it.app;
-    const lab = fixLabel(it);
-    b.querySelector('.chips').innerHTML = lab ? lab.split('・').map(t => '<span class="chip fix"></span>').join('') : '';
-    if (lab) lab.split('・').forEach((t, i) => { b.querySelectorAll('.chip.fix')[i].textContent = t; });
+    const chips = fixLabel(it).split('・').filter(Boolean);
+    if (it.n) chips.push(it.n + (it.app === 'goso' ? 'つの お題' : '問'));
+    if (it.opts != null) chips.push(OPTCHIP[it.app] ? OPTCHIP[it.app](it.opts) : it.opts + '択');
+    const tl = topicLabel(it); if (tl) chips.push(tl);
+    const ch = b.querySelector('.chips');
+    ch.innerHTML = '';
+    chips.forEach(t => { const c = document.createElement('span'); c.className = 'chip fix'; c.textContent = t; ch.appendChild(c); });
+    if (it.topics && it.topics.length > 3) ch.lastChild.title = it.topics.map(k => topicName(it.app, k)).join('、');
+    if (it.times) {
+      const did = counts[i], ok = did >= it.times;
+      const m = document.createElement('span');
+      m.className = 'hw' + (ok ? ' ok' : '');
+      const dots = Array.from({ length: Math.min(it.times, 10) }, (_, k) => `<i class="${k < did ? 'on' : ''}"></i>`).join('');
+      m.innerHTML = `<span class="hw-dots" aria-hidden="true">${dots}</span><span class="hw-n">${ok ? '✓ できた　' : ''}${Math.min(did, 99)} / ${it.times}<ruby>回<rt>かい</rt></ruby></span>`;
+      m.setAttribute('aria-label', it.times + '回のうち ' + did + '回 やりました' + (ok ? '。できました' : ''));
+      ch.after(m);
+      if (ok) b.classList.add('hw-done');
+    }
     b.addEventListener('click', () => openApp(it.app, true, it));
     list.appendChild(b);
   });
@@ -803,6 +917,7 @@ function openApp(id, push, fix) {
   if (!html) return;
   if (frame) teardown();
   current = id;
+  currentFix = fix || null;
   const card = cardOf(id);
   $('barLeaf').innerHTML = card ? card.querySelector('.leaf').outerHTML : '';
   $('barName').innerHTML = card ? card.querySelector('.app-name').innerHTML : APPS[id].title;
@@ -830,6 +945,7 @@ function teardown() {
     frame = null;
   }
   current = null;
+  currentFix = null;
 }
 
 function closeApp(fromHash) {
@@ -899,6 +1015,8 @@ window.addEventListener('message', e => {
     return;
   }
   if (!d || d.gg !== 'result' || !current) return;
+  /* 宿題：決められた練習を1回終えたら、この端末でも すぐ数える */
+  try { const p = activePlan(), wid = SEND.who(); if (p && wid && currentFix && p.items.some(x => sameFix(x, currentFix))) HW.add(wid, p, currentFix); } catch (e) {}
   const str = (v, n) => String(v == null ? '' : v).slice(0, n);
   SEND.add({
     app: current, appName: APPS[current].title,
@@ -1134,6 +1252,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -1303,13 +1423,13 @@ function oneFromGroupsFar(groups, gi, n) {           // ちがうグループか
   return sample(groups.map((g, i) => i).filter(i => i !== gi), n).map(i => groups[i][randInt(groups[i].length)]);
 }
 function makeQ(type, lv) {
-  const n = N_OPTS[lv];
+  const n = optN(N_OPTS[lv], 2, 6), k = Math.min(2, n - 2);   // k：にた ものの数（普通）
   if (type === 'word') {
     const gi = randInt(WORD_GROUPS.length), g = WORD_GROUPS[gi], target = g[randInt(g.length)];
     const others = g.filter(x => x !== target);
     let ds;
     if (lv === 'easy') ds = oneFromGroupsFar(WORD_GROUPS, gi, n - 1);
-    else if (lv === 'normal') ds = sample(others, 2).concat(oneFromGroupsFar(WORD_GROUPS, gi, 1));
+    else if (lv === 'normal') ds = sample(others, k).concat(oneFromGroupsFar(WORD_GROUPS, gi, n - 1 - k));
     else ds = sample(others, n - 1);
     return { type, dir: Math.random() < 0.5 ? 'w2p' : 'p2w', target, opts: shuffle([target].concat(ds)), ruby: lv !== 'hard' };
   }
@@ -1324,18 +1444,19 @@ function makeQ(type, lv) {
     else {
       const set = SHAPE_SETS[randInt(SHAPE_SETS.length)]; target = set[randInt(set.length)];
       const near = set.filter(x => x !== target);
-      ds = lv === 'hard' ? near : sample(near, 2).concat(sample(Object.keys(SHAPES).filter(x => !set.includes(x)), 1));
+      ds = lv === 'hard' ? sample(near, n - 1) : sample(near, k).concat(sample(Object.keys(SHAPES).filter(x => !set.includes(x)), n - 1 - k));
     }
     return { type, target, opts: shuffle([target].concat(ds)) };
   }
   /* color */
   let target, ds;
-  if (lv === 'hard') { const set = COLOR_SETS[randInt(COLOR_SETS.length)]; target = set[randInt(set.length)]; ds = set.filter(x => x !== target); }
+  if (lv === 'hard') { const set = COLOR_SETS[randInt(COLOR_SETS.length)]; target = set[randInt(set.length)]; ds = sample(set.filter(x => x !== target), n - 1); }
   else {
     target = COLOR_EASY[randInt(COLOR_EASY.length)];
     const near = COLOR_NEAR[target] || [];
     const far = COLOR_EASY.filter(x => x !== target && !near.includes(x));
-    ds = lv === 'easy' ? sample(far, n - 1) : sample(near, 1).concat(sample(far, n - 2));
+    const k1 = Math.min(1, n - 2);
+    ds = lv === 'easy' ? sample(far, n - 1) : sample(near, k1).concat(sample(far, n - 1 - k1));
   }
   return { type, target, opts: shuffle([target].concat(ds)) };
 }
@@ -1412,7 +1533,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -1814,6 +1953,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -2099,10 +2240,10 @@ const APP = {
         all ? `<span class="mora blank-cell${i === 0 ? ' current' : ''}" id="oc${i}">${i === 0 ? '？' : ''}</span>`
             : i === q.blank ? `<span class="mora blank-cell current" id="oc${i}">？</span>` : `<span class="mora">${m}</span>`).join('')}</div>`;
     let opts;
-    if (!all) opts = shuffle([morae[q.blank]].concat(q.dist));
+    if (!all) opts = shuffle([morae[q.blank]].concat(sample(q.dist, optN(q.dist.length + 1, 2, q.dist.length + 1) - 1)));
     else {
       const uniq = [...new Set(morae)];
-      opts = shuffle(uniq.concat(q.dist.filter(d => !uniq.includes(d)).slice(0, 6 - uniq.length)));
+      opts = shuffle(uniq.concat(q.dist.filter(d => !uniq.includes(d)).slice(0, Math.max(1, optN(6, 2, 8) - uniq.length))));
     }
     const box = $('choices');
     box.dataset.n = opts.length;
@@ -2152,7 +2293,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -2554,6 +2713,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -2863,8 +3024,9 @@ const APP = {
       const used = new Set(ans);
       const take = (list, k) => { const got = []; for (const m of shuffle(list)) { if (got.length >= k) break; if (!used.has(m)) { used.add(m); got.push(m); } } return got; };
       const simPool = [].concat(...ans.map(similar));
-      const near = take(simPool, L.sim);
-      const far = take(q.dist.concat(shuffle(simPool)), L.n - ans.length - near.length);
+      const n = optN(L.n, ans.length + 1, 8);
+      const near = take(simPool, Math.min(L.sim, n - ans.length - 1));
+      const far = take(q.dist.concat(shuffle(simPool)), n - ans.length - near.length);
       return Object.assign({}, q, { blanks, opts: shuffle(ans.concat(near, far)) });
     });
   },
@@ -2920,7 +3082,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -3322,6 +3502,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -3448,7 +3630,7 @@ const pos = {}; GOJUON.forEach((col, c) => col.forEach((k, r) => { if (k) pos[k]
 const GJ = { easy:{ k:2, blanks:1, n:3 }, normal:{ k:3, blanks:2, n:6 }, hard:{ k:5, blanks:5, n:10 } };
 
 function gjDistractors(lv, ans, start, k) {
-  const L = GJ[lv], need = L.n - ans.length, out = [];
+  const L = GJ[lv], need = optN(L.n, ans.length + 1, 10) - ans.length, out = [];
   const inWin = kana => { const c = pos[kana][0]; return c >= start && c < start + k; };
   /* list からまだ選んでいない字を max 個まで足す */
   const add = (list, max) => { let n = 0; for (const x of shuffle(list)) { if (out.length >= need || n >= (max || 99)) return; if (x && !ans.includes(x) && !out.includes(x) && pos[x]) { out.push(x); n++; } } };
@@ -3545,7 +3727,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -3947,6 +4147,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -4173,7 +4375,9 @@ const DB = (() => {
 /* ---------- 状態 ---------- */
 const S = { recs: [], rowId: 'a', daku: !!lsGet(DAKU_KEY, false), busy: false, playing: '', armed: '' };
 const row = id => ROWS.find(r => r.id === id);
-const visible = () => ROWS.filter(r => S.daku || !r.daku);
+/* 職員が決めた行（宿題のお題）だけを出す */
+const MYROWS = (f => (f && Array.isArray(f.topics) ? ROWS.filter(r => f.topics.map(String).includes(r.id)) : []))(window.GG_FIX);
+const visible = () => MYROWS.length ? MYROWS : ROWS.filter(r => S.daku || !r.daku);
 const recsOf = rid => S.recs.filter(r => r.row === rid).sort((a, b) => b.at - a.at);
 async function reload() { S.recs = (await DB.list()).filter(r => (r.user || '') === WHO && row(r.row)); }
 
@@ -4245,9 +4449,11 @@ function rowBtn(r) {
   return `<button class="rowbtn" type="button" data-row="${r.id}"><span class="nm">${r.name}</span><span class="ks">${r.k.join('')}</span>${today ? '<span class="done">今日 ✓</span>' : ''}</button>`;
 }
 function renderHome() {
-  $('rows').innerHTML = ROWS.filter(r => !r.daku).map(rowBtn).join('');
-  $('rowsD').innerHTML = ROWS.filter(r => r.daku).map(rowBtn).join('');
-  $('dakuBox').hidden = !S.daku;
+  const base = MYROWS.length ? MYROWS : ROWS;
+  $('rows').innerHTML = base.filter(r => !r.daku).map(rowBtn).join('');
+  $('rowsD').innerHTML = base.filter(r => r.daku).map(rowBtn).join('');
+  $('dakuBox').hidden = MYROWS.length ? !MYROWS.some(r => r.daku) : !S.daku;
+  $('dakuBtn').hidden = !!MYROWS.length;
   $('dakuBtn').innerHTML = S.daku ? R('濁音[だくおん]・半濁音[はんだくおん]を かくす') : R('濁音[だくおん]・半濁音[はんだくおん]も 出[だ]す');
   $('storeNote').innerHTML = DB.ok ? '録音は 1つの行につき 新しい30回分まで この端末に残ります。' : 'この端末では録音を残せないため、この画面を閉じると録音は消えます。';
 }
@@ -4491,6 +4697,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -4618,7 +4826,7 @@ const APP = {
   make(lv) {
     const L = NB[lv];
     return sample(L.words, SET_SIZE).map(([emo, word]) => {
-      const tiles = shuffle(word.split('').concat(extraTiles(word, L.extra)));
+      const tiles = shuffle(word.split('').concat(extraTiles(word, optN(L.extra, 0, 4))));
       return { emo, word, tiles };
     });
   },
@@ -4673,7 +4881,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -5075,6 +5301,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -5222,7 +5450,7 @@ const APP = {
   levelDesc(lv) { return { easy:'3〜4文字[もじ]・使[つか]う 字[じ]だけ', normal:'4〜5文字[もじ]・まちがえやすい 字[じ]が 1つ 多[おお]い', hard:'5〜8文字[もじ]・まちがえやすい 字[じ]が 2つ 多[おお]い' }[lv]; },
   make(lv) {
     const L = NB2[lv];
-    return sample(L.words, SET_SIZE).map(([emo, word]) => ({ emo, word, tiles: shuffle([...word].concat(extraTiles2(word, L.extra))) }));
+    return sample(L.words, SET_SIZE).map(([emo, word]) => ({ emo, word, tiles: shuffle([...word].concat(extraTiles2(word, optN(L.extra, 0, 4)))) }));
   },
   instr() { return '絵[え]を 見[み]て、字[じ]を じゅんばんに えらんで ください（小[ちい]さい 字[じ]も 1まいです）'; },
   render(q, lv, api) {
@@ -5274,7 +5502,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -5676,6 +5922,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -5809,8 +6057,10 @@ const APP = {
     return { easy:'絵[え]と ことば・6まいから 3つ', normal:'絵[え]と ことば・8まいから 4つ・にた 仲間[なかま]も まざる', hard:'ことばだけ・9まいから 4つ・にた 仲間[なかま]も まざる' }[lv];
   },
   make(lv) {
-    const L = NK[lv];
-    return sample(L.cats, SET_SIZE).map(c => {
+    const L0 = NK[lv], n = optN(L0.n, 4, 10);
+    const t = Math.min(L0.t, n - 2), L = Object.assign({}, L0, { n, t, near: Math.min(L0.near, n - t) });   // 仲間（正答）は カードの数より2つ以上 少なく
+    const mine = topicPool(Object.keys(CATS), k => k);
+    return (mine ? fillTo(mine, SET_SIZE) : sample(L.cats, SET_SIZE)).map(c => {
       const C = CATS[c];
       const targets = sample(C.items, L.t);
       const skip = new Set([c].concat(NOT_WITH[c] || []));
@@ -5875,7 +6125,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -6585,7 +6853,7 @@ tr.off td:last-child{opacity:1}
 
 /* ================= 設定 ================= */
 const TIME_LIMIT = 15;          // 1問の制限時間（秒）
-const SET_SIZE = 10;            // 1セットの問題数
+const SET_SIZE = (function () { var f = window.GG_FIX, n = f && Math.floor(Number(f.n)); return n >= 1 && n <= 30 ? n : 10; })();            // 1セットの問題数
 const KEY_SET = 'fk.settings.v1', KEY_HIST = 'fk.history.v1' + (typeof window.GG_USER === 'string' && window.GG_USER ? '.' + window.GG_USER : ''), KEY_WORDS = 'fk.words.v1';
 const RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 const BALLOON_COLORS = ['#E5484D','#F08A24','#2E9C8E','#3B78DA','#8B5CD6','#E5539A','#E3B027','#46A157'];
@@ -7572,6 +7840,9 @@ requestAnimationFrame(loop);
   var b = document.getElementById('lv-' + F.lv), s = document.getElementById('startBtn'); if (!b || !s) return;
   document.documentElement.classList.add('gg-fixed');
   b.click();
+  /* 職員が決めた選択肢の数（2・3・4・6択） */
+  var r = F.opts ? document.getElementById('nopt-' + Math.floor(Number(F.opts))) : null;
+  if (r) { r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); }
   var back = document.getElementById('backBtn');
   if (back) {
     back.textContent = 'メニューへ もどる';
@@ -8099,7 +8370,7 @@ tr.off td:last-child{opacity:1}
 'use strict';
 
 /* ================= 設定 ================= */
-const SET_SIZE = 10;
+const SET_SIZE = (function () { var f = window.GG_FIX, n = f && Math.floor(Number(f.n)); return n >= 1 && n <= 30 ? n : 10; })();
 const KEY_SET = 'sk.settings.v1', KEY_HIST = 'sk.history.v1' + (typeof window.GG_USER === 'string' && window.GG_USER ? '.' + window.GG_USER : ''), KEY_WORDS = 'sk.words.v1';
 const RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 const BAND_NAME = {1:'高頻度', 2:'中頻度', 3:'低頻度'};
@@ -8825,6 +9096,9 @@ renderLevels(); syncSettings(); renderHistory(); renderWords(); syncSpeakUI(); s
   var b = document.getElementById('lv-' + F.lv), s = document.getElementById('startBtn'); if (!b || !s) return;
   document.documentElement.classList.add('gg-fixed');
   b.click();
+  /* 職員が決めた選択肢の数（2・3・4・6択） */
+  var r = F.opts ? document.getElementById('nopt-' + Math.floor(Number(F.opts))) : null;
+  if (r) { r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); }
   var back = document.getElementById('backBtn');
   if (back) {
     back.textContent = 'メニューへ もどる';
@@ -9014,6 +9288,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -9242,7 +9518,11 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
 };
 const FIX = (() => { const f = window.GG_FIX; if (!f || !LEVELS.some(l => l.key === f.lv)) return null; return { lv: f.lv, type: TYPES.some(t => t.key === f.type) ? f.type : null }; })();
-let curType = (FIX && FIX.type) || store.get('gg.goso.type', 'cat');
+/* 職員が決めた お題（「cat:魚」「onset:か」）と お題の数 */
+const GGF = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+const MY = (Array.isArray(GGF.topics) ? GGF.topics : []).map(String).map(t => { const m = /^(cat|onset):(.+)$/.exec(t); return m ? { type: m[1], w: m[2] } : null; }).filter(Boolean);
+const NFIX = (n => n >= 1 && n <= 8 ? n : 0)(Math.floor(Number(GGF.n)));
+let curType = (FIX && FIX.type) || (MY.length && MY[0].type) || store.get('gg.goso.type', 'cat');
 if (!TYPES.some(t => t.key === curType)) curType = 'cat';
 
 /* ===== 音（はじめと おわりの 合図） ===== */
@@ -9280,9 +9560,13 @@ function renderTitle() {
   }).join('');
 }
 
+function fillToN(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 function startSet(lv) {
-  const pool = curType === 'cat' ? CATS[lv].map(c => ({ type: 'cat', w: c[0], ex: c[1] })) : ONSETS[lv].map(k => ({ type: 'onset', w: k }));
-  G = { type: curType, lv, items: shuffle(pool).slice(0, N), i: 0, takes: [], t0: Date.now() };
+  const all = curType === 'cat' ? [].concat(...['easy', 'normal', 'hard'].map(l => CATS[l])).map(c => ({ type: 'cat', w: c[0], ex: c[1] })) : [];
+  const mine = MY.filter(o => o.type === curType).map(o => curType === 'cat' ? all.find(c => P(c.w) === o.w) : { type: 'onset', w: o.w }).filter(Boolean);
+  const pool = mine.length ? mine : curType === 'cat' ? CATS[lv].map(c => ({ type: 'cat', w: c[0], ex: c[1] })) : ONSETS[lv].map(k => ({ type: 'onset', w: k }));
+  const n = NFIX || (mine.length ? Math.min(mine.length, 5) : N);
+  G = { type: curType, lv, items: (mine.length ? fillToN(mine, n) : shuffle(pool).slice(0, n)), i: 0, takes: [], t0: Date.now() };
   show('play'); renderOdai();
 }
 
@@ -9290,8 +9574,8 @@ function renderOdai() {
   const o = G.items[G.i];
   stopAll(); clearInterval(tick);
   G.phase = 'ready';
-  $('qno').textContent = (G.i + 1) + ' / ' + N;
-  $('bar').style.width = (G.i / N * 100) + '%';
+  $('qno').textContent = (G.i + 1) + ' / ' + G.items.length;
+  $('bar').style.width = (G.i / G.items.length * 100) + '%';
   $('odai').innerHTML = o.type === 'cat'
     ? `<span class="odai-kind">カテゴリ</span><p class="odai-word">${R(o.w)}</p>
        <p class="odai-ins">${R(o.w + 'の 仲間[なかま]を、できるだけ たくさん 言[い]って ください')}</p>${o.ex && G.lv === 'easy' ? `<p class="odai-ex">${R('例[れい]')}：${o.ex}</p>` : ''}
@@ -9360,22 +9644,22 @@ function timeUp() {
   $('recState').innerHTML = '';
   $('doneMsg').innerHTML = R('おわり！');
   $('playBtn').hidden = !G.takes[G.i];
-  $('next').innerHTML = G.i >= N - 1 ? R('結果[けっか]を みる') : R('つぎの お題[だい]へ');
-  $('bar').style.width = ((G.i + 1) / N * 100) + '%';
+  $('next').innerHTML = G.i >= G.items.length - 1 ? R('結果[けっか]を みる') : R('つぎの お題[だい]へ');
+  $('bar').style.width = ((G.i + 1) / G.items.length * 100) + '%';
 }
 
 function finish() {
   stopAll();
   const lvName = LEVELS.find(l => l.key === G.lv).name, tName = G.type === 'cat' ? 'カテゴリ' : '語頭音[ごとうおん]';
   $('rMeta').innerHTML = R(tName + '・' + lvName);
-  $('rTotal').textContent = N;
+  $('rTotal').textContent = G.items.length;
   $('rList').innerHTML = G.items.map((o, i) => `<div class="r-row"><span class="w">${R(o.type === 'cat' ? o.w : '「' + o.w + '」で はじまる ことば')}</span><span></span>${G.takes[i] ? `<button type="button" data-take="${i}">▶ ${R('聞[き]く')}</button>` : '<span></span>'}</div>`).join('');
   $('rList').querySelectorAll('[data-take]').forEach(b => b.addEventListener('click', () => { const t = G.takes[Number(b.dataset.take)]; if (t) { stopAll(); player = new Audio(t.url); player.play().catch(() => {}); } }));
   $('rStamp').textContent = '💮';
   $('rPraise').innerHTML = G.takes.some(Boolean) ? R('録音[ろくおん]を 聞[き]いて、言[い]えた ことばを たしかめて みましょう') : '';
   /* 成績をメニューへ（個人用リンクのときは職員に送られる）：点数は なく、やった お題を 記録する */
   try {
-    window.parent.postMessage({ gg: 'result', typeName: G.type === 'cat' ? 'カテゴリ' : '語頭音', levelName: P(lvName), score: N, max: 0, marks: '',
+    window.parent.postMessage({ gg: 'result', typeName: G.type === 'cat' ? 'カテゴリ' : '語頭音', levelName: P(lvName), score: G.items.length, max: 0, marks: '',
       items: G.items.map(o => odaiText(o)), sec: Math.round((Date.now() - G.t0) / 1000) }, '*');
   } catch (e) {}
   REC.release();
@@ -9396,7 +9680,7 @@ $('levels').addEventListener('click', e => { const b = e.target.closest('.level'
 $('goBtn').addEventListener('click', go);
 $('stopEarly').addEventListener('click', () => { if (G && G.phase === 'run') timeUp(); });
 $('playBtn').addEventListener('click', () => { const t = G && G.takes[G.i]; if (!t) return; if (player) { stopPlay(); return; } stopAll(); player = new Audio(t.url); player.onended = () => { player = null; }; player.play().catch(() => {}); });
-$('next').addEventListener('click', () => { stopPlay(); if (G.i >= N - 1) finish(); else { G.i++; renderOdai(); } });
+$('next').addEventListener('click', () => { stopPlay(); if (G.i >= G.items.length - 1) finish(); else { G.i++; renderOdai(); } });
 $('again').addEventListener('click', () => startSet(G ? G.lv : 'easy'));
 $('home').addEventListener('click', () => { if (FIX && toMenu()) return; renderTitle(); show('title'); });
 $('quit').addEventListener('click', () => { $('quitScrim').hidden = false; $('stay').focus(); });
@@ -9594,6 +9878,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -9773,7 +10059,7 @@ const sentenceHTML = s => R(s).replace(/ /g, '<span class="sp"></span>').replace
 const APP = {
   id:'gg.meishi',
   levelDesc(lv) { return { easy:'3択・よく 使う ことば', normal:'4択・同[おな]じ 場面[ばめん]の ことばが まざる', hard:'4択・あまり 使[つか]わない ことば' }[lv]; },
-  make(lv) { return sample(MS[lv], SET_SIZE).map(q => Object.assign({}, q, { opts: shuffle([q.a].concat(q.d)) })); },
+  make(lv) { return sample(MS[lv], SET_SIZE).map(q => Object.assign({}, q, { opts: shuffle([q.a].concat(sample(q.d, optN(q.d.length + 1, 2, q.d.length + 1) - 1))) })); },
   instr() { return 'あいている ところに 入[はい]る ことばを えらんで ください'; },
   render(q) {
     $('stage').innerHTML = `<p class="sentence">${sentenceHTML(q.s)}</p>`;
@@ -9796,7 +10082,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -10198,6 +10502,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -10301,7 +10607,7 @@ const joshiHTML = s => R(s).replace(/ /g, '<span class="sp"></span>').replace(/�
 const APP = {
   id:'gg.joshi',
   levelDesc(lv) { return { easy:'2択・「が」と「を」', normal:'3〜4択・「に」「で」なども', hard:'5択・家[いえ]の 中[なか]の ことば' }[lv]; },
-  make(lv) { return sample(DIFFS[JL[lv]].pool, SET_SIZE).map(q => Object.assign({}, q, { opts: shuffle([q.a].concat(q.d)) })); },
+  make(lv) { return sample(DIFFS[JL[lv]].pool, SET_SIZE).map(q => Object.assign({}, q, { opts: shuffle([q.a].concat(sample(q.d, optN(q.d.length + 1, 2, q.d.length + 1) - 1))) })); },
   maxMiss(q) { return q.opts.length === 2 ? 1 : 2; },   // 2択は1回で判定（元のアプリと同じ）
   instr() { return '正[ただ]しい ことばを 1つ えらんで ください'; },
   render(q) {
@@ -10325,7 +10631,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -10727,6 +11051,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -10927,7 +11253,6 @@ function buildQuestionOrder(dataset) {
   const singles = shuffle(units);
 
   // 1セット10問になるようにペア数kを選ぶ(ペア=2問)
-  const SET_SIZE = 10;
   const validKs = [];
   for (let k = 0; k <= pairs.length; k++) {
     const s = SET_SIZE - 2 * k;
@@ -10953,7 +11278,7 @@ const APP = {
         const first = ds.find(x => x.pairId === q.pairId && x.pairOrder === 1);
         if (first) prev = first.stemHtml + ' ' + VERBS[first.answer].rubyHtml;
       }
-      return Object.assign({}, q, { prev, opts: shuffle([q.answer].concat(q.distractors)) });
+      return Object.assign({}, q, { prev, opts: shuffle([q.answer].concat(sample(q.distractors, optN(q.distractors.length + 1, 2, q.distractors.length + 1) - 1))) });
     });
   },
   instr(q) { return q.prev ? '上[うえ]の 文[ぶん]と 反対[はんたい]の ことばを えらんで ください' : 'あいている ところに 入[はい]る ことばを えらんで ください'; },
@@ -10979,7 +11304,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -11381,6 +11724,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -11757,7 +12102,10 @@ const APP = {
   typeLabel:'問題[もんだい]の しゅるいを えらぶ',
   types:[ { key:'place', name:'場所[ばしょ]から（家[いえ]で・外[そと]で など）' }, { key:'time', name:'時間[じかん]から（朝[あさ]・夜[よる] など）' },
           { key:'thing', name:'人[ひと]・ことから（家族[かぞく]と・食[た]べた もの など）' }, { key:'mix', name:'まぜる' } ],
-  make(lv, type) { return sample(TOPICS.filter(t => type === 'mix' || !type || t.t === type), BUN[lv].n).map(t => Object.assign({}, t)); },
+  make(lv, type) {
+    const pool = topicPool(TOPICS, t => P(t.k)) || TOPICS.filter(t => type === 'mix' || !type || t.t === type);
+    return sample(pool, PER.n || BUN[lv].n).map(t => Object.assign({}, t));
+  },
   instr(q, lv) { return lv === 'normal' ? '質問[しつもん]に 声[こえ]で こたえて、さいごに 長[なが]い 文[ぶん]に しましょう' : '質問[しつもん]に 声[こえ]で こたえましょう'; },
   render(q, lv, api) {
     stopAll(); dropTakes();
@@ -11896,7 +12244,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -12298,6 +12664,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -12694,10 +13062,11 @@ const APP = {
   id:'gg.serifu',
   levelDesc(lv) { return { easy:'相手[あいて]に こたえる 場面[ばめん]・3択', normal:'自分[じぶん]から 話[はな]す 場面[ばめん]も・3択', hard:'自分[じぶん]から 話[はな]す 場面[ばめん]も・4択・にた セリフが まざる' }[lv]; },
   make(lv) {
-    const L = SL[lv];
-    return sample(SCENES.filter(sc => L.modes.includes(sc.mode)), SET_SIZE).map(sc => {
-      const near = sample(sc.near, L.near);
-      const far = sample(SCENES.filter(o => o !== sc && !clash(grp(o), grp(sc)) && o.place !== sc.place && !near.includes(o.a)).map(o => o.a), L.n - 1 - near.length);
+    const L = SL[lv], n = optN(L.n, 2, 5);
+    const pool = topicPool(SCENES, sc => P(sc.t)) || SCENES.filter(sc => L.modes.includes(sc.mode));
+    return sample(pool, SET_SIZE).map(sc => {
+      const near = sample(sc.near, Math.min(L.near, n - 1));
+      const far = sample(SCENES.filter(o => o !== sc && !clash(grp(o), grp(sc)) && o.place !== sc.place && !near.includes(o.a)).map(o => o.a), n - 1 - near.length);
       return Object.assign({}, sc, { opts: shuffle([sc.a].concat(near, far)) });
     });
   },
@@ -12726,7 +13095,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -13128,6 +13515,8 @@ h1,h2,p{margin:0}
 .choices[data-n="4"]{--cols:4}
 .choices[data-n="6"],.choices[data-n="9"]{--cols:3}
 .choices[data-n="8"]{--cols:4}
+.choices[data-n="5"],.choices[data-n="7"]{--cols:3}
+.choices[data-n="10"]{--cols:5}
 @media (max-width:560px){
   .pic-card{width:118px;height:118px;border-radius:18px}
   .pic-card .emo{font-size:80px}
@@ -13642,7 +14031,7 @@ function stopAll() { stopPlay(); try { window.speechSynthesis && window.speechSy
 const APP = {
   id:'gg.serifu2',
   levelDesc(lv) { return { easy:'相手[あいて]に こたえる 場面[ばめん]・ヒント：はじめの ことば', normal:'自分[じぶん]から 話[はな]す 場面[ばめん]も・ヒント：はじめの 1字[じ]', hard:'自分[じぶん]から 話[はな]す 場面[ばめん]も・ヒントなし' }[lv]; },
-  make(lv) { return sample(SCENES.filter(sc => SAY[lv].modes.includes(sc.mode)), SET_SIZE).map(sc => Object.assign({}, sc)); },
+  make(lv) { return sample(topicPool(SCENES, sc => P(sc.t)) || SCENES.filter(sc => SAY[lv].modes.includes(sc.mode)), SET_SIZE).map(sc => Object.assign({}, sc)); },
   instr() { return '「あなた」の セリフを 声[こえ]に 出[だ]して 言[い]って みましょう'; },
   render(q, lv, api) {
     dropTake(); stopAll();
@@ -13761,7 +14150,25 @@ const randInt = n => Math.floor(Math.random() * n);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
-const SET_SIZE = 10;
+/* 職員が人ごとに決めた 問題数・選択肢の数・お題（個人別メニューの GG_FIX。決めていないときは難しさで決まる数） */
+const PER = (() => {
+  const f = window.GG_FIX && typeof window.GG_FIX === 'object' ? window.GG_FIX : {};
+  const n = Math.floor(Number(f.n)), o = f.opts === '' || f.opts == null ? NaN : Math.floor(Number(f.opts));
+  return { n: n >= 1 && n <= 30 ? n : 0, opts: o >= 0 && o <= 12 ? o : null,
+    topics: Array.isArray(f.topics) ? f.topics.map(t => String(t)).filter(Boolean) : [] };
+})();
+const SET_SIZE = PER.n || 10;
+/* 選択肢の数：決められていれば min〜max の中で使う（その練習で作れる数まで） */
+const optN = (def, min, max) => PER.opts == null ? def : Math.max(min, Math.min(max, PER.opts));
+/* お題：決められていれば、その中から出す（keyOf でお題の名前を取り出す）。合うものがなければ null */
+function topicPool(pool, keyOf) {
+  if (!PER.topics.length) return null;
+  const want = new Set(PER.topics);
+  const got = pool.filter(x => want.has(keyOf(x)));
+  return got.length ? got : null;
+}
+/* 少ないお題で問題数をうめるときは、まぜながら くり返す */
+function fillTo(list, n) { let out = []; while (out.length < n && list.length) out = out.concat(shuffle(list)); return out.slice(0, n); }
 const LEVELS = [
   { key:'easy',   name:'簡単[かんたん]', stars:1 },
   { key:'normal', name:'普通[ふつう]',   stars:2 },
@@ -16327,6 +16734,7 @@ var SCENES = (function () {
 
   // --- アプリケーションの状態変数 ---
   let ggT0 = Date.now(), ggDone = [], ggRecT0 = 0;   // グリーン・グリーン：成績・録音用
+  const ggStages = () => { const f = window.GG_FIX, t = f && Array.isArray(f.topics) ? f.topics.map(String) : []; const s = STAGES.filter(x => t.indexOf(x.id) >= 0); return s.length ? s : STAGES; };
   let currentStage = null;
   let currentStageSteps = [];
   let currentStepIndex = 0;
@@ -16414,7 +16822,7 @@ var SCENES = (function () {
   // 1. ステージカードの一覧描画
   function renderStageGrid() {
     stageGrid.innerHTML = '';
-    STAGES.forEach(stage => {
+    ggStages().forEach(stage => {
       const card = document.createElement('div');
       card.className = 'stage-card';
       card.setAttribute('role', 'button');
@@ -16493,8 +16901,8 @@ function bindButtonHandlers() {
 
   // ランダム開始
   function onRandomStart() {
-    const randomIndex = Math.floor(Math.random() * STAGES.length);
-    const randomStage = STAGES[randomIndex];
+    const ggS = ggStages(), randomIndex = Math.floor(Math.random() * ggS.length);
+    const randomStage = ggS[randomIndex];
     onStageSelect(randomStage);
   }
 

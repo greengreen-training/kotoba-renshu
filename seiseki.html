@@ -177,6 +177,97 @@ details p{font-size:13px;color:var(--muted);margin-top:4px;word-break:break-all}
 .m-dup,.m-del{min-width:38px;min-height:38px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--green);font-weight:700}
 .m-del{color:var(--bad)}
 .pill.fix{background:var(--green);color:#fff}
+.pill.hw{background:#e8f1fb;color:#2a5f9e}
+/* 宿題・問題数・選択肢・お題 */
+.m-bulk{border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 10px;display:grid;gap:8px;background:#fbfdf9}
+.m-bulk-h{font-weight:700;color:var(--green);margin:0}
+.m-bulk-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.m-bulk-row select,.m-bulk-row input[type=date]{min-height:38px;border:1.5px solid var(--line);border-radius:8px;background:#fff;padding:2px 6px}
+.m-more{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:2px 0 4px 32px}
+.m-k{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.m-tbtn.set{background:var(--green);color:#fff;border-color:var(--green)}
+.m-topics{grid-column:1 / -1;margin:2px 0 6px 32px;border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:8px 12px;display:grid;gap:8px}
+.m-tg{border:0;padding:0;margin:0;display:grid;gap:6px}
+.m-tg legend{font-weight:700;font-size:14px;color:var(--green);padding:0}
+.m-tg-btns{display:flex;gap:6px;flex-wrap:wrap}
+.m-tps{display:flex;flex-wrap:wrap;gap:4px 6px}
+.m-tp{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px 3px 8px;cursor:pointer;font-size:14px;min-height:36px;background:#fff}
+.m-tp input{width:18px;height:18px;accent-color:var(--green)}
+.m-tp:has(input:checked){background:#e7f3df;border-color:var(--green);font-weight:700}
+.hw-box{margin-top:8px;border:1.5px solid #cfe0f3;background:#f6faff;border-radius:12px;padding:8px 12px;display:grid;gap:4px;color:var(--ink)}
+.hw-top{margin:0}
+.hw-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.hw-list li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13.5px}
+.hw-nm{flex:1 1 220px;min-width:0}
+.hw-bar{width:110px;height:10px;border-radius:999px;background:#dde7f2;overflow:hidden;flex:none}
+.hw-bar i{display:block;height:100%;background:#2a78d6;border-radius:999px}
+.hw-list li.ok .hw-bar i{background:var(--green)}
+.hw-ok{color:var(--green);font-weight:700}
+/* ふりかえり（利用者さんへ） */
+.seg{display:flex;gap:6px}
+.seg label{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:4px 14px 4px 10px;cursor:pointer;min-height:40px;background:#fff}
+.seg label:has(input:checked){background:#e7f3df;border-color:var(--green);font-weight:700}
+.seg input{accent-color:var(--green)}
+.lbl-t{font-size:13px;font-weight:700;color:var(--muted)}
+#fbNote{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;font-size:15px;line-height:1.7}
+.fb-sheet{max-width:760px;margin:14px auto 0;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:28px 32px;color:#1f2a22;font-family:"BIZ UDPGothic","Zen Maru Gothic",sans-serif;display:grid;gap:18px}
+.fb-sheet rt{font-size:.42em;color:#3d5a45}
+.fb-top{display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--green);padding-bottom:12px}
+.fb-top img{width:54px;height:auto}
+.fb-top .t{display:grid;gap:2px}
+.fb-top .org{font-size:13px;color:var(--muted)}
+.fb-top h1{margin:0;font-size:26px;line-height:1.7;color:var(--green)}
+.fb-who{font-size:24px;font-weight:700;line-height:1.8}
+.fb-who small{font-size:16px;font-weight:400;margin-left:10px;color:#46574b}
+.fb-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fb-kpi{border:2px solid #d5e6cc;border-radius:14px;padding:10px 12px;text-align:center;background:#f6fbf3}
+.fb-kpi .k{font-size:16px;font-weight:700;line-height:1.9}
+.fb-kpi .v{font-size:40px;font-weight:700;line-height:1.2;color:var(--green)}
+.fb-kpi .v small{font-size:18px;margin-left:2px}
+.fb-kpi .c{font-size:14px;line-height:1.9;color:#46574b}
+.fb-days{display:flex;flex-wrap:wrap;gap:6px}
+.fb-day{width:44px;text-align:center;font-size:13px;line-height:1.5}
+.fb-day i{display:block;width:34px;height:34px;margin:2px auto 0;border-radius:50%;border:2px solid #c8d8c0;background:#fff}
+.fb-day.on i{background:var(--green);border-color:var(--green)}
+.fb-month .fb-day{width:38px}.fb-month .fb-day i{width:26px;height:26px}
+.fb-h{margin:0;font-size:19px;line-height:1.9;color:var(--green);border-left:6px solid var(--green);padding-left:10px}
+.fb-tbl{width:100%;border-collapse:collapse}
+.fb-tbl th,.fb-tbl td{border-bottom:1.5px solid #e2ebdd;padding:8px 6px;font-size:16px;line-height:1.9;text-align:left;vertical-align:middle}
+.fb-tbl th{font-size:14px;color:#46574b;font-weight:700}
+.fb-tbl td.n{text-align:right;white-space:nowrap;font-weight:700}
+.fb-bar{display:flex;align-items:center;gap:8px}
+.fb-bar span{flex:1;height:14px;border-radius:999px;background:#e5eee0;overflow:hidden;min-width:80px}
+.fb-bar span i{display:block;height:100%;background:var(--green);border-radius:999px}
+.fb-bar b{width:3.2em;text-align:right}
+.fb-up{color:#c0392b;font-weight:700}.fb-down{color:#2a5f9e;font-weight:700}
+.fb-hw li{font-size:16px;line-height:2}
+.fb-note{border:2px dashed #c8d8c0;border-radius:14px;padding:12px 16px;font-size:18px;line-height:2;white-space:pre-wrap;min-height:70px}
+.fb-foot{font-size:12px;color:var(--muted);text-align:right}
+@media (max-width:560px){ .fb-sheet{padding:18px 14px} .fb-kpi .v{font-size:30px} .fb-kpis{gap:6px} }
+/* 回数ごと・問題ごとの変わり方 */
+.seq-chart{max-width:100%;height:auto}
+.seq-ln{fill:none;stroke:#c9d3cc;stroke-width:1.5}
+.seq-avg{fill:none;stroke:var(--green);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.seq-chart circle{stroke:#fff;stroke-width:1.5}
+.seq-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px}
+.seq-legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.seq-legend i.avg{width:18px;height:4px;border-radius:2px;background:var(--green);vertical-align:3px}
+.seq details summary{cursor:pointer;font-weight:700;color:var(--green);font-size:14px}
+.qa-ctl{align-items:center;gap:8px}
+.qa-ctl select{min-height:38px;border:1.5px solid var(--line);border-radius:8px;background:#fff;padding:2px 6px}
+.qa-wrap{max-height:560px;overflow:auto}
+.qa-t{border-collapse:separate;border-spacing:0;background:#fff;width:auto!important;min-width:0}
+.qa-t th,.qa-t td{font-size:13px;padding:4px 6px;white-space:nowrap;border-bottom:1px solid var(--line)}
+.qa-t thead th{position:sticky;top:0;background:#f3f8ef;z-index:1}
+.qa-t .qa-q{position:sticky;left:0;background:#fff;text-align:left;font-weight:700;max-width:220px;white-space:normal;min-width:120px;z-index:1}
+.qa-t thead .qa-q{z-index:2;background:#f3f8ef}
+.qa-d{text-align:center;line-height:1.3}
+.qa-d small{display:block;font-size:10.5px;color:var(--muted);font-weight:400}
+.qa-c{text-align:center;font-weight:700;font-size:16px;position:relative;min-width:30px}
+.qa-c.o{color:#d63a3a}.qa-c.t{color:#e67e22}.qa-c.x{color:var(--lv-normal);background:#eef4fb}
+.qa-c.none{color:#c4ccc6;font-weight:400}
+.qa-w{position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--bad)}
+.qa-t td.num small{display:block;font-size:10.5px;color:var(--muted)}
 .pill.voice{background:#fbeee0;color:var(--warn)}
 .voice-box{border:1.5px solid #f1d7b5;background:#fffaf2;border-radius:12px;padding:8px 12px;margin:10px 0 6px;display:grid;gap:2px}
 .recs .play{min-width:92px}
@@ -184,6 +275,8 @@ details p{font-size:13px;color:var(--muted);margin-top:4px;word-break:break-all}
 @media (max-width:560px){
   .m-row{grid-template-columns:minmax(0,1fr) auto}
   .m-row .m-sel{order:3;grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:6px;padding-left:32px}
+  .m-row .m-more{order:4}
+  .m-row .m-topics{order:5;margin-left:0}
 }
 
 /* 設定 */
@@ -197,6 +290,11 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
   body{background:#fff}
   .head,.tabs,#p-data,#p-setup,#p-menu,.no-print{display:none!important}
   #p-links{display:block!important}
+  #p-fb{display:none!important}
+  body.print-fb #p-links{display:none!important}
+  body.print-fb #p-fb{display:block!important}
+  body.print-fb .box,body.print-fb .panel{border:0;box-shadow:none;padding:0;margin:0}
+  .fb-sheet{border:0!important;box-shadow:none!important;padding:0!important}
   .cards{grid-template-columns:repeat(2,1fr)}
   .qcard{border:1.5px solid #999}
   .qcard .acts{display:none}
@@ -216,6 +314,7 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
   <nav class="tabs" role="tablist" aria-label="ページの切りかえ">
     <button class="tab" role="tab" id="t-data" aria-controls="p-data" aria-selected="true" type="button">成績</button>
     <button class="tab" role="tab" id="t-menu" aria-controls="p-menu" aria-selected="false" type="button">練習メニュー（個人別）</button>
+    <button class="tab" role="tab" id="t-fb" aria-controls="p-fb" aria-selected="false" type="button">ふりかえり（利用者さんへ）</button>
     <button class="tab" role="tab" id="t-links" aria-controls="p-links" aria-selected="false" type="button">利用者のリンク・QR</button>
     <button class="tab" role="tab" id="t-setup" aria-controls="p-setup" aria-selected="false" type="button">設定・はじめての準備</button>
   </nav>
@@ -259,7 +358,17 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
         <p class="howto">本人（ご家族）の同意をもらってから オンにしてください。声は施設の Google ドライブの「ことばの練習 録音」フォルダに保存され、このページの「成績」でも聞けます。押すと すぐ変わります。</p>
         <span class="msg" id="mVoiceMsg"></span>
       </div>
-      <p class="howto" style="margin:6px 0 10px">出す練習に ✓ を入れ、難しさを えらびます。「本人がえらぶ」にすると、いつもどおり えらぶ画面が出ます。同じ練習を ちがう難しさで2つ出すときは［＋］を押します。</p>
+      <p class="howto" style="margin:6px 0 10px">出す練習に ✓ を入れ、難しさを えらびます。「本人がえらぶ」にすると、いつもどおり えらぶ画面が出ます。同じ練習を ちがう難しさで2つ出すときは［＋］を押します。<br>
+        ✓ を入れると、その人に合わせた <b>問題数・選択肢の数・お題</b> と、<b>宿題の回数</b> も決められます（決めないときは、難しさで決まる いつもの数です）。</p>
+      <div class="m-bulk">
+        <p class="m-bulk-h">まとめて 決める（✓ を入れた練習 ぜんぶに）</p>
+        <div class="m-bulk-row"><span>難しさを</span>
+          <button class="btn small" type="button" data-blv="easy">簡単</button><button class="btn small" type="button" data-blv="normal">普通</button><button class="btn small" type="button" data-blv="hard">難しい</button><button class="btn small" type="button" data-blv="">本人がえらぶ</button><span>に する</span></div>
+        <div class="m-bulk-row"><label for="mBulkN">問題数を</label><select id="mBulkN"><option value="">えらぶ</option><option value="-">おまかせ（いつもの数）に もどす</option></select>
+          <label for="mBulkTimes">宿題の回数を</label><select id="mBulkTimes"><option value="">えらぶ</option><option value="0">決めない</option></select></div>
+        <div class="m-bulk-row"><label for="mDue">宿題の期限</label><input type="date" id="mDue"><button class="btn small" type="button" id="mDueClear">期限なし</button><span class="note">決めなくても かまいません。期限は 利用者さんの画面に「〇月〇日までに」と出ます。</span></div>
+        <span class="msg" id="mBulkMsg"></span>
+      </div>
       <div id="mList"></div>
       <div class="row" style="margin-top:14px">
         <button class="btn primary" id="mSave" type="button">保存する（この人のアプリに届きます）</button>
@@ -267,6 +376,23 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
         <span class="msg" id="mSaveMsg"></span>
       </div>
     </div>
+  </section>
+
+  <!-- ===== ふりかえり（利用者さんへ渡す 週ごと・月ごとの まとめ） ===== -->
+  <section class="panel" id="p-fb" role="tabpanel" aria-labelledby="t-fb" hidden>
+    <div class="box no-print">
+      <h2>ふりかえりの 資料を つくる</h2>
+      <p class="howto">利用者さんと 期間を えらぶと、利用者さんに 渡す 1枚の まとめが できます。［印刷する］から 紙にも PDF にも できます（印刷の画面で「PDF に保存」を えらびます）。名前は この端末の「名前のメモ」を使います。</p>
+      <div class="row" style="margin-top:10px">
+        <div class="field" style="min-width:200px"><label for="fbUser">利用者</label><select id="fbUser"></select></div>
+        <div class="field"><span class="lbl-t">期間</span><div class="seg"><label><input type="radio" name="fbKind" value="week" checked><span>週ごと</span></label><label><input type="radio" name="fbKind" value="month"><span>月ごと</span></label></div></div>
+        <div class="field" style="min-width:240px"><label for="fbWhen">いつの分</label><select id="fbWhen"></select></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label for="fbNote">職員からの ひとこと（そのまま 資料に 入ります。漢字には 印刷のときに 読みがなが 付きません）</label>
+        <textarea id="fbNote" rows="3" placeholder="例：毎日 声を 出して 練習できましたね。来週も いっしょに がんばりましょう。"></textarea></div>
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="fbPrint" type="button">印刷する（PDF にも できます）</button><button class="btn" id="fbAuto" type="button">ひとことの 例を 入れる</button><span class="msg" id="fbMsg"></span></div>
+    </div>
+    <div id="fbSheet"></div>
   </section>
 
   <!-- ===== リンク・QR ===== -->
@@ -325,6 +451,8 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
  * ・成績一覧ページは、下のパスワードを付けて読みに来たときだけ、記録を返します。
  * ・個人別メニュー：成績一覧ページで決めた「その人がやる練習と難しさ」を「メニュー」シートに書き、
  *   利用者のアプリが開いたときに読みに来ます（決めるのはパスワードが必要、読むのは利用者番号だけ）。
+ * ・宿題：個人別メニューには、お題・回数・期限も付けられます。利用者のアプリが読みに来たとき、
+ *   メニューを決めた日から何回やったかも「記録」シートから数えて返します。
  * ・録音：成績一覧ページで「声も送る」にした人だけ、録音の練習の声が届きます。
  *   この Google アカウントのドライブの「ことばの練習 録音」フォルダ（利用者番号ごと）に保存し、「録音」シートに1行ずつ書きます。
  *
@@ -334,9 +462,10 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
 const STAFF_PASSWORD = 'ここを職員用のパスワードに変える';
 
 const SHEET_NAME = '記録';
-const HEAD = ['受信日時', '練習した日時', '利用者番号', '練習', 'しゅるい', '難しさ', '点数', '満点', '〇△×', '問題ごと', 'かかった秒数', '記録ID'];
+const HEAD = ['受信日時', '練習した日時', '利用者番号', '練習', 'しゅるい', '難しさ', '点数', '満点', '〇△×', '問題ごと', 'かかった秒数', '記録ID', '練習ID'];
 const MENU_SHEET = 'メニュー';
-const MENU_HEAD = ['利用者番号', '練習メニュー（成績一覧ページで変えます）', '変えた日時', '声を送る（成績一覧ページで変えます）'];
+const MENU_HEAD = ['利用者番号', '練習メニュー（成績一覧ページで変えます）', '変えた日時', '声を送る（成績一覧ページで変えます）', '宿題の期限（成績一覧ページで変えます）'];
+const LVJP = { easy: '簡単', normal: '普通', hard: '難しい' };
 const AUDIO_SHEET = '録音';
 const AUDIO_HEAD = ['受信日時', '録音した日時', '利用者番号', '練習', '内容', '秒数', 'ファイル名', 'ファイルID', '記録ID'];
 const AUDIO_FOLDER = 'ことばの練習 録音';
@@ -353,13 +482,21 @@ function headed_(name, head) {
   }
   return sh;
 }
-function sheet_() { return headed_(SHEET_NAME, HEAD); }
+/* 前のスクリプトで作ったシートには、あとから足した列の見出しを足す */
+function addHeads_(sh, head) {
+  const now = sh.getRange(1, 1, 1, head.length).getValues()[0];
+  now.forEach((v, c) =&gt; {
+    if (v === '') sh.getRange(1, c + 1).setValue(head[c]).setFontWeight('bold').setBackground('#e5f0dc');
+  });
+  return sh;
+}
+function sheet_() { return addHeads_(headed_(SHEET_NAME, HEAD), HEAD); }
 function audioSheet_() { return headed_(AUDIO_SHEET, AUDIO_HEAD); }
 function menuSheet_() {
   const sh = headed_(MENU_SHEET, MENU_HEAD);
   sh.getRange('A:A').setNumberFormat('@');
-  if (sh.getRange(1, 4).getValue() === '') sh.getRange(1, 4).setValue(MENU_HEAD[3]).setFontWeight('bold').setBackground('#e5f0dc');
-  return sh;
+  sh.getRange('E:E').setNumberFormat('@');
+  return addHeads_(sh, MENU_HEAD);
 }
 
 function out_(obj) {
@@ -376,22 +513,46 @@ function text_(v, n) {
   return s;
 }
 
-/* ---------- 個人別メニュー・声を送るか ---------- */
+/* ---------- 個人別メニュー・宿題・声を送るか ---------- */
+/* お題：練習の中の問題の名前（例「魚」「家で」）。回数：宿題として やる回数（0＝決めない） */
+function cleanTopics_(a) {
+  if (!Array.isArray(a)) return [];
+  const out = [];
+  a.slice(0, 60).forEach(t =&gt; {
+    const s = String(t == null ? '' : t).replace(/[\u0000-\u001f&lt;&gt;"\\]/g, '').trim().slice(0, 40);
+    if (s &amp;&amp; out.indexOf(s) &lt; 0) out.push(s);
+  });
+  return out;
+}
 function cleanItems_(a) {
   if (!Array.isArray(a)) return [];
-  return a.slice(0, 40).map(x =&gt; ({ app: String((x &amp;&amp; x.app) || ''), lv: String((x &amp;&amp; x.lv) || ''), type: String((x &amp;&amp; x.type) || '') }))
-    .filter(x =&gt; /^[a-z0-9]{1,20}$/.test(x.app) &amp;&amp; /^(easy|normal|hard|)$/.test(x.lv) &amp;&amp; /^[A-Za-z0-9_-]{0,20}$/.test(x.type));
+  return a.slice(0, 40).map(x =&gt; {
+    const it = { app: String((x &amp;&amp; x.app) || ''), lv: String((x &amp;&amp; x.lv) || ''), type: String((x &amp;&amp; x.type) || '') };
+    const topics = cleanTopics_(x &amp;&amp; x.topics), times = Math.max(0, Math.min(30, Math.floor(Number(x &amp;&amp; x.times) || 0)));
+    if (topics.length) it.topics = topics;
+    if (times) it.times = times;
+    /* 人ごとの 問題数（1〜30）・選択肢の数（0〜12。並べ替えの「まぜる字」は0もある） */
+    const n = Math.floor(Number(x &amp;&amp; x.n)), o = x &amp;&amp; x.opts !== '' &amp;&amp; x.opts != null ? Math.floor(Number(x.opts)) : NaN;
+    if (n &gt;= 1 &amp;&amp; n &lt;= 30) it.n = n;
+    if (o &gt;= 0 &amp;&amp; o &lt;= 12) it.opts = o;
+    return it;
+  }).filter(x =&gt; /^[a-z0-9]{1,20}$/.test(x.app) &amp;&amp; /^(easy|normal|hard|)$/.test(x.lv) &amp;&amp; /^[A-Za-z0-9_-]{0,20}$/.test(x.type));
 }
+const cleanDue_ = v =&gt; {
+  if (v instanceof Date) return Utilities.formatDate(v, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  const s = String(v || '').trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : '';
+};
 const yes_ = v =&gt; v === true || /^(はい|TRUE|1)$/i.test(String(v || ''));
 function readMenus_() {
   const sh = menuSheet_(), last = sh.getLastRow(), out = {};
   if (last &lt; 2) return out;
-  sh.getRange(2, 1, last - 1, 4).getValues().forEach(r =&gt; {
+  sh.getRange(2, 1, last - 1, 5).getValues().forEach(r =&gt; {
     const id = String(r[0]);
     if (!okUser_(id)) return;
     let items = [];
     try { items = cleanItems_(JSON.parse(String(r[1] || '[]'))); } catch (e) {}
-    out[id] = { items: items, at: r[2] instanceof Date ? r[2].toISOString() : String(r[2] || ''), voice: yes_(r[3]) };
+    out[id] = { items: items, at: r[2] instanceof Date ? r[2].toISOString() : String(r[2] || ''), voice: yes_(r[3]), due: cleanDue_(r[4]) };
   });
   return out;
 }
@@ -403,9 +564,35 @@ function menuRow_(sh, user) {
   sh.getRange(last + 1, 1, 1, 3).setValues([[user, '[]', new Date()]]);
   return last + 1;
 }
-function saveMenu_(user, items) {
+function saveMenu_(user, items, due) {
   const sh = menuSheet_(), row = menuRow_(sh, user);
   sh.getRange(row, 1, 1, 3).setValues([[user, JSON.stringify(items), new Date()]]);
+  sh.getRange(row, 5).setValue(due || '');
+}
+/* メニューを決めた日時から、その人が それぞれの練習を何回やったか（「記録」シートの 練習ID で数える）。
+   同じ練習を ちがう難しさで2つ出しているときだけ、難しさも見る */
+function doneCounts_(user, m) {
+  const items = m.items || [];
+  if (!items.length) return [];
+  const since = new Date(m.at || 0).getTime() || 0;
+  const sh = sheet_(), last = sh.getLastRow();
+  const counts = items.map(() =&gt; 0);
+  if (last &lt; 2) return counts;
+  const vals = sh.getRange(2, 1, last - 1, HEAD.length).getValues();
+  const dup = {};
+  items.forEach(it =&gt; { dup[it.app] = (dup[it.app] || 0) + 1; });
+  vals.forEach(r =&gt; {
+    if (String(r[2]) !== user) return;
+    const when = r[1] instanceof Date ? r[1].getTime() : new Date(r[1]).getTime();
+    if (!(when &gt;= since)) return;
+    const app = String(r[12] || ''), lvName = String(r[5] || '');
+    items.forEach((it, i) =&gt; {
+      if (it.app !== app) return;
+      if (dup[app] &gt; 1 &amp;&amp; it.lv &amp;&amp; lvName.indexOf(LVJP[it.lv]) &lt; 0) return;
+      counts[i]++;
+    });
+  });
+  return counts;
 }
 function saveVoice_(user, voice) {
   const sh = menuSheet_(), row = menuRow_(sh, user);
@@ -462,9 +649,9 @@ function doPost(e) {
       if (!okUser_(body.user)) return out_({ ok: false, error: 'user' });
       const user = String(body.user);
       if (body.action === 'setvoice') { saveVoice_(user, !!body.voice); return out_({ ok: true, user: user, voice: !!body.voice }); }
-      const items = cleanItems_(body.items);
-      saveMenu_(user, items);
-      return out_({ ok: true, user: user, items: items });
+      const items = cleanItems_(body.items), due = items.length ? cleanDue_(body.due) : '';
+      saveMenu_(user, items, due);
+      return out_({ ok: true, user: user, items: items, due: due, homework: true });
     }
 
     const recs = Array.isArray(body.records) ? body.records.slice(0, 100) : [];
@@ -482,7 +669,8 @@ function doPost(e) {
       let when = new Date(r.ts);
       if (isNaN(when.getTime())) when = new Date();
       rows.push([new Date(), when, user, text_(r.appName, 40), text_(r.typeName, 40), text_(r.levelName, 60),
-        Number(r.score) || 0, Number(r.max) || 0, text_(r.marks, 60), text_(r.items, 2000), Number(r.sec) || 0, uid]);
+        Number(r.score) || 0, Number(r.max) || 0, text_(r.marks, 60), text_(r.items, 2000), Number(r.sec) || 0, uid,
+        /^[a-z0-9]{1,20}$/.test(String(r.app || '')) ? String(r.app) : '']);
     });
     if (rows.length) sh.getRange(sh.getLastRow() + 1, 1, rows.length, HEAD.length).setValues(rows);
     return out_({ ok: true, saved: saved });
@@ -494,15 +682,19 @@ function doPost(e) {
 }
 
 /* 読みに来たとき
-   ・…?menu=利用者番号        ：その人の個人別メニューと「声を送るか」を返す（利用者のアプリが使う。パスワードはいらない）
+   ・…?menu=利用者番号        ：その人の個人別メニュー・宿題の期限・やった回数と「声を送るか」を返す
+                                 （利用者のアプリが使う。パスワードはいらない。点数は返さない）
    ・…?key=パスワード          ：成績・録音の一覧・全員の個人別メニューを返す（成績一覧ページが使う）
    ・…?key=パスワード&amp;audio=ID ：録音1つを返す（成績一覧ページで聞くとき） */
 function doGet(e) {
   const p = (e &amp;&amp; e.parameter) || {};
   if (p.menu != null) {
     if (!okUser_(p.menu)) return out_({ ok: false, error: 'user' });
-    const m = readMenus_()[String(p.menu)] || { items: [], at: '', voice: false };
-    return out_({ ok: true, menu: true, user: String(p.menu), items: m.items, at: m.at, voice: m.voice });
+    const user = String(p.menu);
+    const m = readMenus_()[user] || { items: [], at: '', voice: false, due: '' };
+    const hw = m.items.some(it =&gt; it.times) || !!m.due;
+    return out_({ ok: true, menu: true, user: user, items: m.items, at: m.at, voice: m.voice, due: m.due || '',
+      done: hw ? doneCounts_(user, m) : [] });
   }
   if (!okKey_(p.key)) return out_({ ok: false, error: 'password' });
   const ash = audioSheet_(), alast = ash.getLastRow();
@@ -2862,15 +3054,39 @@ let audios = [], audioFolder = '';   // 録音の一覧（「声も送る」に�
 
 /* 練習の一覧（ことばの練習アプリのメニューと同じ順） */
 const LVS = [['easy', '簡単'], ['normal', '普通'], ['hard', '難しい']];
+/* qn：問題数として えらべる数　opt：選択肢の数（label・unit・えらべる数・難しさごとの いつもの数）　topics：お題を えらべる練習
+   title：アプリが記録に書く練習の名前 */
+const QN = [3, 5, 8, 10, 15, 20];
 const CATALOG = [
-  { stage:'① 絵と形', apps:[ { id:'eawase', name:'絵合わせ', types:[['word','ことばと絵'], ['pic','同じ絵'], ['shape','形'], ['color','色'], ['mix','まぜる']] } ] },
-  { stage:'② 音と文字', apps:[ { id:'onin', name:'音を選ぶ練習', types:[['single','一文字を埋める'], ['all','全部の文字を埋める']] }, { id:'oto2', name:'音を選ぶ練習（上級）' },
-      { id:'gojuon', name:'50音ならべ' }, { id:'gojuonrec', name:'五十音れんしゅう（録音）', nolv:true },
-      { id:'narabe', name:'ことば並べ替え（初級）' }, { id:'narabe2', name:'ことば並べ替え（上級）' } ] },
-  { stage:'③ ことば', apps:[ { id:'nakama', name:'仲間えらび' }, { id:'fusen', name:'風船ことば' }, { id:'setsumei', name:'説明ことば' }, { id:'goso', name:'語想起タイムアタック（録音）', types:[['cat','カテゴリ'], ['onset','語頭音']] } ] },
-  { stage:'④ 文', apps:[ { id:'meishi', name:'名詞の練習' }, { id:'joshi', name:'助詞の練習' }, { id:'doushi', name:'動詞の練習' }, { id:'bun', name:'文をつくろう（録音）', types:[['place','場所から'], ['time','時間から'], ['thing','人・ことから'], ['mix','まぜる']] } ] },
-  { stage:'⑤ 会話', apps:[ { id:'serifu', name:'セリフをえらびましょう' }, { id:'serifu2', name:'セリフをいいましょう（録音）' }, { id:'aisatsu', name:'挨拶語のトレーニング（録音）', nolv:true } ] },
+  { stage:'① 絵と形', apps:[ { id:'eawase', name:'絵合わせ', title:'絵合わせ', types:[['word','ことばと絵'], ['pic','同じ絵'], ['shape','形'], ['color','色'], ['mix','まぜる']], qn:QN, opt:{ vals:[2,3,4,5,6], def:{ easy:3, normal:4, hard:6 } } } ] },
+  { stage:'② 音と文字', apps:[ { id:'onin', name:'音を選ぶ練習', title:'音を選ぶ練習', types:[['single','一文字を埋める'], ['all','全部の文字を埋める']], qn:QN, opt:{ vals:[2,3,4,5,6], def:{ easy:6, normal:6, hard:6 } } },
+      { id:'oto2', name:'音を選ぶ練習（上級）', title:'音を選ぶ練習（上級）', qn:QN, opt:{ vals:[3,4,5,6,7,8], def:{ easy:6, normal:6, hard:8 } } },
+      { id:'gojuon', name:'50音ならべ', title:'50音ならべ', qn:QN, opt:{ vals:[2,3,4,6,8,10], def:{ easy:3, normal:6, hard:10 }, note:'空きのマスの数より1つ以上 多くなります' } },
+      { id:'gojuonrec', name:'五十音れんしゅう（録音）', title:'五十音れんしゅう（録音）', nolv:true, topics:true, timesNote:'1つの行を録音するごとに1回' },
+      { id:'narabe', name:'ことば並べ替え（初級）', title:'ことば並べ替え（初級）', qn:QN, opt:{ label:'まぜる字', unit:'つ', vals:[0,1,2,3,4], def:{ easy:0, normal:1, hard:2 } } },
+      { id:'narabe2', name:'ことば並べ替え（上級）', title:'ことば並べ替え（上級）', qn:QN, opt:{ label:'まぜる字', unit:'つ', vals:[0,1,2,3,4], def:{ easy:0, normal:1, hard:2 } } } ] },
+  { stage:'③ ことば', apps:[ { id:'nakama', name:'仲間えらび', title:'仲間えらび', qn:QN, topics:true, opt:{ label:'カードの数', unit:'枚', vals:[4,5,6,7,8,9,10], def:{ easy:6, normal:8, hard:9 } } },
+      { id:'fusen', name:'風船ことば', title:'風船ことば', qn:QN, opt:{ vals:[2,3,4,6], def:{ easy:3, normal:4, hard:6 }, needLv:true } },
+      { id:'setsumei', name:'説明ことば', title:'説明ことば', qn:QN, opt:{ vals:[2,3,4,6], def:{ easy:3, normal:4, hard:6 }, needLv:true } },
+      { id:'goso', name:'語想起タイムアタック（録音）', title:'語想起タイムアタック', types:[['cat','カテゴリ'], ['onset','語頭音']], qn:[1,2,3,4,5], qlabel:'お題の数', qunit:'つ', topics:true } ] },
+  { stage:'④ 文', apps:[ { id:'meishi', name:'名詞の練習', title:'名詞の練習', qn:QN, opt:{ vals:[2,3,4], def:{ easy:3, normal:4, hard:4 }, note:'問題によっては少なくなります' } },
+      { id:'joshi', name:'助詞の練習', title:'助詞の練習', qn:QN, opt:{ vals:[2,3,4,5], def:{}, note:'問題によっては少なくなります' } },
+      { id:'doushi', name:'動詞の練習', title:'動詞の練習', qn:QN, opt:{ vals:[2,3,4], def:{ easy:3, normal:3, hard:4 }, note:'問題によっては少なくなります' } },
+      { id:'bun', name:'文をつくろう（録音）', title:'文をつくろう', types:[['place','場所から'], ['time','時間から'], ['thing','人・ことから'], ['mix','まぜる']], qn:[1,2,3,4,5,6,8,10], topics:true } ] },
+  { stage:'⑤ 会話', apps:[ { id:'serifu', name:'セリフをえらびましょう', title:'セリフをえらびましょう', qn:QN, topics:true, opt:{ vals:[2,3,4,5], def:{ easy:3, normal:3, hard:4 } } },
+      { id:'serifu2', name:'セリフをいいましょう（録音）', title:'セリフをいいましょう', qn:QN, topics:true },
+      { id:'aisatsu', name:'挨拶語のトレーニング（録音）', title:'挨拶語のトレーニング', nolv:true, topics:true, timesNote:'1つの場面を終えるごとに1回' } ] },
 ];
+/* お題の一覧（ことばの練習アプリの各練習のデータから取り出したもの） */
+const TOPICDEF = {"serifu":{"groups":[{"name":"こたえる 場面","items":[["病院の 診察室で","病院の 診察室で"],["タクシーで","タクシーで"],["食堂で（注文する）","食堂で（注文する）"],["電話で","電話で"],["薬局で（お薬手帳）","薬局で（お薬手帳）"],["電車の 中で","電車の 中で"],["郵便局で（荷物）","郵便局で（荷物）"],["洋服の 店で（サイズ）","洋服の 店で（サイズ）"],["家で（電話）","家で（電話）"],["家で（お客さん）","家で（お客さん）"],["デイサービスで（おやつ）","デイサービスで（おやつ）"],["道で（友だちに 会う）","道で（友だちに 会う）"],["バスの 中で","バスの 中で"],["美容院で","美容院で"],["交番で","交番で"],["病院の 受付で（次の 予約）","病院の 受付で（次の 予約）"],["歯医者の 受付で","歯医者の 受付で"],["コンビニの レジで","コンビニの レジで"],["デイサービスの お迎え","デイサービスの お迎え"],["レストランの 入り口で","レストランの 入り口で"],["病院からの 電話","病院からの 電話"],["銀行の 窓口で","銀行の 窓口で"],["市役所の 窓口で","市役所の 窓口で"],["スーパーの レジで","スーパーの レジで"],["デイサービスで（お昼ごはん）","デイサービスで（お昼ごはん）"],["道で（道を 聞かれる）","道で（道を 聞かれる）"],["エレベーターで","エレベーターで"]]},{"name":"自分から 話す 場面","items":[["食堂で（料理が 来た）","食堂で（料理が 来た）"],["スーパーで","スーパーで"],["道で（道を 聞く）","道で（道を 聞く）"],["道で（落とし物）","道で（落とし物）"],["薬局で（薬の 飲み方）","薬局で（薬の 飲み方）"],["駅で","駅で"],["郵便局で（切手）","郵便局で（切手）"],["洋服の 店で（着て みたい）","洋服の 店で（着て みたい）"],["デイサービスで（寒い）","デイサービスで（寒い）"],["待ち合わせで","待ち合わせで"],["バス停で","バス停で"],["美容院に 電話","美容院に 電話"],["レストランで（お水）","レストランで（お水）"],["レストランで（お会計）","レストランで（お会計）"],["タクシーで（降りる）","タクシーで（降りる）"],["デイサービスで（トイレ）","デイサービスで（トイレ）"],["家の 前で（あいさつ）","家の 前で（あいさつ）"],["デイサービスに 電話（お休み）","デイサービスに 電話（お休み）"],["旅行先で（写真）","旅行先で（写真）"]]}]},"serifu2":{"groups":[{"name":"こたえる 場面","items":[["病院の 診察室で","病院の 診察室で"],["タクシーで","タクシーで"],["食堂で（注文する）","食堂で（注文する）"],["電話で","電話で"],["薬局で（お薬手帳）","薬局で（お薬手帳）"],["電車の 中で","電車の 中で"],["郵便局で（荷物）","郵便局で（荷物）"],["洋服の 店で（サイズ）","洋服の 店で（サイズ）"],["家で（電話）","家で（電話）"],["家で（お客さん）","家で（お客さん）"],["デイサービスで（おやつ）","デイサービスで（おやつ）"],["道で（友だちに 会う）","道で（友だちに 会う）"],["バスの 中で","バスの 中で"],["美容院で","美容院で"],["交番で","交番で"],["病院の 受付で（次の 予約）","病院の 受付で（次の 予約）"],["歯医者の 受付で","歯医者の 受付で"],["コンビニの レジで","コンビニの レジで"],["デイサービスの お迎え","デイサービスの お迎え"],["レストランの 入り口で","レストランの 入り口で"],["病院からの 電話","病院からの 電話"],["銀行の 窓口で","銀行の 窓口で"],["市役所の 窓口で","市役所の 窓口で"],["スーパーの レジで","スーパーの レジで"],["デイサービスで（お昼ごはん）","デイサービスで（お昼ごはん）"],["道で（道を 聞かれる）","道で（道を 聞かれる）"],["エレベーターで","エレベーターで"]]},{"name":"自分から 話す 場面","items":[["食堂で（料理が 来た）","食堂で（料理が 来た）"],["スーパーで","スーパーで"],["道で（道を 聞く）","道で（道を 聞く）"],["道で（落とし物）","道で（落とし物）"],["薬局で（薬の 飲み方）","薬局で（薬の 飲み方）"],["駅で","駅で"],["郵便局で（切手）","郵便局で（切手）"],["洋服の 店で（着て みたい）","洋服の 店で（着て みたい）"],["デイサービスで（寒い）","デイサービスで（寒い）"],["待ち合わせで","待ち合わせで"],["バス停で","バス停で"],["美容院に 電話","美容院に 電話"],["レストランで（お水）","レストランで（お水）"],["レストランで（お会計）","レストランで（お会計）"],["タクシーで（降りる）","タクシーで（降りる）"],["デイサービスで（トイレ）","デイサービスで（トイレ）"],["家の 前で（あいさつ）","家の 前で（あいさつ）"],["デイサービスに 電話（お休み）","デイサービスに 電話（お休み）"],["旅行先で（写真）","旅行先で（写真）"]]}]},"bun":{"groups":[{"name":"場所から","items":[["家で","家で"],["外で","外で"],["デイサービスで","デイサービスで"],["お店で","お店で"],["病院で","病院で"],["公園・散歩で","公園・散歩で"],["子どもや 孫の 家で","子どもや 孫の 家で"],["庭・ベランダで","庭・ベランダで"],["近所で","近所で"],["乗り物で","乗り物で"]]},{"name":"時間から","items":[["けさ","けさ"],["お昼","お昼"],["夜","夜"],["きのう","きのう"],["土曜日・日曜日","土曜日・日曜日"],["寝る 前","寝る 前"],["ごはんの あと","ごはんの あと"],["お正月・行事","お正月・行事"],["去年","去年"],["子どもの ころ","子どもの ころ"],["若い ころ（仕事）","若い ころ（仕事）"]]},{"name":"人・ことから","items":[["食べた もの","食べた もの"],["買った もの","買った もの"],["作った 料理","作った 料理"],["家族と","家族と"],["友だちと","友だちと"],["すきな こと","すきな こと"],["テレビ・ラジオ","テレビ・ラジオ"],["電話・手紙","電話・手紙"],["旅行","旅行"],["うれしかった こと","うれしかった こと"]]}]},"nakama":{"groups":[{"name":"仲間","items":[["fruit","くだもの"],["veg","野菜"],["dish","料理"],["drink","飲み物"],["sweets","おかし"],["animal","動物"],["bird","鳥"],["insect","虫"],["sea","海の 生き物"],["flower","花"],["vehicle","乗り物"],["building","建物"],["clothes","服"],["wear","身に つける 物（服の ほか）"],["instrument","楽器"],["sport","スポーツ"],["stationery","文房具"],["kitchen","台所の 道具"],["tools","大工道具"],["body","体"],["weather","天気"]]}]},"goso":{"byType":true,"groups":[{"type":"cat","name":"カテゴリ：簡単で 出る お題","items":[["cat:動物","動物"],["cat:果物","果物"],["cat:野菜","野菜"],["cat:食べ物","食べ物"],["cat:乗り物","乗り物"],["cat:色","色"],["cat:体の 部分","体の 部分"],["cat:花","花"],["cat:飲み物","飲み物"],["cat:魚","魚"],["cat:鳥","鳥"],["cat:家族の 呼び方","家族の 呼び方"]]},{"type":"cat","name":"カテゴリ：普通で 出る お題","items":[["cat:台所に ある もの","台所に ある もの"],["cat:着る もの","着る もの"],["cat:文房具","文房具"],["cat:楽器","楽器"],["cat:スポーツ","スポーツ"],["cat:家具","家具"],["cat:虫","虫"],["cat:海に いる 生き物","海に いる 生き物"],["cat:お店の 種類","お店の 種類"],["cat:仕事（職業）","仕事（職業）"],["cat:料理の 名前","料理の 名前"],["cat:天気の ことば","天気の ことば"]]},{"type":"cat","name":"カテゴリ：難しいで 出る お題","items":[["cat:赤い もの","赤い もの"],["cat:丸い もの","丸い もの"],["cat:冷たい もの","冷たい もの"],["cat:甘い もの","甘い もの"],["cat:電気で 動く もの","電気で 動く もの"],["cat:学校に ある もの","学校に ある もの"],["cat:病院に ある もの","病院に ある もの"],["cat:木で できて いる もの","木で できて いる もの"],["cat:空を 飛ぶ もの","空を 飛ぶ もの"],["cat:春に 関係する もの","春に 関係する もの"],["cat:お祝いに 関係する もの","お祝いに 関係する もの"],["cat:四角い もの","四角い もの"]]},{"type":"onset","name":"語頭音：簡単で 出る 音","items":[["onset:か","か"],["onset:さ","さ"],["onset:た","た"],["onset:は","は"],["onset:ま","ま"],["onset:あ","あ"],["onset:こ","こ"],["onset:し","し"],["onset:と","と"],["onset:き","き"]]},{"type":"onset","name":"語頭音：普通で 出る 音","items":[["onset:い","い"],["onset:う","う"],["onset:お","お"],["onset:く","く"],["onset:け","け"],["onset:せ","せ"],["onset:そ","そ"],["onset:つ","つ"],["onset:な","な"],["onset:に","に"],["onset:の","の"],["onset:ひ","ひ"],["onset:ふ","ふ"],["onset:ほ","ほ"],["onset:み","み"],["onset:も","も"],["onset:や","や"],["onset:り","り"],["onset:わ","わ"]]},{"type":"onset","name":"語頭音：難しいで 出る 音","items":[["onset:ぬ","ぬ"],["onset:へ","へ"],["onset:る","る"],["onset:ろ","ろ"],["onset:ゆ","ゆ"],["onset:よ","よ"],["onset:れ","れ"],["onset:ね","ね"],["onset:む","む"],["onset:め","め"],["onset:え","え"],["onset:ら","ら"]]}]},"gojuonrec":{"groups":[{"name":"清音","items":[["a","あ行"],["ka","か行"],["sa","さ行"],["ta","た行"],["na","な行"],["ha","は行"],["ma","ま行"],["ya","や行"],["ra","ら行"],["wa","わ行"]]},{"name":"濁音・半濁音","items":[["ga","が行"],["za","ざ行"],["da","だ行"],["ba","ば行"],["pa","ぱ行"]]}]},"aisatsu":{"groups":[{"name":"場面","items":[["morning","朝の挨拶"],["noon","昼の挨拶"],["night","夜の挨拶"],["gift","プレゼント"],["meal","食事（ごはん）"],["doorway","玄関（お出かけ）"],["meeting","対面（挨拶）"],["homecoming","帰宅（おうち）"]]}]}};
+function topicName(app, k) {
+  const d = TOPICDEF[app];
+  if (d) for (const g of d.groups) for (const it of g.items) if (it[0] === k) return it[1];
+  return String(k).replace(/^(cat|onset):/, '');
+}
+const TIMES = [1, 2, 3, 4, 5, 7, 10, 14];
+const QN_OPTS_HTML = () => QN.map(v => `<option value="${v}">${v}問</option>`).join('');
+const optText = (a, v) => { const o = a.opt || {}; return o.label ? `${o.label} ${v}${o.unit || ''}` : `${v}択`; };
 const APPDEF = {}; CATALOG.forEach(g => g.apps.forEach(a => { APPDEF[a.id] = a; }));
 const okUser = v => /^[A-Za-z0-9_-]{1,20}$/.test(v || '');
 function planText(items) {
@@ -2879,17 +3095,21 @@ function planText(items) {
     const a = APPDEF[it.app]; if (!a) return '';
     const t = it.type && a.types ? (a.types.find(x => x[0] === it.type) || [, ''])[1] : '';
     const l = it.lv ? (LVS.find(x => x[0] === it.lv) || [, ''])[1] : (a.nolv ? '' : '本人がえらぶ');
-    const sub = [t, l].filter(Boolean).join('・');
+    const extra = [it.n ? it.n + (a.qunit || '問') : '', it.opts != null && a.opt ? optText(a, it.opts) : '',
+      it.topics && it.topics.length ? 'お題：' + (it.topics.length <= 3 ? it.topics.map(k => topicName(it.app, k)).join('・') : it.topics.length + (it.topics.length < 10 ? 'つ' : 'こ')) : '',
+      it.times ? it.times + '回' : ''];
+    const sub = [t, l].concat(extra).filter(Boolean).join('・');
     return a.name + (sub ? '（' + sub + '）' : '');
   }).filter(Boolean).join('、');
 }
 
 /* ---------- タブ ---------- */
-const TABS = ['data', 'menu', 'links', 'setup'];
+const TABS = ['data', 'menu', 'fb', 'links', 'setup'];
 function showTab(k) {
   TABS.forEach(t => { $('t-' + t).setAttribute('aria-selected', t === k); $('p-' + t).hidden = t !== k; });
   if (k === 'links') renderCards();
   if (k === 'menu') renderMenuTab();
+  if (k === 'fb') renderFb();
 }
 TABS.forEach(t => $('t-' + t).addEventListener('click', () => showTab(t)));
 
@@ -2937,10 +3157,11 @@ async function load() {
     audios = (Array.isArray(j.audio) ? j.audio : []).map(r => ({ at: new Date(r[1]), user: String(r[2]), app: String(r[3] || ''), label: String(r[4] || ''), dur: Number(r[5]) || 0, name: String(r[6] || ''), id: String(r[7] || '') }))
       .filter(a => a.user && a.id && !isNaN(a.at.getTime()));
     rows = (j.rows || []).map(r => ({ recv:new Date(r[0]), at:new Date(r[1]), user:String(r[2]), app:String(r[3]), type:String(r[4] || ''), level:String(r[5] || ''),
-      score:Number(r[6]) || 0, max:Number(r[7]) || 0, marks:String(r[8] || ''), items:String(r[9] || ''), sec:Number(r[10]) || 0, uid:String(r[11] || '') }))
+      score:Number(r[6]) || 0, max:Number(r[7]) || 0, marks:String(r[8] || ''), items:String(r[9] || ''), sec:Number(r[10]) || 0, uid:String(r[11] || ''), appId:String(r[12] || '') }))
       .filter(r => r.user && !isNaN(r.at.getTime()));
     m.className = 'msg ok'; m.textContent = `${fmtDT(new Date())} に読みこみました（全 ${rows.length} 回分）`;
     renderUsers(); renderDetail(); renderMenuTab();
+    if (!$('p-fb').hidden) renderFb();
   } catch (e) {
     m.className = 'msg err'; m.textContent = '読みこめませんでした。インターネットのつながりと受け取りURLを確かめてください。';
   }
@@ -2966,7 +3187,8 @@ function renderUsers() {
     return `<button class="user" type="button" data-u="${esc(x.u)}" aria-pressed="${x.u === selected}">
       <span class="id">${esc(x.u)}</span>${nm[x.u] ? `<span class="nm">${esc(nm[x.u])}</span>` : ''}
       <span class="meta">さいごの練習　${fmtDT(x.last.at)}</span>
-      <span class="meta">この期間 ${x.n} 回・この7日 ${x.week} 回 ${idle ? '<span class="pill idle">7日以上 練習なし</span>' : '<span class="pill">練習中</span>'}${menus && menus[x.u] && menus[x.u].items.length ? ' <span class="pill fix">メニュー決定</span>' : ''}${menus && menus[x.u] && menus[x.u].voice ? ' <span class="pill voice">🎙 声も送る</span>' : ''}</span>
+      <span class="meta">この期間 ${x.n} 回・この7日 ${x.week} 回 ${idle ? '<span class="pill idle">7日以上 練習なし</span>' : '<span class="pill">練習中</span>'}${(() => { const h = hwSummary(x.u); if (h) return ` <span class="pill ${h.total && h.done === h.total ? 'fix' : h.late ? 'idle' : 'hw'}">宿題 ${h.total ? h.done + '/' + h.total : ''}${h.total && h.done === h.total ? ' ✓' : ''}${h.late ? '・期限すぎ' : ''}</span>`;
+        return menus && menus[x.u] && menus[x.u].items.length ? ' <span class="pill fix">メニュー決定</span>' : ''; })()}${menus && menus[x.u] && menus[x.u].voice ? ' <span class="pill voice">🎙 声も送る</span>' : ''}</span>
     </button>`; }).join('')}</div>`;
   box.querySelectorAll('.user').forEach(b => b.addEventListener('click', () => { selected = b.dataset.u; renderUsers(); renderDetail(); $('detail').scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
 }
@@ -3006,7 +3228,7 @@ function renderDetail() {
   const legend = `<div class="legend">${usedLv.map(l => `<span><svg viewBox="0 0 14 14">${marker(l.shape, 7, 7, 4.5, l.color)}</svg>${l.name}</span>`).join('')}</div>`;
   box.innerHTML = `<div class="box" style="display:grid;gap:14px">
     <div class="detail-head"><span class="id">${esc(selected)}</span>${nm ? `<span class="nm">${esc(nm)}</span>` : ''}</div>
-    <p class="m-now no-print">練習メニュー：${menus && menus[selected] && menus[selected].items.length ? '<b>' + esc(planText(menus[selected].items)) + '</b>' : (menus ? '決めていません（全部の練習が出ます）' : '—')}　<button class="btn small" id="toMenu" type="button">練習メニューを決める・変える</button></p>
+    <div class="m-now no-print">練習メニュー：${menus && menus[selected] && menus[selected].items.length ? '<b>' + esc(planText(menus[selected].items)) + '</b>' : (menus ? '決めていません（全部の練習が出ます）' : '—')}　<button class="btn small" id="toMenu" type="button">練習メニュー・宿題を決める・変える</button>${hwHTML(selected)}</div>
     <div class="kpis"><span><b>${mine.length}</b>回</span><span><b>${days}</b>日 練習</span><span>合計 <b>${Math.round(total / 60)}</b>分</span><span>（${$('range').selectedOptions[0].textContent}）</span></div>
     ${calendarHTML(mineAll, audios.filter(a => a.user === selected))}
     ${mine.length ? '' : '<p class="empty">この期間の記録はありません。期間を「すべての期間」にすると前の記録も出ます。</p>'}
@@ -3020,6 +3242,8 @@ function renderDetail() {
       return `<div class="prac"><h3>${esc(a)}</h3>
         <p class="sub">${list.length}回　さいご ${fmtN(last.score)}/${last.max}点（${esc(last.level)}）　いちばん良い ${Math.round(best)}%</p>
         ${chartSVG(list)}${legend}</div>`; }).join('')}</div>
+    ${seqHTML(mine)}
+    ${qaHTML(mine)}
     ${recsHTML()}
     ${mine.length ? `<h3 class="sec-h">すべての記録（行を押すと、問題ごとに「どう まちがえたか・何秒かかったか」が 出ます）</h3>${recTable(mine)}` : ''}
   </div>`;
@@ -3029,6 +3253,74 @@ function renderDetail() {
   const tm = $('toMenu');
   if (tm) tm.addEventListener('click', () => { showTab('menu'); startEdit(selected); window.scrollTo(0, 0); });
   box.querySelectorAll('[data-aud]').forEach(b => b.addEventListener('click', () => playAudio(b)));
+  const qs = $('qaSel'); if (qs) qs.addEventListener('change', () => { qaApp = qs.value; renderDetail(); const q = $('qaBox'); if (q) q.scrollIntoView({ block: 'nearest' }); });
+  const qm = $('qaMiss'); if (qm) qm.addEventListener('change', () => { qaMiss = qm.checked; renderDetail(); const q = $('qaBox'); if (q) q.scrollIntoView({ block: 'nearest' }); });
+}
+
+/* ---------- 回数ごと（練習の しゅるいに 関係なく、練習した順の点数） ---------- */
+function seqHTML(list) {
+  const pts = list.filter(r => r.max).sort((a, b) => a.at - b.at);
+  if (pts.length < 2) return '';
+  const W = 680, H = 200, L = 46, R = 12, T = 12, B = 28, w = W - L - R, h = H - T - B;
+  const x = i => L + (i * w) / (pts.length - 1);
+  const y = v => T + h - (v / 100) * h;
+  const pct = r => (r.score / r.max) * 100;
+  let g = '';
+  [0, 50, 100].forEach(v => { g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}%</text>`; });
+  g += `<text class="axis" x="${L}" y="${H - 8}">1回目</text><text class="axis" x="${W - R}" y="${H - 8}" text-anchor="end">${pts.length}回目</text>`;
+  /* 5回ごとの 平均（ならした線） */
+  const avg = pts.map((p, i) => { const s = pts.slice(Math.max(0, i - 4), i + 1); return s.reduce((a, r) => a + pct(r), 0) / s.length; });
+  g += `<polyline class="seq-ln" points="${pts.map((p, i) => `${x(i)},${y(pct(p))}`).join(' ')}"/>`;
+  g += `<polyline class="seq-avg" points="${avg.map((v, i) => `${x(i)},${y(v)}`).join(' ')}"/>`;
+  pts.forEach((p, i) => { g += `<circle cx="${x(i)}" cy="${y(pct(p))}" r="${pts.length > 60 ? 3.5 : 5}" style="fill:var(--st${stageOf(p.app)})"><title>${i + 1}回目　${fmtDT(p.at)}　${esc(p.app)}（${esc([p.type, p.level].filter(Boolean).join('・'))}）　${fmtN(p.score)} / ${p.max}点（${Math.round(pct(p))}%）</title></circle>`; });
+  const legend = STAGE.map((st, i) => pts.some(p => stageOf(p.app) === i + 1) ? `<span><i style="background:var(--st${i + 1})"></i>${esc(st[0])}</span>` : '').join('');
+  const rowsH = pts.map((p, i) => ({ p, i })).reverse().map(({ p, i }) => `<tr><td class="num">${i + 1}</td><td>${fmtDT(p.at)}</td><td>${esc(p.app)}</td><td>${esc([p.type, p.level].filter(Boolean).join('・'))}</td><td class="num">${fmtN(p.score)} / ${p.max}</td><td class="num"><b>${Math.round(pct(p))}%</b></td><td class="marks">${marksHTML(p.marks)}</td></tr>`).join('');
+  return `<div class="seq cal">
+    <h3 class="sec-h" style="margin:0">回数ごとの 点数（練習の しゅるいに 関係なく、練習した順）</h3>
+    <p class="note">点の色は 練習の まとまり、太い線は 5回ごとの 平均です。点に 指を あてると くわしく 出ます。</p>
+    <svg class="chart seq-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="回数ごとの点数">${g}</svg>
+    <div class="legend seq-legend">${legend}<span><i class="avg"></i>5回ごとの 平均</span></div>
+    <details><summary>表で見る（${pts.length}回分・新しい順）</summary>
+      <div class="tblwrap"><table><thead><tr><th class="num">回</th><th>練習した日時</th><th>練習</th><th>しゅるい・難しさ</th><th class="num">点数</th><th class="num">正答率</th><th>〇△×</th></tr></thead><tbody>${rowsH}</tbody></table></div>
+    </details></div>`;
+}
+
+/* ---------- 問題ごとの 変わり方（同じ問題の 〇△× が 日付の順に 並ぶ） ---------- */
+let qaApp = null, qaMiss = false;
+function qaHTML(list) {
+  const withQ = list.filter(r => r.items && /[〇△×]/.test(r.items)).sort((a, b) => b.at - a.at);
+  const apps = [...new Set(withQ.map(r => r.app))];
+  if (!apps.length) return '';
+  if (!apps.includes(qaApp)) qaApp = apps[0];
+  const ses = withQ.filter(r => r.app === qaApp).sort((a, b) => a.at - b.at).slice(-20);
+  const map = new Map();
+  ses.forEach((r, si) => String(r.items).split('／').filter(Boolean).map(parseItem).forEach(q => {
+    if (!q.mk) return;
+    if (!map.has(q.label)) map.set(q.label, []);
+    map.get(q.label)[si] = q;
+  }));
+  const pt = q => q.mk === '〇' ? 1 : q.mk === '△' ? 0.5 : 0;
+  let lines = [...map.entries()].map(([label, arr]) => {
+    const got = arr.filter(Boolean);
+    return { label, arr, n: got.length, rate: got.reduce((a, q) => a + pt(q), 0) / got.length, miss: got.some(q => q.mk !== '〇'), last: got[got.length - 1] };
+  });
+  if (qaMiss) lines = lines.filter(l => l.miss);
+  lines.sort((a, b) => b.n - a.n || a.rate - b.rate || a.label.localeCompare(b.label, 'ja'));
+  const head = ses.map(r => `<th class="qa-d" title="${fmtDT(r.at)}　${esc([r.type, r.level].filter(Boolean).join('・'))}">${r.at.getMonth() + 1}/${r.at.getDate()}<small>${esc(String(r.level || '').slice(0, 3))}</small></th>`).join('');
+  const cell = q => {
+    if (!q) return '<td class="qa-c none" aria-label="出ていない">·</td>';
+    const tip = [q.late ? '時間切れ' : q.sec != null ? q.sec + '秒' : '', q.wrong ? 'えらんだ：' + q.wrong : ''].filter(Boolean).join('　');
+    return `<td class="qa-c mk ${q.mk === '〇' ? 'o' : q.mk === '△' ? 't' : 'x'}"${tip ? ` title="${esc(tip)}"` : ''}>${q.mk}${q.wrong ? '<i class="qa-w" aria-hidden="true"></i>' : ''}</td>`;
+  };
+  return `<div class="cal qa" id="qaBox">
+    <h3 class="sec-h" style="margin:0">問題ごとの 変わり方（同じ問題の 〇△× を 日付の順に）</h3>
+    <div class="row qa-ctl"><label for="qaSel">練習</label><select id="qaSel">${apps.map(a => `<option${a === qaApp ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select>
+      <label class="m-on"><input type="checkbox" id="qaMiss"${qaMiss ? ' checked' : ''}><span>まちがえたことの ある問題だけ</span></label></div>
+    <p class="note">新しい20回分まで。〇△× に 指を あてると、かかった秒数と まちがえて えらんだものが 出ます（赤い点は まちがえて えらんだものが ある問題）。この期間に ${ses.length}回、${map.size}問 出ています。</p>
+    ${lines.length ? `<div class="tblwrap qa-wrap"><table class="qa-t"><thead><tr><th class="qa-q">問題</th>${head}<th class="num">正答率</th></tr></thead><tbody>
+      ${lines.map(l => `<tr><th class="qa-q" scope="row">${esc(l.label)}</th>${ses.map((r, si) => cell(l.arr[si])).join('')}<td class="num"><b>${Math.round(l.rate * 100)}%</b><small>（${l.n}回）</small></td></tr>`).join('')}
+    </tbody></table></div>` : '<p class="empty">まちがえたことの ある問題は ありません。</p>'}
+  </div>`;
 }
 
 /* ---------- 問題ごと（どう まちがえたか・何秒かかったか） ---------- */
@@ -3188,7 +3480,7 @@ async function playAudio(b) {
 }
 
 /* ---------- 練習メニュー（個人別） ---------- */
-let mUser = null, draft = [];
+let mUser = null, draft = [], draftDue = '';
 function knownUsers() {
   const set = new Set();
   rows.forEach(r => set.add(r.user));
@@ -3211,15 +3503,51 @@ function renderMenuTab() {
 }
 function startEdit(u) {
   mUser = u;
-  const cur = (menus && menus[u] && menus[u].items) || [];
+  const m = menus && menus[u], cur = (m && m.items) || [];
   draft = [];
+  draftDue = (m && m.due) || '';
+  const extraOf = it => ({ topics: (it.topics || []).slice(), times: it.times || 0, n: it.n != null ? String(it.n) : '', opts: it.opts != null ? String(it.opts) : '', open: false });
   CATALOG.forEach(g => g.apps.forEach(a => {
     const mine = cur.filter(it => it.app === a.id);
-    if (mine.length) mine.forEach((it, i) => draft.push({ app: a.id, on: true, lv: a.nolv ? '' : (it.lv || ''), type: a.types ? (it.type || '') : '', extra: i > 0 }));
-    else draft.push({ app: a.id, on: false, lv: a.nolv ? '' : 'normal', type: a.types ? a.types[0][0] : '', extra: false });
+    if (mine.length) mine.forEach((it, i) => draft.push(Object.assign({ app: a.id, on: true, lv: a.nolv ? '' : (it.lv || ''), type: a.types ? (it.type || '') : '', extra: i > 0 }, extraOf(it))));
+    else draft.push(Object.assign({ app: a.id, on: false, lv: a.nolv ? '' : 'normal', type: a.types ? a.types[0][0] : '', extra: false }, extraOf({})));
   }));
-  $('mSaveMsg').textContent = ''; $('mVoiceMsg').textContent = '';
+  $('mSaveMsg').textContent = ''; $('mVoiceMsg').textContent = ''; $('mBulkMsg').textContent = '';
   renderMenuTab();
+}
+/* ---------- 宿題の進み具合（受け取りスクリプトと同じ数え方：メニューを決めた日時から、その練習を何回やったか） ---------- */
+const LVJ = { easy:'簡単', normal:'普通', hard:'難しい' };
+const hasHW = m => !!m && (!!m.due || (m.items || []).some(it => it.times));
+function hwCounts(u) {
+  const m = menus && menus[u]; if (!m || !m.items.length) return [];
+  const since = new Date(m.at || 0).getTime() || 0, dup = {};
+  m.items.forEach(it => { dup[it.app] = (dup[it.app] || 0) + 1; });
+  return m.items.map(it => rows.filter(r => r.user === u && r.at.getTime() >= since
+    && (r.appId ? r.appId === it.app : r.app === (APPDEF[it.app] || {}).title)
+    && !(dup[it.app] > 1 && it.lv && r.level.indexOf(LVJ[it.lv]) < 0)).length);
+}
+function fmtDue(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); if (!m) return '';
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  return (d.getMonth() + 1) + '月' + d.getDate() + '日（' + '日月火水木金土'[d.getDay()] + '）';
+}
+const overdue = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return !!m && Date.now() > new Date(+m[1], +m[2] - 1, +m[3] + 1).getTime(); };
+function hwSummary(u) {
+  const m = menus && menus[u]; if (!hasHW(m)) return null;
+  const c = hwCounts(u), goal = m.items.map((it, i) => it.times ? [c[i], it.times] : null).filter(Boolean);
+  return { done: goal.filter(g => g[0] >= g[1]).length, total: goal.length, late: overdue(m.due) && goal.some(g => g[0] < g[1]) };
+}
+function hwHTML(u) {
+  const m = menus && menus[u]; if (!hasHW(m)) return '';
+  const c = hwCounts(u), sum = hwSummary(u);
+  const due = m.due ? `期限 <b>${fmtDue(m.due)}</b>${sum.late ? ' <span class="pill idle">期限すぎ</span>' : ''}` : '期限なし';
+  return `<div class="hw-box"><p class="hw-top"><b>宿題</b>　${due}　<span class="note">（${m.at ? fmtDT(new Date(m.at)) + ' に出してから' : ''}の回数）</span>${rows.length ? '' : '　<span class="note">「成績」タブで成績を読みこむと、やった回数が出ます。</span>'}</p>
+    <ul class="hw-list">${m.items.map((it, i) => {
+      const name = esc(planText([Object.assign({}, it, { times: 0 })]));
+      if (!it.times) return `<li><span class="hw-nm">${name}</span><span class="note">回数は決めていません（${c[i]}回 やりました）</span></li>`;
+      const ok = c[i] >= it.times;
+      return `<li class="${ok ? 'ok' : ''}"><span class="hw-nm">${name}</span><span class="hw-bar" aria-hidden="true"><i style="width:${Math.min(100, (c[i] / it.times) * 100)}%"></i></span><b>${c[i]} / ${it.times}回</b>${ok ? '<span class="hw-ok">✓ できた</span>' : ''}</li>`;
+    }).join('')}</ul></div>`;
 }
 function renderEditor() {
   const box = $('mEdit');
@@ -3230,8 +3558,9 @@ function renderEditor() {
   const cur = menus && menus[mUser];
   $('mVoice').checked = !!(cur && cur.voice);
   $('mVoice').disabled = menus === null;
+  $('mDue').value = draftDue || '';
   $('mNow').innerHTML = cur && cur.items.length
-    ? `いまの メニュー：<b>${esc(planText(cur.items))}</b>${cur.at ? `<br>（${fmtDT(new Date(cur.at))} に保存）` : ''}`
+    ? `いまの メニュー：<b>${esc(planText(cur.items))}</b>${cur.at ? `<br>（${fmtDT(new Date(cur.at))} に保存）` : ''}${hwHTML(mUser)}`
     : 'いまは 決めていません（全部の練習が出ます）。';
   let h = '';
   CATALOG.forEach(g => {
@@ -3246,10 +3575,47 @@ function renderEditor() {
       const btn = d.extra ? `<button class="m-del" type="button" data-del="${i}" aria-label="この行を消す">×</button>`
         : (a.nolv ? '<span></span>' : `<button class="m-dup" type="button" data-dup="${i}" aria-label="${esc(a.name)}を もう1つ" title="同じ練習を もう1つ（ちがう難しさで）">＋</button>`);
       h += `<div class="m-row${d.on ? ' on' : ''}"><label class="m-on"><input type="checkbox" data-i="${i}" data-f="on"${d.on ? ' checked' : ''}><span>${esc(a.name)}${d.extra ? '（2つめ）' : ''}</span></label>
-        <span class="m-sel">${typeSel}${lvSel}</span>${btn}</div>`;
+        <span class="m-sel">${typeSel}${lvSel}</span>${btn}${d.on ? moreHTML(d, i, a) : ''}</div>`;
     });
   });
   $('mList').innerHTML = h;
+}
+/* ✓ を入れた練習の 2行目：問題数・選択肢の数・宿題の回数・お題 */
+function moreHTML(d, i, a) {
+  const qDef = a.id === 'goso' ? '3つ' : a.id === 'bun' ? '難しさで 3〜5問' : '10問';
+  const o = a.opt, oDef = o ? (d.lv && o.def[d.lv] != null ? optText(a, o.def[d.lv]) : '難しさで 決まる数') : '';
+  const sel = (f, cur, opts) => `<select data-i="${i}" data-f="${f}">${opts.map(([v, t]) => `<option value="${v}"${String(cur) === String(v) ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  const parts = [];
+  if (a.qn) parts.push(`<label class="m-k">${esc(a.qlabel || '問題数')} ${sel('n', d.n, [['', 'いつもの数（' + qDef + '）']].concat(a.qn.map(v => [v, v + (a.qunit || '問')])))}</label>`);
+  if (o) parts.push(`<label class="m-k">${esc(o.label || '選択肢')} ${sel('opts', d.opts, [['', 'いつもの数（' + oDef + '）']].concat(o.vals.map(v => [v, o.label ? v + (o.unit || '') : v + '択'])))}</label>`);
+  parts.push(`<label class="m-k">宿題の回数 ${sel('times', d.times, [[0, '決めない']].concat(TIMES.map(v => [v, v + '回'])))}</label>`);
+  if (a.topics && TOPICDEF[a.id]) parts.push(`<button class="btn small m-tbtn${d.topics.length ? ' set' : ''}" type="button" data-topen="${i}" aria-expanded="${d.open}">お題：${d.topics.length ? d.topics.length + (d.topics.length < 10 ? 'つ' : 'こ') + ' えらんだ' : 'ぜんぶの中から'} ${d.open ? '▲' : '▼'}</button>`);
+  const notes = [];
+  if (o && o.note && d.opts !== '') notes.push(o.note);
+  if (o && o.needLv && d.opts !== '' && !d.lv) notes.push('選択肢の数は、難しさを決めたときに使われます');
+  if (a.timesNote && Number(d.times)) notes.push(a.timesNote);
+  return `<div class="m-more">${parts.join('')}${notes.length ? `<span class="note">${esc(notes.join('。'))}</span>` : ''}</div>${d.open ? topicPanel(d, i) : ''}`;
+}
+function topicPanel(d, i) {
+  const def = TOPICDEF[d.app]; if (!def) return '';
+  const sel = new Set(d.topics);
+  const groups = def.groups.map((g, gi) => ({ g, gi })).filter(x => !(d.app === 'goso' && d.type && x.g.type && x.g.type !== d.type));
+  return `<div class="m-topics">
+    <p class="note">えらんだ お題だけが出ます。えらばないときは、いつもどおり 全部の中から出ます。${d.app === 'goso' ? '1回に出る お題の数は「お題の数」で決めます（決めないときは えらんだ数・5つまで）。' : d.app === 'nakama' ? 'お題が少ないときは、くり返して問題数をうめます。' : ''}</p>
+    ${groups.map(({ g, gi }) => `<fieldset class="m-tg"><legend>${esc(g.name)}</legend>
+      <div class="m-tg-btns"><button type="button" class="btn small" data-tg="${i}:${gi}:all">この まとまりを 全部</button><button type="button" class="btn small" data-tg="${i}:${gi}:none">はずす</button></div>
+      <div class="m-tps">${g.items.map(([k, label]) => `<label class="m-tp"><input type="checkbox" data-i="${i}" data-tk="${esc(k)}"${sel.has(k) ? ' checked' : ''}><span>${esc(label)}</span></label>`).join('')}</div></fieldset>`).join('')}
+    <div class="row"><button type="button" class="btn small" data-tclear="${i}">お題を 全部 はずす</button><button type="button" class="btn small" data-topen="${i}">とじる</button></div>
+  </div>`;
+}
+/* 語想起：カテゴリと語頭音の お題は まぜない（えらんだ お題に しゅるいを合わせる） */
+function gosoType(d) {
+  if (d.app !== 'goso' || !d.topics.length) return false;
+  const t = d.topics[d.topics.length - 1].split(':')[0];
+  const before = d.type;
+  d.topics = d.topics.filter(k => k.split(':')[0] === t);
+  d.type = t;
+  return before !== t;
 }
 $('mUser').addEventListener('change', () => { const u = $('mUser').value; if (u) startEdit(u); else { mUser = null; renderEditor(); } });
 $('mPick').addEventListener('click', () => {
@@ -3258,18 +3624,69 @@ $('mPick').addEventListener('click', () => {
   $('mNew').value = ''; startEdit(u);
 });
 $('mList').addEventListener('change', e => {
-  const el = e.target.closest('[data-f]'); if (!el) return;
+  const el = e.target;
   const d = draft[Number(el.dataset.i)]; if (!d) return;
-  if (el.dataset.f === 'on') d.on = el.checked; else d[el.dataset.f] = el.value;
   $('mSaveMsg').textContent = '';
-  if (el.dataset.f === 'on') renderEditor();
+  if (el.dataset.tk != null) {
+    const k = el.dataset.tk;
+    d.topics = d.topics.filter(x => x !== k);
+    if (el.checked) d.topics.push(k);
+    if (gosoType(d)) { renderEditor(); return; }
+    const b = $('mList').querySelector(`.m-tbtn[data-topen="${el.dataset.i}"]`);
+    if (b) { b.classList.toggle('set', !!d.topics.length); b.textContent = 'お題：' + (d.topics.length ? d.topics.length + (d.topics.length < 10 ? 'つ' : 'こ') + ' えらんだ' : 'ぜんぶの中から') + ' ▲'; }
+    return;
+  }
+  const f = el.dataset.f; if (!f) return;
+  if (f === 'on') d.on = el.checked;
+  else if (f === 'times') d.times = Number(el.value) || 0;
+  else d[f] = el.value;
+  if (f === 'type' && d.app === 'goso') d.topics = d.topics.filter(k => !d.type || k.split(':')[0] === d.type);
+  renderEditor();
 });
 $('mList').addEventListener('click', e => {
-  const dup = e.target.closest('[data-dup]'), del = e.target.closest('[data-del]');
+  const dup = e.target.closest('[data-dup]'), del = e.target.closest('[data-del]'), op = e.target.closest('[data-topen]'), tg = e.target.closest('[data-tg]'), tc = e.target.closest('[data-tclear]');
   if (dup) { const i = Number(dup.dataset.dup), d = draft[i]; let j = i + 1; while (draft[j] && draft[j].app === d.app) j++;
-    draft.splice(j, 0, { app: d.app, on: true, lv: d.lv === 'hard' ? 'normal' : 'hard', type: d.type, extra: true }); d.on = true; renderEditor(); }
+    draft.splice(j, 0, { app: d.app, on: true, lv: d.lv === 'hard' ? 'normal' : 'hard', type: d.type, extra: true, topics: [], times: d.times, n: '', opts: '', open: false }); d.on = true; renderEditor(); }
   if (del) { draft.splice(Number(del.dataset.del), 1); renderEditor(); }
+  if (op) { const d = draft[Number(op.dataset.topen)]; if (d) { d.open = !d.open; renderEditor(); } }
+  if (tg) {
+    const [i, gi, how] = tg.dataset.tg.split(':'), d = draft[Number(i)], g = TOPICDEF[d.app].groups[Number(gi)];
+    const keys = g.items.map(x => x[0]);
+    d.topics = d.topics.filter(k => !keys.includes(k));
+    if (how === 'all') d.topics = d.topics.concat(keys);
+    gosoType(d); $('mSaveMsg').textContent = ''; renderEditor();
+  }
+  if (tc) { const d = draft[Number(tc.dataset.tclear)]; d.topics = []; $('mSaveMsg').textContent = ''; renderEditor(); }
 });
+/* まとめて決める（✓ を入れた練習 ぜんぶに） */
+$('mBulkN').insertAdjacentHTML('beforeend', QN_OPTS_HTML());
+$('mBulkTimes').insertAdjacentHTML('beforeend', TIMES.map(v => `<option value="${v}">${v}回</option>`).join(''));
+function bulk(fn, what) {
+  const on = draft.filter(d => d.on);
+  const m = $('mBulkMsg');
+  if (!on.length) { m.className = 'msg err'; m.textContent = '先に、出す練習に ✓ を入れてください。'; return; }
+  let n = 0; on.forEach(d => { if (fn(d, APPDEF[d.app]) !== false) n++; });
+  m.className = 'msg ok'; m.textContent = `${n}つの 練習の ${what}を変えました（まだ保存していません）。`;
+  $('mSaveMsg').textContent = '';
+  renderEditor();
+}
+document.querySelectorAll('[data-blv]').forEach(b => b.addEventListener('click', () => {
+  const lv = b.dataset.blv;
+  bulk((d, a) => { if (a.nolv) return false; d.lv = lv; }, '難しさ');
+}));
+$('mBulkN').addEventListener('change', () => {
+  const v = $('mBulkN').value; if (!v) return;
+  bulk((d, a) => { if (!a.qn) return false; if (v === '-') { d.n = ''; return; } const n = Number(v);
+    d.n = String(a.qn.includes(n) ? n : a.qn.reduce((m, x) => (Math.abs(x - n) < Math.abs(m - n) ? x : m), a.qn[0])); }, '問題数');
+  $('mBulkN').value = '';
+});
+$('mBulkTimes').addEventListener('change', () => {
+  const v = $('mBulkTimes').value; if (v === '') return;
+  bulk(d => { d.times = Number(v) || 0; }, '宿題の回数');
+  $('mBulkTimes').value = '';
+});
+$('mDue').addEventListener('change', () => { draftDue = $('mDue').value || ''; $('mSaveMsg').textContent = ''; });
+$('mDueClear').addEventListener('click', () => { draftDue = ''; $('mDue').value = ''; $('mSaveMsg').textContent = ''; });
 $('mVoice').addEventListener('change', async () => {
   const on = $('mVoice').checked, m = $('mVoiceMsg'), url = ls.get(LS.url, ''), key = ls.get(LS.key, '');
   if (!mUser) return;
@@ -3279,7 +3696,7 @@ $('mVoice').addEventListener('change', async () => {
     const j = await res.json();
     if (j && j.ok && typeof j.voice === 'boolean') {
       menus = menus || {};
-      menus[mUser] = Object.assign({ items: [], at: '' }, menus[mUser] || {}, { voice: j.voice });
+      menus[mUser] = Object.assign({ items: [], at: '', due: '' }, menus[mUser] || {}, { voice: j.voice });
       m.className = 'msg ok'; m.textContent = j.voice ? '声も送る に しました。次にアプリを開いたときから届きます。' : '声を送るのを やめました。';
       renderUsers(); renderDetail();
       const sel = $('mUser'); const keep = sel.value; renderMenuTab(); sel.value = keep;
@@ -3289,19 +3706,26 @@ $('mVoice').addEventListener('change', async () => {
     }
   } catch (e) { $('mVoice').checked = !on; m.className = 'msg err'; m.textContent = '保存できませんでした。インターネットのつながりを確かめてください。'; }
 });
-async function saveMenu(items) {
+const OLD_GAS = '受け取りスクリプトが前のままなので、お題・問題数・選択肢・宿題の回数・期限は保存されませんでした（練習と難しさだけ保存しました）。「設定・はじめての準備」の下にある新しいスクリプトを Apps Script に貼り直し、「デプロイ」→「デプロイを管理」→ 鉛筆 → バージョン「新バージョン」→「デプロイ」をしてから、もう一度保存してください。';
+async function saveMenu(items, due) {
   const url = ls.get(LS.url, ''), key = ls.get(LS.key, ''), m = $('mSaveMsg');
   if (!depIdOf(url) || !key) { m.className = 'msg err'; m.textContent = '先に「設定・はじめての準備」で受け取りURLとパスワードを入れてください。'; return; }
   m.className = 'msg'; m.textContent = '保存中…';
+  const usesNew = !!due || items.some(it => it.topics || it.times || it.n != null || it.opts != null);
   try {
-    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'setmenu', key, user: mUser, items }) });
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'setmenu', key, user: mUser, items, due: due || '' }) });
     const j = await res.json();
     if (j && j.ok && Array.isArray(j.items)) {
       menus = menus || {};
-      menus[mUser] = { items: j.items, at: new Date().toISOString(), voice: !!(menus[mUser] && menus[mUser].voice) };
+      menus[mUser] = { items: j.items, at: new Date().toISOString(), voice: !!(menus[mUser] && menus[mUser].voice), due: j.due || '' };
       startEdit(mUser);
-      $('mSaveMsg').className = 'msg ok';
-      $('mSaveMsg').textContent = j.items.length ? '保存しました。次にアプリを開いたときから、この練習だけが出ます。' : '決めた練習を はずしました。全部の練習が出ます。';
+      if (usesNew && !j.homework) { $('mSaveMsg').className = 'msg err'; $('mSaveMsg').textContent = OLD_GAS; }
+      else {
+        $('mSaveMsg').className = 'msg ok';
+        $('mSaveMsg').textContent = !j.items.length ? '決めた練習を はずしました。全部の練習が出ます。'
+          : hasHW(menus[mUser]) ? '保存しました。次にアプリを開いたときから、この宿題が出ます。やった回数は、いまから数えます。'
+          : '保存しました。次にアプリを開いたときから、この練習だけが出ます。';
+      }
       renderUsers(); renderDetail();
     } else if (j && j.error === 'password') { m.className = 'msg err'; m.textContent = 'パスワードがちがいます（スクリプトの STAFF_PASSWORD と同じにしてください）。'; }
     else if (j && j.ok) { m.className = 'msg err'; m.textContent = '受け取りスクリプトが前のままなので保存できません。新しいスクリプトを貼り直し、「新バージョン」でデプロイしてください。'; }
@@ -3310,17 +3734,162 @@ async function saveMenu(items) {
 }
 $('mSave').addEventListener('click', () => {
   if (!mUser) return;
-  const items = draft.filter(d => d.on).map(d => ({ app: d.app, lv: d.lv || '', type: d.type || '' }));
+  const items = draft.filter(d => d.on).map(d => {
+    const it = { app: d.app, lv: d.lv || '', type: d.type || '' };
+    if (d.topics.length) it.topics = d.topics.slice();
+    if (Number(d.times)) it.times = Number(d.times);
+    if (d.n !== '') it.n = Number(d.n);
+    if (d.opts !== '') it.opts = Number(d.opts);
+    return it;
+  });
   if (!items.length) { $('mSaveMsg').className = 'msg err'; $('mSaveMsg').textContent = '出す練習に ✓ を入れてください（全部の練習を出すときは［決めた練習を全部はずす］）。'; return; }
-  saveMenu(items);
+  saveMenu(items, draftDue);
 });
 $('mClear').addEventListener('click', () => {
   if (!mUser) return;
   const b = $('mClear');
   if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = 'もう一度押すと はずします'; setTimeout(() => { b.dataset.armed = ''; b.textContent = '決めた練習を全部はずす'; }, 4000); return; }
   b.dataset.armed = ''; b.textContent = '決めた練習を全部はずす';
-  saveMenu([]);
+  saveMenu([], '');
 });
+
+
+/* ---------- ふりかえり（利用者さんへ渡す 週ごと・月ごとの まとめ） ----------
+   表記は 表記妥当性に したがう（ふだん漢字で書く語は漢字、カタカナ語はカタカナ）。漢字には読みがなを付ける */
+const RB = s => esc(String(s)).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
+const FBNAME = {
+  '絵合わせ':'絵[え]合[あ]わせ', '音を選ぶ練習':'音[おと]を 選[えら]ぶ 練習[れんしゅう]', '音を選ぶ練習（上級）':'音[おと]を 選[えら]ぶ 練習[れんしゅう]（上級[じょうきゅう]）',
+  '50音ならべ':'50音[おん]ならべ', '五十音れんしゅう（録音）':'五十音[ごじゅうおん]の 練習[れんしゅう]（録音[ろくおん]）',
+  'ことば並べ替え（初級）':'ことば 並[なら]べ替[か]え（初級[しょきゅう]）', 'ことば並べ替え（上級）':'ことば 並[なら]べ替[か]え（上級[じょうきゅう]）',
+  '仲間えらび':'仲間[なかま]えらび', '風船ことば':'風船[ふうせん]ことば', '説明ことば':'説明[せつめい]ことば', '語想起タイムアタック':'語想起[ごそうき] タイムアタック',
+  '名詞の練習':'名詞[めいし]の 練習[れんしゅう]', '助詞の練習':'助詞[じょし]の 練習[れんしゅう]', '動詞の練習':'動詞[どうし]の 練習[れんしゅう]', '文をつくろう':'文[ぶん]を つくろう',
+  'セリフをえらびましょう':'セリフを えらびましょう', 'セリフをいいましょう':'セリフを 言[い]いましょう', '挨拶語のトレーニング':'挨拶語[あいさつご]の トレーニング',
+};
+const fbName = app => RB(FBNAME[app] || app);
+const WK = '日月火水木金土';
+const mdW = d => `${d.getMonth() + 1}月${d.getDate()}日（${WK[d.getDay()]}）`;
+function weekStart(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
+function fbPeriods(kind) {
+  const now = new Date(), out = [];
+  if (kind === 'week') {
+    const s0 = weekStart(now);
+    for (let i = 0; i < 12; i++) {
+      const s = new Date(s0.getFullYear(), s0.getMonth(), s0.getDate() - 7 * i), e = new Date(s.getFullYear(), s.getMonth(), s.getDate() + 7);
+      out.push({ s, e, label: `${mdW(s)}〜${mdW(new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1))}${i === 0 ? '（今週）' : i === 1 ? '（先週）' : ''}` });
+    }
+  } else {
+    for (let i = 0; i < 12; i++) {
+      const s = new Date(now.getFullYear(), now.getMonth() - i, 1), e = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      out.push({ s, e, label: `${s.getFullYear()}年${s.getMonth() + 1}月${i === 0 ? '（今月）' : i === 1 ? '（先月）' : ''}` });
+    }
+  }
+  return out;
+}
+const fbKind = () => (document.querySelector('input[name=fbKind]:checked') || {}).value || 'week';
+function fbData() {
+  const u = $('fbUser').value, kind = fbKind(), ps = fbPeriods(kind), P = ps[Number($('fbWhen').value) || 0];
+  if (!u || !P) return null;
+  const prev = kind === 'week' ? { s: new Date(P.s.getFullYear(), P.s.getMonth(), P.s.getDate() - 7), e: P.s } : { s: new Date(P.s.getFullYear(), P.s.getMonth() - 1, 1), e: P.s };
+  const pick = (a, b) => rows.filter(r => r.user === u && r.at >= a && r.at < b);
+  const list = pick(P.s, P.e), before = pick(prev.s, prev.e);
+  const apps = {};
+  list.forEach(r => { const a = apps[r.app] = apps[r.app] || { n: 0, sc: 0, mx: 0 }; a.n++; a.sc += r.score; a.mx += r.max; });
+  const papps = {};
+  before.forEach(r => { const a = papps[r.app] = papps[r.app] || { n: 0, sc: 0, mx: 0 }; a.n++; a.sc += r.score; a.mx += r.max; });
+  const order = Object.keys(apps).sort((a, b) => stageOf(a) - stageOf(b) || a.localeCompare(b, 'ja'));
+  return { u, kind, P, list, before, apps, papps, order,
+    days: new Set(list.map(r => dayKey(r.at))), pdays: new Set(before.map(r => dayKey(r.at))),
+    min: Math.round(list.reduce((a, r) => a + r.sec, 0) / 60), pmin: Math.round(before.reduce((a, r) => a + r.sec, 0) / 60) };
+}
+function renderFb() {
+  const sel = $('fbUser'), users = knownUsers(), nm = names();
+  const keep = sel.value || selected || '';
+  sel.innerHTML = '<option value="">（えらんで ください）</option>' + users.map(u => `<option value="${esc(u)}">${esc(u)}${nm[u] ? '　' + esc(nm[u]) : ''}</option>`).join('');
+  sel.value = users.includes(keep) ? keep : '';
+  const kind = fbKind(), ws = $('fbWhen'), keepW = ws.dataset.kind === kind ? ws.value : '0';
+  ws.innerHTML = fbPeriods(kind).map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('');
+  ws.dataset.kind = kind; ws.value = keepW || '0';
+  const box = $('fbSheet');
+  if (!rows.length) { box.innerHTML = '<p class="msg no-print" style="margin-top:12px">先に「成績」タブで［最新の成績を読みこむ］を押してください。</p>'; return; }
+  const D = fbData();
+  if (!D) { box.innerHTML = '<p class="msg no-print" style="margin-top:12px">利用者を えらんで ください。</p>'; return; }
+  const who = nm[D.u] ? (/(さん|様|さま|くん|君|ちゃん)$/.test(nm[D.u]) ? nm[D.u] : nm[D.u] + ' さん') : D.u + ' さん';
+  const unit = D.kind === 'week' ? '週[しゅう]' : '月[つき]';
+  const cmp = (now, before, u) => {
+    if (!D.before.length) return '';
+    const d = now - before;
+    return d > 0 ? RB(`前[まえ]の ${unit}より ${d}${u} ふえました`) : d < 0 ? RB(`前[まえ]の ${unit}より ${-d}${u} へりました`) : RB(`前[まえ]の ${unit}と 同[おな]じです`);
+  };
+  /* 練習した日 */
+  let daysH = '';
+  if (D.kind === 'week') {
+    for (let k = 0; k < 7; k++) { const d = new Date(D.P.s.getFullYear(), D.P.s.getMonth(), D.P.s.getDate() + k), on = D.days.has(dayKey(d));
+      daysH += `<span class="fb-day${on ? ' on' : ''}">${WK[d.getDay()]}<br>${d.getDate()}日<i aria-label="${on ? '練習した' : ''}"></i></span>`; }
+  } else {
+    const n = new Date(D.P.s.getFullYear(), D.P.s.getMonth() + 1, 0).getDate();
+    for (let k = 1; k <= n; k++) { const d = new Date(D.P.s.getFullYear(), D.P.s.getMonth(), k), on = D.days.has(dayKey(d));
+      daysH += `<span class="fb-day${on ? ' on' : ''}">${k}<i aria-label="${on ? '練習した' : ''}"></i></span>`; }
+  }
+  const pct = a => a.mx ? Math.round((a.sc / a.mx) * 100) : null;
+  const tbl = D.order.map(app => {
+    const a = D.apps[app], p = pct(a), pa = D.papps[app], pp = pa ? pct(pa) : null;
+    const trend = p == null || pp == null ? '' : p - pp >= 5 ? `<span class="fb-up">${RB('上[あ]がりました')} ↑</span>` : pp - p >= 5 ? `<span class="fb-down">${RB('下[さ]がりました')} ↓</span>` : RB('同[おな]じくらい');
+    return `<tr><td>${fbName(app)}</td><td class="n">${a.n}回</td>
+      <td>${p == null ? RB('録音[ろくおん]の 練習[れんしゅう]') : `<span class="fb-bar"><span><i style="width:${p}%"></i></span><b>${p}%</b></span>`}</td>${D.before.length ? `<td>${trend}</td>` : ''}</tr>`;
+  }).join('');
+  /* いまの 宿題 */
+  const m = menus && menus[D.u];
+  let hwH = '';
+  if (hasHW(m)) {
+    const c = hwCounts(D.u);
+    hwH = `<h2 class="fb-h">${RB('宿題[しゅくだい]')}${m.due ? `（${RB(fmtDue(m.due))}まで）` : ''}</h2><ul class="fb-hw">${m.items.map((it, i) => {
+      const a = APPDEF[it.app]; const t = a ? a.title : it.app;
+      return `<li>${fbName(t)}　${it.times ? `${c[i]} / ${it.times}回 ${c[i] >= it.times ? '<b class="fb-up">✓ できました</b>' : ''}` : `${c[i]}回`}</li>`; }).join('')}</ul>`;
+  }
+  const note = $('fbNote').value.trim();
+  const logo = (document.querySelector('.head img') || {}).src || '';
+  box.innerHTML = `<article class="fb-sheet">
+    <div class="fb-top">${logo ? `<img src="${logo}" alt="">` : ''}<div class="t"><span class="org">ことばのリハビリデイサービス　グリーン・グリーン</span>
+      <h1>${RB('ことばの 練習[れんしゅう] ふりかえり')}</h1></div></div>
+    <p class="fb-who">${esc(who)}<small>${esc(D.P.label.replace(/（(今週|先週|今月|先月)）$/, ''))}</small></p>
+    <div class="fb-kpis">
+      <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 日[ひ]')}</div><div class="v">${D.days.size}<small>日</small></div><div class="c">${cmp(D.days.size, D.pdays.size, '日')}</div></div>
+      <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 回数[かいすう]')}</div><div class="v">${D.list.length}<small>回</small></div><div class="c">${cmp(D.list.length, D.before.length, '回')}</div></div>
+      <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 時間[じかん]')}</div><div class="v">${D.min}<small>分</small></div><div class="c">${cmp(D.min, D.pmin, '分')}</div></div>
+    </div>
+    <div><h2 class="fb-h">${RB('練習[れんしゅう]した 日[ひ]')}</h2><div class="fb-days${D.kind === 'month' ? ' fb-month' : ''}">${daysH}</div></div>
+    ${D.order.length ? `<div><h2 class="fb-h">${RB('練習[れんしゅう]ごとの ようす')}</h2>
+      <table class="fb-tbl"><thead><tr><th>${RB('練習[れんしゅう]')}</th><th style="text-align:right">${RB('回数[かいすう]')}</th><th>${RB('できた 割合[わりあい]')}</th>${D.before.length ? `<th>${RB('前[まえ]と くらべて')}</th>` : ''}</tr></thead><tbody>${tbl}</tbody></table></div>`
+      : `<p>${RB('この 期間[きかん]は 練習[れんしゅう]の 記録[きろく]が ありません。')}</p>`}
+    ${hwH}
+    <div><h2 class="fb-h">${RB('職員[しょくいん]から ひとこと')}</h2><div class="fb-note" id="fbNoteOut">${esc(note)}</div></div>
+    <p class="fb-foot">${new Date().getFullYear()}年${new Date().getMonth() + 1}月${new Date().getDate()}日 作成</p>
+  </article>`;
+}
+function fbSuggest() {
+  const D = fbData(); if (!D) return '';
+  if (!D.list.length) return 'この期間は練習の記録がありませんでした。無理のない範囲で、また一緒に練習しましょう。';
+  const unit = D.kind === 'week' ? '週' : '月', out = [];
+  out.push(D.kind === 'week' && D.days.size >= 5 ? `この${unit}は ${D.days.size}日も 練習できました。` : `この${unit}は ${D.days.size}日、${D.list.length}回 練習できました。`);
+  const scored = D.order.filter(a => D.apps[a].mx).map(a => ({ a, p: Math.round((D.apps[a].sc / D.apps[a].mx) * 100), pp: D.papps[a] && D.papps[a].mx ? Math.round((D.papps[a].sc / D.papps[a].mx) * 100) : null }));
+  const up = scored.filter(x => x.pp != null && x.p - x.pp >= 5).sort((x, y) => (y.p - y.pp) - (x.p - x.pp))[0];
+  if (up) out.push(`「${up.a}」は、前の${unit}より よく できるように なりました（${up.pp}% → ${up.p}%）。`);
+  else { const best = scored.sort((x, y) => y.p - x.p)[0]; if (best && best.p >= 70) out.push(`「${best.a}」は ${best.p}% できました。`); }
+  if (D.before.length && D.list.length > D.before.length) out.push(`前の${unit}より 練習の回数が ふえましたね。`);
+  out.push('この調子で 続けていきましょう。');
+  return out.join('\n');
+}
+$('fbUser').addEventListener('change', renderFb);
+$('fbWhen').addEventListener('change', renderFb);
+document.querySelectorAll('input[name=fbKind]').forEach(r => r.addEventListener('change', () => { $('fbWhen').dataset.kind = ''; renderFb(); }));
+$('fbNote').addEventListener('input', () => { const o = $('fbNoteOut'); if (o) o.textContent = $('fbNote').value.trim(); });
+$('fbAuto').addEventListener('click', () => { const t = fbSuggest(); if (!t) { $('fbMsg').className = 'msg err'; $('fbMsg').textContent = '利用者を えらんで ください。'; return; } $('fbNote').value = t; $('fbMsg').textContent = ''; renderFb(); });
+$('fbPrint').addEventListener('click', () => {
+  if (!$('fbSheet').querySelector('.fb-sheet')) { $('fbMsg').className = 'msg err'; $('fbMsg').textContent = '先に 利用者を えらんで ください。'; return; }
+  document.body.classList.add('print-fb');
+  window.print();
+});
+window.addEventListener('afterprint', () => document.body.classList.remove('print-fb'));
 
 /* ---------- CSV ---------- */
 $('csv').addEventListener('click', () => {
