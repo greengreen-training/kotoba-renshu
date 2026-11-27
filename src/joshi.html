@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2e8b57">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="助詞の練習">
+<title>助詞の練習アプリ｜グリーン・グリーン</title>
+<style>
+:root{
+  --main:#2e8b57; --dmain:#1e5c3a; --lmain:#e8f5ec; --llmain:#f3faf5;
+  --ok:#2e8b57; --lok:#e6f5ec;
+  --tri:#d99000; --ltri:#fdf3e0;
+  --ng:#c0504d; --lng:#faeceb;
+  --gray:#666; --lgray:#ccc; --bg:#f6f9f6;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; padding:0; background:var(--bg);
+  font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic UI","Yu Gothic","Meiryo",sans-serif;
+  color:#222;}
+#app{max-width:900px; margin:0 auto; padding:24px 20px 60px;}
+button{font-family:inherit; cursor:pointer;}
+rt{font-size:0.42em; color:var(--gray); font-weight:normal; letter-spacing:0;}
+
+/* ---------- ホーム ---------- */
+.banner{position:relative; overflow:hidden;
+  background:linear-gradient(150deg,#eaf7ee 0%,#dff1e4 60%,#d2ecdc 100%);
+  border-radius:18px; padding:40px 16px 30px; text-align:center; margin-bottom:26px;
+  border:1.5px solid #cfe8d8;}
+.banner .titlerow{display:flex; align-items:center; justify-content:center; gap:16px; margin-top:6px;}
+.banner .logo{width:72px; height:auto; background:transparent;}
+.banner .org{color:var(--dmain); font-size:1.05em; letter-spacing:1px; margin-bottom:12px; font-weight:bold;}
+.banner h1{margin:0; font-size:2.1em; color:var(--dmain);}
+.banner p{margin:14px 0 0; color:#4a6b57; font-size:1.05em;}
+.leaf{position:absolute; pointer-events:none;}
+.topbar{display:flex; justify-content:flex-end; margin-bottom:10px;}
+.soundbtn{border:1.5px solid var(--lgray); background:#fff; border-radius:12px;
+  font-size:1.05em; padding:10px 18px; color:#444;}
+.diffbtns{display:flex; flex-direction:column; gap:20px; max-width:560px; margin:0 auto;}
+.dbtn{position:relative; text-align:left; background:#fff; border:2.5px solid #cfe8d8;
+  border-radius:20px; padding:26px 28px; display:flex; align-items:center; gap:22px;}
+.dbtn:hover{border-color:var(--main);}
+.dbtn .name{font-size:1.9em; font-weight:bold; color:var(--dmain); min-width:4.2em;}
+.dbtn .info{flex:1;}
+.dbtn .stars{color:#e8a200; font-size:1.15em; letter-spacing:3px;}
+.dbtn .desc{color:var(--gray); font-size:1em; margin-top:6px; line-height:1.5;}
+.dbtn .best{font-size:1em; color:var(--main); font-weight:bold; margin-top:6px; min-height:1.3em;}
+.dbtn .go{font-size:1.8em; color:var(--main);}
+
+/* ---------- 問題 ---------- */
+.qhead{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:10px;}
+.qhead .title{font-size:1.3em; font-weight:bold; color:var(--dmain);}
+.homebtn{border:1.5px solid var(--lgray); background:#fff; border-radius:12px; padding:10px 18px; font-size:1em; color:#444;}
+.dots{text-align:center; margin:10px 0 20px; font-size:1.05em; letter-spacing:7px; color:#d5e3da;}
+.dots .on{color:var(--main);}
+.instr{background:var(--lmain); color:var(--dmain); border-radius:12px; padding:14px 18px;
+  font-size:1.15em; margin-bottom:24px; text-align:center;}
+.card{position:relative; background:#fff; border:1.5px solid #dcebe1; border-radius:20px;
+  padding:56px 28px 48px; text-align:center; overflow:hidden;}
+.sentence{font-size:2.4em; line-height:2.1; margin-bottom:44px;}
+/* 文字と同じベースラインに乗る空欄枠(高さ固定をやめ、行ボックスに沿わせる) */
+.blank{display:inline-block; min-width:2.2em; padding:0 0.15em; margin:0 0.15em;
+  border:2.5px solid var(--main); border-radius:10px; background:#fff;
+  text-align:center; line-height:1.35; color:var(--dmain); font-weight:bold;
+  white-space:nowrap;}
+.blank.filled{background:var(--lok); border-color:var(--ok); color:var(--ok);}
+.sp{display:inline-block; width:0.5em;}
+.choices{display:flex; flex-wrap:wrap; gap:22px; justify-content:center;}
+.ch{min-width:130px; padding:24px 30px; font-size:2em; border-radius:16px;
+  border:2px solid var(--lgray); background:#fff;}
+.ch:disabled{opacity:0.95;}
+/* 状態変化で太字にしない(ボタン幅が変わって行がずれるのを防ぐ) */
+.ch.correct{border-color:var(--ok); background:var(--lok); color:var(--ok);}
+.ch.second{border-color:var(--tri); background:var(--ltri); color:var(--tri);}
+.ch.wrong{border-color:var(--ng); background:var(--lng); color:var(--ng);}
+.fb{min-height:1.8em; margin-top:30px; font-size:1.5em; font-weight:bold;}
+.nextwrap{min-height:80px; margin-top:14px;}
+.nextbtn{background:var(--main); color:#fff; border:2px solid var(--main);
+  border-radius:16px; font-size:1.4em; padding:16px 44px;}
+.nextbtn rt{color:#ffffff; opacity:0.9;}
+.fb.ok{color:var(--ok);}
+.fb.tri{color:var(--tri);}
+.fb.ng{color:var(--ng);}
+.bigmark{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  pointer-events:none; font-weight:bold; opacity:0;}
+.bigmark.show{animation:pop 1.2s ease forwards;}
+.bigmark .sym{font-size:11em; line-height:1;}
+.bigmark.ok .sym{color:rgba(46,139,87,0.55);}
+.bigmark.tri .sym{color:rgba(217,144,0,0.55);}
+.bigmark.ng .sym{color:rgba(192,80,77,0.5);}
+@keyframes pop{
+  0%{opacity:0; transform:scale(0.5);}
+  25%{opacity:1; transform:scale(1.05);}
+  55%{opacity:1; transform:scale(1);}
+  100%{opacity:0; transform:scale(1);}
+}
+
+/* ---------- 結果 ---------- */
+.result{background:#fff; border:1.5px solid #dcebe1; border-radius:20px; padding:60px 24px; text-align:center;}
+.result h2{font-size:2.2em; color:var(--dmain); margin:0 0 26px;}
+.score{font-size:1.7em; margin-bottom:14px;}
+.score b{font-size:1.8em; color:var(--main);}
+.marks{font-size:1.8em; letter-spacing:8px; margin-bottom:16px;}
+.marks .o{color:var(--ok);} .marks .t{color:var(--tri);} .marks .x{color:var(--ng);}
+.legend{font-size:0.95em; color:var(--gray); margin-bottom:30px;}
+.bigbtns{display:flex; flex-direction:column; gap:16px; max-width:400px; margin:0 auto;}
+.bigbtns button{font-size:1.35em; padding:22px; border-radius:16px; border:2px solid var(--lgray); background:#fff;}
+.bigbtns .primary{background:var(--main); border-color:var(--main); color:#fff;}
+.bigbtns .primary rt{color:#ffffff; opacity:0.9;}   /* 濃い緑背景ではルビも白 */
+.praise{font-size:1.25em; color:var(--gray); margin-bottom:34px;}
+
+/* ---------- スマホ対応 (600px以下) ---------- */
+@media(max-width:600px){
+  #app{padding:12px 10px 40px;}
+  .banner{padding:26px 10px 20px; border-radius:14px;}
+  .banner .org{font-size:0.82em; letter-spacing:0;}
+  .banner h1{font-size:1.45em;}
+  .banner p{font-size:0.92em; margin-top:10px;}
+  .banner .titlerow{gap:10px;}
+  .banner .logo{width:46px;}
+  .leaf{transform:scale(0.7);}
+  .dbtn{padding:18px 16px; gap:14px; border-radius:16px;}
+  .dbtn .name{font-size:1.4em; min-width:3.6em;}
+  .dbtn .stars{font-size:1em;}
+  .dbtn .best{font-size:0.9em;}
+  .dbtn .go{font-size:1.4em;}
+  .qhead .title{font-size:1.05em;}
+  .homebtn{padding:8px 14px; font-size:0.95em;}
+  .dots{font-size:0.8em; letter-spacing:5px; margin:8px 0 14px;}
+  .instr{font-size:1em; padding:11px 12px; margin-bottom:16px;}
+  .card{padding:30px 12px 26px; border-radius:16px;}
+  .sentence{font-size:1.65em; line-height:2.05; margin-bottom:28px;}
+  .choices{gap:12px;}
+  .ch{min-width:82px; padding:16px 16px; font-size:1.45em; border-radius:13px;}
+  .fb{font-size:1.15em; margin-top:20px; min-height:1.8em;}
+  .nextwrap{min-height:64px; margin-top:10px;}
+  .nextbtn{font-size:1.15em; padding:14px 32px;}
+  .bigmark .sym{font-size:7em;}
+  .result{padding:36px 14px;}
+  .result h2{font-size:1.6em;}
+  .score{font-size:1.3em;}
+  .marks{font-size:1.25em; letter-spacing:4px;}
+  .legend{font-size:0.85em;}
+  .praise{font-size:1.05em;}
+  .bigbtns button{font-size:1.15em; padding:17px;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ===== データ (3難易度 / 各プール からランダムに10問出題) ===== */
+const DIFFS = [{"name": "簡単", "kana": "かんたん", "stars": 1, "pool": [{"s": "犬[いぬ]＠ ほえる。", "a": "が", "d": ["を"]}, {"s": "水[みず]＠ 飲[の]む。", "a": "を", "d": ["が"]}, {"s": "花[はな]＠ さく。", "a": "が", "d": ["を"]}, {"s": "ごはん＠ 食[た]べる。", "a": "を", "d": ["に"]}, {"s": "雨[あめ]＠ ふる。", "a": "が", "d": ["を"]}, {"s": "手[て]＠ あらう。", "a": "を", "d": ["が"]}, {"s": "歯[は]＠ みがく。", "a": "を", "d": ["が"]}, {"s": "車[くるま]＠ 走[はし]る。", "a": "が", "d": ["を"]}, {"s": "本[ほん]＠ 読[よ]む。", "a": "を", "d": ["が"]}, {"s": "猫[ねこ]＠ なく。", "a": "が", "d": ["を"]}, {"s": "歌[うた]＠ うたう。", "a": "を", "d": ["が"]}, {"s": "風[かぜ]＠ ふく。", "a": "が", "d": ["を"]}, {"s": "服[ふく]＠ 着[き]る。", "a": "を", "d": ["が"]}, {"s": "月[つき]＠ 出[で]る。", "a": "が", "d": ["を"]}, {"s": "字[じ]＠ 書[か]く。", "a": "を", "d": ["に"]}, {"s": "鳥[とり]＠ 飛[と]ぶ。", "a": "が", "d": ["を"]}, {"s": "顔[かお]＠ あらう。", "a": "を", "d": ["が"]}, {"s": "雪[ゆき]＠ ふる。", "a": "が", "d": ["を"]}, {"s": "お茶[ちゃ]＠ 飲[の]む。", "a": "を", "d": ["が"]}, {"s": "子[こ]ども＠ わらう。", "a": "が", "d": ["を"]}, {"s": "窓[まど]＠ 開[あ]ける。", "a": "を", "d": ["が"]}, {"s": "電気[でんき]＠ つける。", "a": "を", "d": ["が"]}, {"s": "赤[あか]ちゃん＠ なく。", "a": "が", "d": ["を"]}, {"s": "テレビ＠ 見[み]る。", "a": "を", "d": ["が"]}, {"s": "桜[さくら]＠ さく。", "a": "が", "d": ["を"]}, {"s": "くつ＠ はく。", "a": "を", "d": ["が"]}, {"s": "音[おと]＠ 聞[き]こえる。", "a": "が", "d": ["を"]}, {"s": "パン＠ 買[か]う。", "a": "を", "d": ["が"]}, {"s": "星[ほし]＠ 光[ひか]る。", "a": "が", "d": ["を"]}, {"s": "ドア＠ しめる。", "a": "を", "d": ["が"]}]}, {"name": "普通", "kana": "ふつう", "stars": 2, "pool": [{"s": "学校[がっこう]＠ 行[い]く。", "a": "に", "d": ["を", "が"]}, {"s": "いす＠ すわる。", "a": "に", "d": ["を", "が"]}, {"s": "家[いえ]＠ 帰[かえ]る。", "a": "に", "d": ["を", "が"]}, {"s": "友[とも]だち＠ 会[あ]う。", "a": "に", "d": ["を", "で"]}, {"s": "バス＠ 乗[の]る。", "a": "に", "d": ["を", "が"]}, {"s": "電話[でんわ]＠ 出[で]る。", "a": "に", "d": ["を", "が"]}, {"s": "おふろ＠ 入[はい]る。", "a": "に", "d": ["を", "が"]}, {"s": "道[みち]＠ 歩[ある]く。", "a": "を", "d": ["が", "に"]}, {"s": "絵[え]＠ かく。", "a": "を", "d": ["が", "に"]}, {"s": "魚[さかな]＠ 焼[や]く。", "a": "を", "d": ["が", "に"]}, {"s": "6時[じ]＠ 起[お]きる。", "a": "に", "d": ["を", "が"]}, {"s": "牛乳[ぎゅうにゅう]＠ 飲[の]む。", "a": "を", "d": ["が", "に"]}, {"s": "駅[えき]＠ 着[つ]く。", "a": "に", "d": ["を", "が"]}, {"s": "歌[うた]＠ 聞[き]く。", "a": "を", "d": ["が", "に"]}, {"s": "先生[せんせい]＠ なる。", "a": "に", "d": ["を", "で"]}, {"s": "ごみ＠ すてる。", "a": "を", "d": ["が", "に"]}, {"s": "日本[にほん]＠ 住[す]む。", "a": "に", "d": ["を", "が"]}, {"s": "りんご＠ 切[き]る。", "a": "を", "d": ["が", "に"]}, {"s": "二階[にかい]＠ 上[あ]がる。", "a": "に", "d": ["が", "と"]}, {"s": "めがね＠ かける。", "a": "を", "d": ["が", "に"]}, {"s": "タクシー＠ よぶ。", "a": "を", "d": ["が", "に"]}, {"s": "庭[にわ]＠ 出[で]る。", "a": "に", "d": ["が", "と"]}, {"s": "お金[かね]＠ はらう。", "a": "を", "d": ["が", "に"]}, {"s": "かばん＠ 持[も]つ。", "a": "を", "d": ["が", "に"]}, {"s": "かぎ＠ しめる。", "a": "を", "d": ["が", "に"]}, {"s": "プール＠ 泳[およ]ぐ。", "a": "で", "d": ["が", "に"]}, {"s": "はさみ＠ 切[き]る。", "a": "で", "d": ["が", "に"]}, {"s": "おはし＠ 食[た]べる。", "a": "で", "d": ["が", "に"]}, {"s": "電車[でんしゃ]＠ おりる。", "a": "を", "d": ["が", "と"]}, {"s": "学校[がっこう]＠ 休[やす]む。", "a": "を", "d": ["が", "に"]}, {"s": "バスで 病院[びょういん]＠ 行[い]く。", "a": "に", "d": ["を", "が"]}, {"s": "公園[こうえん]で お弁当[べんとう]＠ 食[た]べる。", "a": "を", "d": ["が", "に"]}, {"s": "郵便局[ゆうびんきょく]で 切手[きって]＠ 買[か]う。", "a": "を", "d": ["が", "に"]}, {"s": "ポスト＠ 手紙[てがみ]を 入[い]れる。", "a": "に", "d": ["を", "が"]}, {"s": "病院[びょういん]で 薬[くすり]＠ もらう。", "a": "を", "d": ["が", "に"]}, {"s": "友[とも]だちと 映画[えいが]＠ 見[み]る。", "a": "を", "d": ["が", "に"]}, {"s": "かさ＠ 持[も]って 出[で]かける。", "a": "を", "d": ["が", "に"]}, {"s": "台所[だいどころ]で 野菜[やさい]＠ 切[き]る。", "a": "を", "d": ["が", "に"]}, {"s": "電車[でんしゃ]＠ 乗[の]って 出[で]かける。", "a": "に", "d": ["を", "が"]}, {"s": "銀行[ぎんこう]で お金[かね]＠ おろす。", "a": "を", "d": ["が", "に"]}, {"s": "洗濯物[せんたくもの]＠ 外[そと]に ほす。", "a": "を", "d": ["が", "と"]}, {"s": "手紙[てがみ]＠ 友[とも]だちに 送[おく]る。", "a": "を", "d": ["が", "と"]}, {"s": "荷物[にもつ]＠ 車[くるま]に つむ。", "a": "を", "d": ["が", "と"]}, {"s": "財布[さいふ]＠ かばんに 入[い]れる。", "a": "を", "d": ["が", "と"]}, {"s": "部屋[へや]＠ そうじきを かける。", "a": "に", "d": ["を", "が"]}, {"s": "あした 病院[びょういん]＠ 行[い]く。", "a": "に", "d": ["が", "を"]}, {"s": "駅[えき]で 電車[でんしゃ]＠ 待[ま]つ。", "a": "を", "d": ["が", "に"]}, {"s": "花[か]びん＠ 花[はな]を いける。", "a": "に", "d": ["を", "が"]}, {"s": "弟[おとうと]と 公園[こうえん]＠ 遊[あそ]ぶ。", "a": "で", "d": ["を", "に"]}, {"s": "受付[うけつけ]で 名前[なまえ]＠ 書[か]く。", "a": "を", "d": ["が", "に"]}, {"s": "はさみで 紙[かみ]＠ 切[き]る。", "a": "を", "d": ["が", "に"]}, {"s": "薬[くすり]＠ 水[みず]で 飲[の]む。", "a": "を", "d": ["が", "に"]}, {"s": "母[はは]と 買[か]い物[もの]＠ 行[い]く。", "a": "に", "d": ["を", "が"]}, {"s": "めがね＠ 机[つくえ]に 置[お]く。", "a": "を", "d": ["が", "と"]}, {"s": "朝[あさ]から 雨[あめ]＠ ふっている。", "a": "が", "d": ["を", "に"]}, {"s": "電話[でんわ]で 予約[よやく]＠ とる。", "a": "を", "d": ["が", "に"]}, {"s": "タオルで 手[て]＠ ふく。", "a": "を", "d": ["が", "に"]}, {"s": "駅[えき]まで 自転車[じてんしゃ]＠ 行[い]く。", "a": "で", "d": ["を", "に"]}, {"s": "庭[にわ]に 花[はな]＠ 植[う]える。", "a": "を", "d": ["が", "と"]}, {"s": "兄[あに]＠ 東京[とうきょう]に 住[す]んでいる。", "a": "が", "d": ["を", "に"]}, {"s": "電車[でんしゃ]＠ 会社[かいしゃ]に 行[い]く。", "a": "で", "d": ["を", "が", "と"]}, {"s": "壁[かべ]＠ 絵[え]を かける。", "a": "に", "d": ["を", "が", "と"]}, {"s": "公園[こうえん]＠ 犬[いぬ]と 散歩[さんぽ]する。", "a": "を", "d": ["が", "に", "と"]}, {"s": "郵便局[ゆうびんきょく]＠ 荷物[にもつ]を 出[だ]す。", "a": "で", "d": ["を", "が", "と"]}, {"s": "病院[びょういん]＠ 薬[くすり]を もらった。", "a": "で", "d": ["を", "が", "と"]}, {"s": "はさみ＠ ひもを 切[き]る。", "a": "で", "d": ["を", "が", "に"]}, {"s": "手紙[てがみ]＠ ポストに 入[い]れる。", "a": "を", "d": ["が", "で", "と"]}, {"s": "母[はは]と スーパー＠ 行[い]く。", "a": "へ", "d": ["を", "が", "で"]}, {"s": "財布[さいふ]＠ ポケットから 出[だ]す。", "a": "を", "d": ["が", "に", "で"]}, {"s": "会社[かいしゃ]＠ バスで 帰[かえ]る。", "a": "から", "d": ["を", "が", "と"]}, {"s": "部屋[へや]＠ 電気[でんき]を つける。", "a": "の", "d": ["を", "が", "と"]}, {"s": "犬[いぬ]＠ えさを やる。", "a": "に", "d": ["を", "が", "で"]}, {"s": "かさ＠ 玄関[げんかん]に 置[お]く。", "a": "を", "d": ["が", "で", "と"]}, {"s": "毎朝[まいあさ] 薬[くすり]＠ 飲[の]む。", "a": "を", "d": ["が", "で", "と"]}, {"s": "たんす＠ 服[ふく]を 出[だ]す。", "a": "から", "d": ["を", "が", "と"]}, {"s": "駅[えき]＠ 友[とも]だちと 会[あ]う。", "a": "で", "d": ["を", "が", "に"]}, {"s": "荷物[にもつ]＠ 二階[にかい]に 運[はこ]ぶ。", "a": "を", "d": ["が", "で", "と"]}, {"s": "ノート＠ 名前[なまえ]を 書[か]く。", "a": "に", "d": ["を", "が", "と"]}, {"s": "洗濯物[せんたくもの]＠ かごに 入[い]れる。", "a": "を", "d": ["が", "で", "と"]}, {"s": "病院[びょういん]＠ 歩[ある]いて 行[い]く。", "a": "まで", "d": ["で", "が", "と"]}, {"s": "辞書[じしょ]＠ 意味[いみ]を 調[しら]べる。", "a": "で", "d": ["を", "が", "に"]}, {"s": "台所[だいどころ]＠ お茶[ちゃ]を いれる。", "a": "で", "d": ["を", "が", "に"]}, {"s": "めがね＠ 新聞[しんぶん]を 読[よ]む。", "a": "で", "d": ["を", "が", "に"]}, {"s": "公園[こうえん]＠ ごみを 拾[ひろ]う。", "a": "で", "d": ["を", "が", "に"]}, {"s": "手[て]＠ せっけんで あらう。", "a": "を", "d": ["が", "に", "と"]}, {"s": "電車[でんしゃ]＠ 席[せき]を ゆずる。", "a": "で", "d": ["を", "が", "に"]}, {"s": "教室[きょうしつ]＠ 料理[りょうり]を 習[なら]う。", "a": "で", "d": ["を", "が", "に"]}, {"s": "窓[まど]＠ 風[かぜ]が 入[はい]る。", "a": "から", "d": ["を", "が", "と"]}, {"s": "かぎ＠ 引[ひ]き出[だ]しに しまう。", "a": "を", "d": ["が", "で", "と"]}, {"s": "はがき＠ 返事[へんじ]を 書[か]く。", "a": "に", "d": ["を", "が", "と"]}]}, {"name": "難しい", "kana": "むずかしい", "stars": 3, "pool": [{"s": "蛇口[じゃぐち]＠ 水[みず]が 出[で]る。", "a": "から", "d": ["を", "が", "と", "まで"]}, {"s": "ぞうきん＠ ゆかを ふく。", "a": "で", "d": ["を", "が", "に", "と"]}, {"s": "屋根[やね]＠ 雪[ゆき]が つもる。", "a": "に", "d": ["を", "が", "で", "と"]}, {"s": "縁側[えんがわ]＠ お茶[ちゃ]を 飲[の]む。", "a": "で", "d": ["を", "が", "に", "と"]}, {"s": "急須[きゅうす]＠ お茶[ちゃ]を いれる。", "a": "で", "d": ["を", "が", "と", "まで"]}, {"s": "座布団[ざぶとん]＠ お客[きゃく]さんに 出[だ]す。", "a": "を", "d": ["が", "で", "と", "まで"]}, {"s": "物置[ものおき]＠ 道具[どうぐ]を しまう。", "a": "に", "d": ["を", "が", "と", "まで"]}, {"s": "郵便受[ゆうびんう]け＠ 新聞[しんぶん]を 取[と]る。", "a": "から", "d": ["を", "が", "と", "まで"]}, {"s": "廊下[ろうか]＠ ぞうきんを かける。", "a": "に", "d": ["を", "が", "と", "から"]}, {"s": "畳[たたみ]＠ ほうきで はく。", "a": "を", "d": ["が", "に", "と", "まで"]}, {"s": "障子[しょうじ]＠ 穴[あな]が あく。", "a": "に", "d": ["を", "が", "で", "と"]}, {"s": "雨戸[あまど]＠ 夜[よる]に しめる。", "a": "を", "d": ["が", "で", "と", "まで"]}, {"s": "表札[ひょうさつ]＠ 名前[なまえ]が 書[か]いてある。", "a": "に", "d": ["を", "が", "で", "と"]}, {"s": "井戸[いど]＠ 水[みず]を くむ。", "a": "から", "d": ["を", "が", "と", "まで"]}, {"s": "物干[ものほ]し＠ シャツを ほす。", "a": "に", "d": ["を", "が", "と", "から"]}, {"s": "押[お]し入[い]れ＠ ふとんを しまう。", "a": "に", "d": ["を", "が", "と", "から"]}, {"s": "湯[ゆ]のみ＠ お茶[ちゃ]を つぐ。", "a": "に", "d": ["を", "が", "と", "まで"]}, {"s": "ぞうきん＠ かたく しぼる。", "a": "を", "d": ["が", "に", "で", "と"]}, {"s": "天井[てんじょう]＠ しみが ある。", "a": "に", "d": ["を", "が", "で", "と"]}, {"s": "屋根[やね]＠ ペンキを ぬる。", "a": "に", "d": ["を", "が", "と", "まで"]}, {"s": "玄関[げんかん]＠ くつを そろえる。", "a": "で", "d": ["を", "が", "と", "から"]}, {"s": "縁側[えんがわ]＠ 猫[ねこ]が ねむる。", "a": "で", "d": ["を", "が", "と", "から"]}, {"s": "急須[きゅうす]＠ 茶葉[ちゃば]を 入[い]れる。", "a": "に", "d": ["を", "が", "と", "から"]}, {"s": "廊下[ろうか]＠ 電気[でんき]が 切[き]れる。", "a": "の", "d": ["を", "が", "と", "まで"]}, {"s": "物置[ものおき]＠ 自転車[じてんしゃ]を 出[だ]す。", "a": "から", "d": ["を", "が", "と", "まで"]}, {"s": "座布団[ざぶとん]＠ 畳[たたみ]に ならべる。", "a": "を", "d": ["が", "で", "と", "から"]}, {"s": "雨戸[あまど]＠ 音[おと]が する。", "a": "から", "d": ["を", "が", "に", "と"]}, {"s": "障子[しょうじ]＠ 紙[かみ]を はりかえる。", "a": "の", "d": ["を", "が", "と", "まで"]}, {"s": "表札[ひょうさつ]＠ 玄関[げんかん]に かける。", "a": "を", "d": ["が", "で", "と", "から"]}, {"s": "井戸[いど]＠ 庭[にわ]に ある。", "a": "が", "d": ["を", "で", "と", "の"]}]}];
+
+/* ===== ユーティリティ ===== */
+const RUBY = /([一-鿿㐀-䶿々〆]+)\[([ぁ-ゖー]+)\]/g;
+function toHTML(markup){
+  return markup
+    .replace(RUBY, "<ruby>$1<rt>$2</rt></ruby>")
+    .replace(/ /g, '<span class="sp"></span>')
+    .replace(/＠/g, '<span class="blank" id="blank">&#8203;</span>');
+}
+function toPlain(markup, ans){
+  return markup.replace(RUBY, "$1").replace(/＠/g, ans).replace(/ /g, "");
+}
+function fmt(n){ return Number.isInteger(n) ? String(n) : n.toFixed(1); }
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ===== 保存 ===== */
+const KEY = "joshi_app_v4";
+function loadStore(){
+  try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; }
+}
+function saveStore(s){
+  try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){}
+}
+let store = loadStore();
+
+/* ===== 音なし(無効化) ===== */
+function beep(){}
+const soundOK  = () => {};
+const soundTri = () => {};
+const soundNG  = () => {};
+function speak(){}
+
+/* ===== 葉っぱ(SVG) ===== */
+function leafSVG(size, rot, x, y, color, op){
+  return `<svg class="leaf" width="${size}" height="${size}" viewBox="0 0 24 24"
+    style="${x}; ${y}; transform:rotate(${rot}deg); opacity:${op};">
+    <path d="M12 2 C19 7 20 15 12 22 C4 15 5 7 12 2 Z" fill="${color}"/>
+    <path d="M12 4 L12 20" stroke="#ffffff" stroke-width="1" opacity="0.6"/>
+  </svg>`;
+}
+function leavesHTML(){
+  return leafSVG(58, -30, "left:14px",  "top:12px",    "#4caf7d", 0.55)
+       + leafSVG(36, 20,  "left:64px",  "top:44px",    "#7fc79f", 0.5)
+       + leafSVG(62, 35,  "right:16px", "top:14px",    "#4caf7d", 0.55)
+       + leafSVG(34, -15, "right:70px", "top:52px",    "#7fc79f", 0.5)
+       + leafSVG(30, 60,  "left:30px",  "bottom:10px", "#8fceab", 0.45)
+       + leafSVG(30, -50, "right:34px", "bottom:12px", "#8fceab", 0.45);
+}
+
+/* ===== 画面 ===== */
+const app = document.getElementById("app");
+let cur = null;   // {di, items[10], qIdx, tries, results[]}
+
+function soundBtnHTML(){ return ""; }
+
+function renderHome(){
+  cur = null;
+  let h = `<div class="banner">${leavesHTML()}
+    <div class="org">ことばのリハビリデイサービス　グリーン・グリーン</div>
+    <div class="titlerow">
+      <img class="logo" src="data:image/png;base64,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" alt="グリーン・グリーン ロゴ">
+      <h1><ruby>助詞<rt>じょし</rt></ruby>の <ruby>練習<rt>れんしゅう</rt></ruby>アプリ</h1>
+    </div>
+    <p><ruby>難<rt>むずか</rt></ruby>しさを <ruby>選<rt>えら</rt></ruby>んで ください（1<ruby>回<rt>かい</rt></ruby> 10<ruby>問<rt>もん</rt></ruby>）</p>
+  </div>
+  <div class="diffbtns">`;
+  DIFFS.forEach((df, di) => {
+    const rec = store["d" + di];
+    const best = rec && rec.best !== undefined
+      ? `これまでの さいこう：${fmt(rec.best)}点` : "　";
+    h += `<button class="dbtn" onclick="startDiff(${di})">
+      <span class="name"><ruby>${df.name}<rt>${df.kana}</rt></ruby></span>
+      <span class="info">
+        <span class="stars">${"★".repeat(df.stars)}${"☆".repeat(3 - df.stars)}</span>
+        <span class="best">${best}</span>
+      </span>
+      <span class="go">▶</span>
+    </button>`;
+  });
+  h += `</div>`;
+  app.innerHTML = h;
+  window.scrollTo(0, 0);
+}
+window.renderHome = renderHome;
+
+window.startDiff = function(di){
+  const items = shuffled(DIFFS[di].pool).slice(0, 10);
+  cur = { di: di, items: items, qIdx: 0, tries: 0, results: [] };
+  renderQuiz();
+};
+
+function curQ(){ return cur.items[cur.qIdx]; }
+function maxTries(q){ return (1 + q.d.length) === 2 ? 1 : 2; }
+
+function renderQuiz(){
+  const df = DIFFS[cur.di];
+  const q = curQ();
+  if(!q.order) q.order = shuffled([q.a].concat(q.d));   // 選択肢順は問題ごとに固定
+  let dots = "";
+  for(let i = 0; i < 10; i++) dots += `<span class="${i <= cur.qIdx ? "on" : ""}">●</span>`;
+  app.innerHTML = `
+  <div class="qhead">
+    <span class="title"><ruby>${df.name}<rt>${df.kana}</rt></ruby>　（${cur.qIdx + 1} / 10）</span>
+    <span>${soundBtnHTML()}
+    <button class="homebtn" onclick="renderHome()">ホーム</button></span>
+  </div>
+  <div class="dots">${dots}</div>
+  <div class="instr"><ruby>正<rt>ただ</rt></ruby>しい <ruby>言葉<rt>ことば</rt></ruby>を 1つ <ruby>選<rt>えら</rt></ruby>んで ください。</div>
+  <div class="card">
+    <div class="sentence">${toHTML(q.s)}</div>
+    <div class="choices">
+      ${q.order.map(ch => `<button class="ch" onclick="answer(this,'${ch}')">${ch}</button>`).join("")}
+    </div>
+    <div class="fb" id="fb"></div>
+    <div class="nextwrap" id="nextwrap"></div>
+    <div class="bigmark" id="bigmark"><span class="sym"></span></div>
+  </div>`;
+  window.scrollTo(0, 0);
+}
+
+function showMark(kind){   // "ok" | "tri" | "ng"
+  const bm = document.getElementById("bigmark");
+  bm.className = "bigmark " + kind;
+  bm.querySelector(".sym").textContent = kind === "ok" ? "○" : kind === "tri" ? "△" : "✕";
+  void bm.offsetWidth;
+  bm.classList.add("show");
+}
+
+function lockAndFill(q, second){
+  document.querySelectorAll(".ch").forEach(b => {
+    b.disabled = true;
+    if(b.textContent === q.a && !b.classList.contains("wrong")){
+      b.classList.add(second ? "second" : "correct");
+    }
+  });
+  const blank = document.getElementById("blank");
+  if(blank){ blank.textContent = q.a; blank.classList.add("filled"); }
+}
+
+function showNextBtn(){
+  const label = cur.qIdx >= 9
+    ? '<ruby>結果<rt>けっか</rt></ruby>をみる'
+    : '<ruby>次<rt>つぎ</rt></ruby>の<ruby>問題<rt>もんだい</rt></ruby>';
+  document.getElementById("nextwrap").innerHTML =
+    `<button class="nextbtn" onclick="next()">${label}</button>`;
+}
+window.next = next;
+
+window.answer = function(btn, ch){
+  const q = curQ();
+  const fb = document.getElementById("fb");
+  cur.tries++;
+  if(ch === q.a){
+    const second = cur.tries > 1;
+    lockAndFill(q, second);
+    if(second){
+      fb.className = "fb tri";
+      fb.textContent = "△ せいかい！（2回目）";
+      showMark("tri"); soundTri();
+      cur.results.push(0.5);
+    }else{
+      fb.className = "fb ok";
+      fb.textContent = "○ せいかい！";
+      showMark("ok"); soundOK();
+      cur.results.push(1);
+    }
+    speak(toPlain(q.s, q.a));
+    showNextBtn();
+  }else{
+    btn.classList.add("wrong");
+    btn.disabled = true;
+    if(cur.tries >= maxTries(q)){
+      lockAndFill(q, false);
+      fb.className = "fb ng";
+      fb.innerHTML = `✕　こたえは 「${q.a}」 です`;
+      showMark("ng"); soundNG();
+      cur.results.push(0);
+      speak(toPlain(q.s, q.a));
+      showNextBtn();
+    }else{
+      fb.className = "fb ng";
+      fb.innerHTML = "もう<ruby>一度<rt>いちど</rt></ruby> どうぞ";
+      showMark("ng"); soundNG();
+    }
+  }
+};
+
+function next(){
+  cur.qIdx++;
+  cur.tries = 0;
+  if(cur.qIdx >= 10){ finish(); }
+  else{ renderQuiz(); }
+}
+
+function finish(){
+  const score = cur.results.reduce((a, b) => a + b, 0);
+  const di = cur.di;
+  const rec = store["d" + di] || {};
+  rec.best = Math.max(rec.best || 0, score);
+  rec.last = score;
+  store["d" + di] = rec;
+  saveStore(store);
+  cur.items.forEach(q => delete q.order);
+  const praise = score === 10 ? "たいへん よくできました！"
+              : score >= 7 ? "よく がんばりました！"
+              : "ゆっくりで だいじょうぶです。";
+  const marks = cur.results.map(r =>
+    r === 1 ? '<span class="o">○</span>' :
+    r === 0.5 ? '<span class="t">△</span>' :
+    '<span class="x">✕</span>').join("");
+  const btns = `
+    <button class="primary" onclick="startDiff(${di})">もう<ruby>一度<rt>いちど</rt></ruby> やる（べつの10<ruby>問<rt>もん</rt></ruby>）</button>
+    <button onclick="renderHome()">ホームへ もどる</button>`;
+  app.innerHTML = `
+  <div class="result">
+    <h2>おわりました</h2>
+    <div class="score">10点満点中<b> ${fmt(score)} </b>点</div>
+    <div class="marks">${marks}</div>
+    <div class="legend">○ = 1点　△ = 0.5点（2回目で正解）　✕ = 0点</div>
+    <div class="praise">${praise}</div>
+    <div class="bigbtns">${btns}</div>
+  </div>`;
+  if(score === 10) beep([523, 659, 784, 1047], 0.16, "sine", 0.22);
+  cur = null;
+  window.scrollTo(0, 0);
+}
+
+renderHome();
+</script>
+</body>
+</html>

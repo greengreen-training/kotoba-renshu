@@ -1,0 +1,10 @@
+.choices.tiles{grid-template-columns:repeat(auto-fill,minmax(84px,100px));justify-content:center}
+.ch.kana{font-size:42px}
+.ch.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+/* 字の数に合わせてマスの大きさを変える（8文字でも1行に入るように） */
+.mora-row.fit{flex-wrap:nowrap;gap:6px}
+.mora-row.fit .mora{--w:min(74px,calc((100vw - 96px) / var(--n) - 6px));width:var(--w);height:var(--w);font-size:calc(var(--w) * .6)}
+.mora-row.fit .mora.blank-cell{font-size:calc(var(--w) * .45)}
+.mora-row.fit .mora.blank-cell.filled,.mora-row.fit .mora.blank-cell.reveal{font-size:calc(var(--w) * .6)}
+@media (max-width:560px){.choices.tiles{grid-template-columns:repeat(auto-fill,minmax(64px,80px))}.ch.kana{font-size:34px}}

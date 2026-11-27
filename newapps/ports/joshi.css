@@ -1,0 +1,5 @@
+.sentence .blank{min-width:1.9em}
+.choices[data-n="2"]{--cols:2}
+.choices[data-n="5"]{--cols:5}
+.ch{font-size:34px}
+@media (max-width:560px){.choices[data-n="5"]{--cols:3}.ch{font-size:28px}}

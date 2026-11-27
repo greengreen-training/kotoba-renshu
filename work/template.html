@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2d5b45">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ことばの練習">
+<title>グリーン・グリーン ことばの練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700;900&display=swap">
+<style>
+/* 配置：ロゴと名前 → 「音・ことば・文」の3段に練習を1列で並べる。練習を開くと、細い帯の下に画面いっぱいで表示する */
+:root{
+  --paper:#f3f7f0;        /* 背景：ほんのり緑 */
+  --card:#ffffff;
+  --ink:#1d2d25;          /* 文字：緑寄りの黒 */
+  --muted:#4d5f55;
+  --line:#d3e3d0;
+  --leaf-dark:#2d5b45;    /* ロゴの濃い緑 */
+  --leaf-light:#85b348;   /* ロゴの明るい緑（面に使う） */
+  --leaf-light-ink:#567f25; /* 明るい緑を文字に使うとき */
+  --leaf-soft:#e5f0dc;
+  --font-display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic",sans-serif;
+  --font-body:"BIZ UDPGothic","UD デジタル 教科書体 N-R","Hiragino Sans","Meiryo",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:anywhere} /* 分かち書きの区切り（空白）で改行する */
+button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--leaf-light);outline-offset:3px}
+ruby{ruby-align:center}
+rt{font-size:.5em;font-weight:700;color:var(--muted);letter-spacing:0}
+h1,h2,h3,p{margin:0}
+
+/* ---------- メニュー ---------- */
+.menu{min-height:100%;padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(36px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.menu-in{max-width:780px;margin:0 auto;display:grid;gap:30px}
+.brand{display:flex;align-items:center;gap:18px}
+.brand img{width:88px;height:auto;flex:none}
+.brand-org{font-weight:700;color:var(--muted);font-size:16px;letter-spacing:.08em}
+.brand-name{font-family:var(--font-display);font-weight:900;font-size:clamp(32px,7.4vw,54px);line-height:1.12;letter-spacing:.04em;margin-top:2px;white-space:nowrap}
+.brand-name .g1{color:var(--leaf-dark)}
+.brand-name .g2{color:var(--leaf-light-ink)}
+.brand-name .dot{color:var(--leaf-light);padding:0 .02em}
+.brand-sub{display:inline-block;margin-top:10px;padding:2px 18px;border-radius:999px;background:var(--leaf-soft);color:var(--leaf-dark);font-family:var(--font-display);font-weight:700;font-size:23px;line-height:1.9}
+.brand-sub rt{color:var(--leaf-dark)}
+
+.lead{display:grid;gap:2px}
+/* 個人別メニュー（職員が決めた練習だけを出す） */
+.plan{display:grid;gap:12px}
+.plan-head{display:grid;gap:2px}
+.plan-head h2{margin:0;font-family:var(--font-display);font-weight:900;font-size:26px;line-height:1.6;color:var(--leaf-dark)}
+.plan-head small{font-size:15px;color:var(--muted);line-height:1.8}
+.chip.fix{background:var(--leaf-dark);color:#fff}
+/* 宿題：期限・やった回数・できたしるし */
+.hw-due{margin:0;font-size:20px;font-weight:700;line-height:1.8}
+.hw-due b{font-family:var(--font-display);font-weight:900;font-size:24px;color:var(--leaf-dark);background:var(--leaf-soft);border-radius:10px;padding:0 10px}
+.hw-all{display:flex;align-items:center;gap:12px;margin:0;padding:14px 18px;border-radius:18px;background:#fff6d6;border:2px solid #e9c64a;font-family:var(--font-display);font-weight:900;font-size:22px;line-height:1.6}
+.hw-check{flex:none;width:44px;height:44px;border-radius:50%;background:var(--leaf-dark);color:#fff;display:grid;place-items:center;font-size:28px}
+.hw{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:10px}
+.hw-dots{display:flex;gap:6px}
+.hw-dots i{width:20px;height:20px;border-radius:50%;border:3px solid var(--leaf-dark);background:#fff}
+.hw-dots i.on{background:var(--leaf-dark)}
+.hw-n{font-size:19px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.hw.ok .hw-n{color:var(--leaf-dark);font-weight:900}
+.app.hw-done{border-color:var(--leaf-dark);background:linear-gradient(0deg,var(--leaf-soft),var(--card) 70%)}
+.bar-fix{display:inline-block;margin-left:8px;font-family:var(--font-body);font-size:14px;font-weight:700;background:var(--leaf-soft);color:var(--leaf-dark);border-radius:999px;padding:0 10px;line-height:1.9;vertical-align:.15em;white-space:nowrap}
+.lead p{font-size:21px;font-weight:700;line-height:2}
+.lead small{font-size:15px;color:var(--muted)}
+
+.stage{display:grid;gap:12px}
+.stage-head{display:flex;align-items:center;gap:12px}
+.stage-head::after{content:"";flex:1;height:2px;border-radius:2px;background:var(--line)}
+.stage-no{width:38px;height:38px;border-radius:0 62% 0 62%;background:var(--leaf-dark);color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-weight:900;font-size:19px;flex:none;font-variant-numeric:tabular-nums}
+.stage-name{font-family:var(--font-display);font-weight:900;font-size:27px;line-height:1.5}
+.stage-term{font-size:14px;font-weight:700;color:var(--muted);white-space:nowrap}
+.apps{display:grid;gap:12px}
+
+.app{appearance:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:6px 18px;width:100%;text-align:left;padding:18px 18px 18px 16px;background:var(--card);border:2px solid var(--line);border-radius:22px;cursor:pointer;box-shadow:0 4px 0 var(--line);transition:border-color .15s,transform .1s,box-shadow .1s}
+.app:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.leaf{width:76px;height:76px;border-radius:0 62% 0 62%;display:grid;place-items:center;font-family:var(--font-display);font-weight:900;font-size:38px;line-height:1;flex:none;transition:transform .3s cubic-bezier(.2,.9,.3,1.3)}
+.leaf.dark{background:var(--leaf-dark);color:#fff}
+.leaf.light{background:var(--leaf-light);color:var(--ink)}
+.leaf.two{font-size:27px;letter-spacing:-.02em}
+.leaf svg{width:42px;height:42px;display:block}
+.app-name,.app-desc{display:block}
+.app-name{font-family:var(--font-display);font-weight:700;font-size:28px;line-height:1.55}
+.app-desc{font-size:17px;color:var(--muted);line-height:1.9;margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.grade{display:inline-block;font-family:var(--font-body);font-size:15px;font-weight:700;color:var(--leaf-dark);background:var(--leaf-soft);border-radius:999px;padding:0 10px;line-height:1.9;vertical-align:.2em;margin-left:4px}
+.chip{font-size:14px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--leaf-soft);color:var(--leaf-dark);white-space:nowrap;line-height:1.5}
+.go{width:54px;height:54px;border-radius:50%;background:var(--leaf-dark);color:#fff;display:grid;place-items:center;flex:none;transition:transform .15s}
+.go svg{width:26px;height:26px}
+@media (hover:hover){
+  .app:hover{border-color:var(--leaf-dark)}
+  .app:hover .leaf{transform:rotate(-9deg) scale(1.04)}
+  .app:hover .go{transform:translateX(3px)}
+}
+.note{font-size:14px;color:var(--muted);line-height:1.8;border-top:2px solid var(--line);padding-top:14px}
+
+@media (max-width:600px){
+  .menu-in{gap:26px}
+  .brand{gap:12px}
+  .brand img{width:56px}
+  .brand-name{font-size:min(7.4vw,34px);letter-spacing:0}
+  .brand-org{font-size:13px;letter-spacing:.02em}
+  .brand-sub{font-size:19px;padding:1px 14px}
+  .lead p{font-size:19px}
+  .stage-name{font-size:23px}
+  .app{grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;padding:14px 12px 14px 12px;border-radius:18px}
+  .leaf{width:58px;height:58px;font-size:29px}
+  .leaf.two{font-size:21px}
+  .leaf svg{width:32px;height:32px}
+  .app-name{font-size:23px}
+  .app-desc{font-size:15.5px;line-height:1.85}
+  .chip{font-size:13px;padding:2px 9px}
+  .hw-due{font-size:17px} .hw-due b{font-size:20px}
+  .hw-all{font-size:18px;padding:12px 14px}
+  .hw-dots i{width:16px;height:16px;border-width:2.5px}
+  .hw-n{font-size:16px}
+  .go{width:36px;height:36px}
+  .go svg{width:18px;height:18px}
+}
+
+/* 読み込み時：葉が芽吹くように */
+@media (prefers-reduced-motion:no-preference){
+  .sprout .apps .leaf{animation:sprout .65s cubic-bezier(.2,.9,.3,1.35) backwards;animation-delay:calc(var(--i,0) * 90ms + 150ms)}
+  .sprout .stage-no{animation:sprout .5s cubic-bezier(.2,.9,.3,1.35) backwards;animation-delay:calc(var(--i,0) * 90ms + 60ms)}
+}
+@keyframes sprout{from{transform:scale(.35) rotate(-40deg)}to{transform:none}}
+
+/* ---------- 練習を開いているとき ---------- */
+.shell{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--paper)}
+.bar{flex:none;display:flex;align-items:center;gap:12px;padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));background:var(--card);border-bottom:2px solid var(--line)}
+.back{appearance:none;display:inline-flex;align-items:center;gap:6px;min-height:50px;padding:0 18px 0 12px;border-radius:14px;border:2px solid var(--leaf-dark);background:var(--card);color:var(--leaf-dark);font-weight:700;font-size:19px;cursor:pointer;flex:none;white-space:nowrap}
+.back svg{width:22px;height:22px}
+.back:active{background:var(--leaf-soft)}
+@media (hover:hover){.back:hover{background:var(--leaf-soft)}}
+.bar-title{display:flex;align-items:center;gap:10px;min-width:0;font-family:var(--font-display);font-weight:700;font-size:21px;line-height:1.5}
+.bar-title .leaf{width:38px;height:38px;font-size:19px}
+.bar-title .leaf.two{font-size:14px}
+.bar-title .leaf svg{width:22px;height:22px}
+.bar-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-logo{margin-left:auto;width:40px;height:auto;flex:none}
+@media (max-width:480px){.bar-logo{display:none}.bar-title{font-size:18px}.back{font-size:17px;padding:0 14px 0 10px}}
+.frame-wrap{flex:1;min-height:0;padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card)}
+.frame-wrap iframe{display:block;width:100%;height:100%;border:0}
+
+/* ---------- 成績の送信（個人用リンクのとき） ---------- */
+.me{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 14px}
+.me-id{font-family:var(--font-display);font-weight:900;font-size:22px;color:var(--leaf-dark);background:var(--leaf-soft);border-radius:10px;padding:0 12px;line-height:1.8;font-variant-numeric:tabular-nums}
+.me-state{font-size:15px;color:var(--muted);line-height:1.8}
+.me-state b{color:#b06a00}
+.me .btn-mini{appearance:none;min-height:40px;padding:0 14px;border-radius:10px;border:2px solid var(--leaf-dark);background:var(--card);color:var(--leaf-dark);font-weight:700;font-size:16px;cursor:pointer}
+.bar-who{margin-left:auto;font-weight:700;font-size:16px;color:var(--leaf-dark);background:var(--leaf-soft);border-radius:999px;padding:2px 14px;white-space:nowrap;max-width:40vw;overflow:hidden;text-overflow:ellipsis}
+.bar-who:not([hidden]) + .bar-logo{margin-left:10px}
+.picker{position:fixed;inset:0;z-index:25;background:var(--paper);overflow:auto;padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.picker-in{max-width:780px;margin:0 auto;display:grid;gap:18px}
+.picker-top{display:flex;align-items:center;gap:12px}
+.picker-top img{width:56px;height:auto}
+.picker h2{font-family:var(--font-display);font-weight:900;font-size:clamp(24px,5vw,32px);color:var(--leaf-dark);line-height:1.7;text-wrap:balance}
+.who-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.who{appearance:none;display:grid;gap:0;justify-items:start;text-align:left;min-height:84px;padding:12px 18px;border-radius:18px;border:2px solid var(--line);background:var(--card);box-shadow:0 4px 0 var(--line);cursor:pointer}
+.who:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.who .w-name{font-family:var(--font-display);font-weight:900;font-size:26px;line-height:1.5}
+.who .w-id{font-size:14px;color:var(--muted);font-weight:700}
+@media (hover:hover){.who:hover{border-color:var(--leaf-dark)}}
+.staff{background:var(--card);border:2px dashed var(--line);border-radius:16px;padding:12px 16px}
+.staff summary{cursor:pointer;font-weight:700;color:var(--muted)}
+.staff-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.staff-row input{flex:1 1 180px;min-height:46px;padding:6px 12px;border:2px solid var(--line);border-radius:10px;font:inherit}
+.staff-row button,.r-item button,.picker-close{appearance:none;min-height:46px;padding:0 16px;border-radius:10px;border:2px solid var(--leaf-dark);background:var(--leaf-dark);color:#fff;font-weight:700;cursor:pointer}
+.staff-note{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.8}
+.r-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:16px}
+.r-item span{flex:1}
+.r-item button{min-height:36px;padding:0 12px;background:var(--card);color:#c0392b;border-color:#e3c1bd;font-size:14px}
+.picker-close{background:var(--card);color:var(--leaf-dark);justify-self:start}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;background:var(--leaf-dark);color:#fff;font-weight:700;font-size:17px;border-radius:999px;padding:8px 20px;box-shadow:0 8px 24px rgba(0,0,0,.2);pointer-events:none}
+
+/* ---------- 「メニューにもどる？」の確認 ---------- */
+.scrim{position:fixed;inset:0;z-index:20;background:rgba(18,36,28,.55);display:grid;place-items:center;padding:16px}
+.dialog{width:100%;max-width:440px;background:var(--card);border-radius:24px;padding:30px 22px 22px;display:grid;gap:12px;text-align:center;box-shadow:0 24px 60px rgba(10,30,20,.3)}
+.dialog .leaf{margin:0 auto 4px;width:54px;height:54px}
+.dialog h2{font-family:var(--font-display);font-weight:900;font-size:26px;line-height:1.5;text-wrap:balance}
+.dialog p{font-size:19px;color:var(--muted);line-height:2}
+.btns{display:grid;gap:10px;margin-top:6px}
+.btn{appearance:none;min-height:62px;border-radius:16px;font-size:21px;font-weight:700;cursor:pointer;border:2px solid var(--leaf-dark)}
+.btn-primary{background:var(--leaf-dark);color:#fff}
+.btn-plain{background:var(--card);color:var(--leaf-dark)}
+.btn rt{color:inherit;opacity:.85}
+</style>
+</head>
+<body>
+
+<!-- ======================= メニュー ======================= -->
+<main id="menu" class="menu">
+  <div class="menu-in">
+    <header class="brand">
+      <img id="brandLogo" src="@@LOGO@@" alt="グリーン・グリーンのロゴ">
+      <div>
+        <p class="brand-org">ことばのリハビリデイサービス</p>
+        <h1 class="brand-name"><span class="g1">グリーン</span><span class="dot">・</span><span class="g2">グリーン</span></h1>
+        <p class="brand-sub">ことばの <ruby>練習<rt>れんしゅう</rt></ruby></p>
+      </div>
+    </header>
+
+    <div class="me" id="me" hidden>
+      <span class="me-id" id="meId"></span>
+      <span class="me-state" id="meState"></span>
+    </div>
+
+    <section class="plan" id="planBox" hidden aria-labelledby="planTitle"></section>
+
+    <div class="lead" id="menuLead">
+      <p><ruby>練習<rt>れんしゅう</rt></ruby>を ひとつ えらんで ください</p>
+      <small>多くの練習は「簡単・普通・難しい」から選べます。1回10問です。「録音」の練習は、声を録音して聞き返せます。</small>
+    </div>
+
+    <!-- 1 -->
+    <section class="stage" aria-labelledby="st1">
+      <div class="stage-head">
+        <span class="stage-no" style="--i:0">1</span>
+        <h2 class="stage-name" id="st1"><ruby>絵<rt>え</rt></ruby>と <ruby>形<rt>かたち</rt></ruby></h2>
+        <span class="stage-term">照合</span>
+      </div>
+      <div class="apps">
+        <button class="app" type="button" data-app="eawase">
+          <span class="leaf dark" style="--i:0" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="11" cy="12" r="7.5" fill="currentColor"/><path d="M29 4l8.5 15h-17z" fill="currentColor"/><rect x="12.5" y="23" width="15" height="15" rx="2.5" fill="currentColor"/></svg></span>
+          <span>
+            <span class="app-name"><ruby>絵<rt>え</rt></ruby><ruby>合<rt>あ</rt></ruby>わせ</span>
+            <span class="app-desc">お<ruby>手本<rt>てほん</rt></ruby>と <ruby>同<rt>おな</rt></ruby>じ ものを えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">ことば・絵・形・色</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="stage" aria-labelledby="st2">
+      <div class="stage-head">
+        <span class="stage-no" style="--i:1">2</span>
+        <h2 class="stage-name" id="st2"><ruby>音<rt>おと</rt></ruby>と <ruby>文字<rt>もじ</rt></ruby></h2>
+        <span class="stage-term">音韻・文字</span>
+      </div>
+      <div class="apps">
+        <button class="app" type="button" data-app="onin">
+          <span class="leaf light" style="--i:1" aria-hidden="true">あ</span>
+          <span>
+            <span class="app-name"><ruby>音<rt>おと</rt></ruby>を <ruby>選<rt>えら</rt></ruby>ぶ <ruby>練習<rt>れんしゅう</rt></ruby></span>
+            <span class="app-desc"><ruby>絵<rt>え</rt></ruby>を <ruby>見<rt>み</rt></ruby>て、ことばの <ruby>音<rt>おと</rt></ruby>を えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">6択</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="oto2">
+          <span class="leaf dark two" style="--i:2" aria-hidden="true">あ？</span>
+          <span>
+            <span class="app-name"><ruby>音<rt>おと</rt></ruby>を <ruby>選<rt>えら</rt></ruby>ぶ <ruby>練習<rt>れんしゅう</rt></ruby> <span class="grade"><ruby>上級<rt>じょうきゅう</rt></ruby></span></span>
+            <span class="app-desc">ことばの <ruby>中<rt>なか</rt></ruby>の 2つの <ruby>空白<rt>くうはく</rt></ruby>に <ruby>入<rt>はい</rt></ruby>る <ruby>音<rt>おと</rt></ruby>を えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">空白2つ</span><span class="chip">6〜8択</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="gojuon">
+          <span class="leaf dark" style="--i:3" aria-hidden="true"><svg viewBox="0 0 40 40"><g fill="currentColor"><rect x="3" y="3" width="10" height="10" rx="2"/><rect x="15" y="3" width="10" height="10" rx="2"/><rect x="27" y="3" width="10" height="10" rx="2"/><rect x="3" y="15" width="10" height="10" rx="2"/><rect x="27" y="15" width="10" height="10" rx="2"/><rect x="3" y="27" width="10" height="10" rx="2"/><rect x="15" y="27" width="10" height="10" rx="2"/><rect x="27" y="27" width="10" height="10" rx="2"/></g><rect x="16" y="16" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg></span>
+          <span>
+            <span class="app-name">50<ruby>音<rt>おん</rt></ruby>ならべ</span>
+            <span class="app-desc">50<ruby>音表<rt>おんひょう</rt></ruby>の あいている マスを うめます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">3〜10択</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="gojuonrec">
+          <span class="leaf light two" style="--i:4" aria-hidden="true">あい</span>
+          <span>
+            <span class="app-name"><ruby>五十音<rt>ごじゅうおん</rt></ruby>れんしゅう <span class="grade"><ruby>録音<rt>ろくおん</rt></ruby></span></span>
+            <span class="app-desc"><ruby>行<rt>ぎょう</rt></ruby>ごとに <ruby>声<rt>こえ</rt></ruby>に <ruby>出<rt>だ</rt></ruby>して <ruby>読<rt>よ</rt></ruby>み、<ruby>録音<rt>ろくおん</rt></ruby>して <ruby>聞<rt>き</rt></ruby>き<ruby>返<rt>かえ</rt></ruby>します。</span>
+            <span class="chips"><span class="chip">15行</span><span class="chip">録音</span><span class="chip">聞き返し</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="narabe">
+          <span class="leaf light two" style="--i:5" aria-hidden="true">ねこ</span>
+          <span>
+            <span class="app-name">ことば <ruby>並<rt>なら</rt></ruby>べ<ruby>替<rt>か</rt></ruby>え <span class="grade"><ruby>初級<rt>しょきゅう</rt></ruby></span></span>
+            <span class="app-desc"><ruby>絵<rt>え</rt></ruby>カードを <ruby>見<rt>み</rt></ruby>て、<ruby>字<rt>じ</rt></ruby>を ならべます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">2〜6文字</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="narabe2">
+          <span class="leaf dark" style="--i:6" aria-hidden="true">っ</span>
+          <span>
+            <span class="app-name">ことば <ruby>並<rt>なら</rt></ruby>べ<ruby>替<rt>か</rt></ruby>え <span class="grade"><ruby>上級<rt>じょうきゅう</rt></ruby></span></span>
+            <span class="app-desc"><ruby>小<rt>ちい</rt></ruby>さい「ゃ・ゅ・ょ・っ」や のばす <ruby>音<rt>おと</rt></ruby>の <ruby>入<rt>はい</rt></ruby>った ことばを ならべます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">3〜8文字</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="stage" aria-labelledby="st3">
+      <div class="stage-head">
+        <span class="stage-no" style="--i:2">3</span>
+        <h2 class="stage-name" id="st3">ことば</h2>
+        <span class="stage-term">語彙</span>
+      </div>
+      <div class="apps">
+        <button class="app" type="button" data-app="nakama">
+          <span class="leaf light" style="--i:7" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="14" cy="15" r="9" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="26" cy="15" r="9" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="20" cy="26" r="9" fill="none" stroke="currentColor" stroke-width="3"/></svg></span>
+          <span>
+            <span class="app-name"><ruby>仲間<rt>なかま</rt></ruby>えらび</span>
+            <span class="app-desc">お<ruby>題<rt>だい</rt></ruby>の <ruby>仲間<rt>なかま</rt></ruby>を ぜんぶ えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">6〜9枚から</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="fusen">
+          <span class="leaf dark" style="--i:8" aria-hidden="true"><svg viewBox="0 0 40 40"><ellipse cx="20" cy="15.5" rx="11.5" ry="13.5" fill="currentColor"/><ellipse cx="15.5" cy="10.5" rx="3" ry="4.6" fill="#fff" opacity=".45"/><path d="M17.6 28.6h4.8L20 32z" fill="currentColor"/><path d="M20 32c-2.6 2.4 2.6 3.6 0 6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          <span>
+            <span class="app-name"><ruby>風船<rt>ふうせん</rt></ruby>ことば</span>
+            <span class="app-desc"><ruby>風船<rt>ふうせん</rt></ruby>が われる <ruby>前<rt>まえ</rt></ruby>に、<ruby>絵<rt>え</rt></ruby>に あう ことばを えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">3〜6択</span><span class="chip">1問15秒</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="setsumei">
+          <span class="leaf light" style="--i:9" aria-hidden="true"><svg viewBox="0 0 40 40"><rect x="8.5" y="5" width="23" height="30" rx="4.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M14 13h12M14 19.5h12M14 26h7" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span>
+          <span>
+            <span class="app-name"><ruby>説明<rt>せつめい</rt></ruby>ことば</span>
+            <span class="app-desc"><ruby>説明<rt>せつめい</rt></ruby>を <ruby>読<rt>よ</rt></ruby>んで、あう ことばを えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">3〜6択</span><span class="chip">時間の制限なし</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="goso">
+          <span class="leaf dark" style="--i:10" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="22" r="14" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M20 22V13M20 22l6 4" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><rect x="16" y="3" width="8" height="5" rx="1.5" fill="currentColor"/></svg></span>
+          <span>
+            <span class="app-name"><ruby>語想起<rt>ごそうき</rt></ruby> タイムアタック <span class="grade"><ruby>録音<rt>ろくおん</rt></ruby></span></span>
+            <span class="app-desc">お<ruby>題<rt>だい</rt></ruby>に <ruby>合<rt>あ</rt></ruby>う ことばを 60<ruby>秒<rt>びょう</rt></ruby>で たくさん <ruby>言<rt>い</rt></ruby>います。カテゴリ（<ruby>動物<rt>どうぶつ</rt></ruby> など）と <ruby>語頭音<rt>ごとうおん</rt></ruby>（「か」で はじまる ことば など）。</span>
+            <span class="chips"><span class="chip">60秒×3</span><span class="chip">カテゴリ</span><span class="chip">語頭音</span><span class="chip">録音</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="stage" aria-labelledby="st4">
+      <div class="stage-head">
+        <span class="stage-no" style="--i:3">4</span>
+        <h2 class="stage-name" id="st4"><ruby>文<rt>ぶん</rt></ruby></h2>
+        <span class="stage-term">名詞・助詞・動詞</span>
+      </div>
+      <div class="apps">
+        <button class="app" type="button" data-app="meishi">
+          <span class="leaf dark" style="--i:11" aria-hidden="true">本</span>
+          <span>
+            <span class="app-name"><ruby>名詞<rt>めいし</rt></ruby>の <ruby>練習<rt>れんしゅう</rt></ruby></span>
+            <span class="app-desc">「＿＿を <ruby>飲<rt>の</rt></ruby>む」に あう ことばを えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">3〜4択</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="joshi">
+          <span class="leaf light" style="--i:12" aria-hidden="true">を</span>
+          <span>
+            <span class="app-name"><ruby>助詞<rt>じょし</rt></ruby>の <ruby>練習<rt>れんしゅう</rt></ruby></span>
+            <span class="app-desc"><ruby>文<rt>ぶん</rt></ruby>に あう「が・を・に」などを えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">2〜5択</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="doushi">
+          <span class="leaf dark two" style="--i:13" aria-hidden="true">見る</span>
+          <span>
+            <span class="app-name"><ruby>動詞<rt>どうし</rt></ruby>の <ruby>練習<rt>れんしゅう</rt></ruby></span>
+            <span class="app-desc"><ruby>文<rt>ぶん</rt></ruby>に あう <ruby>動<rt>うご</rt></ruby>きの ことばを えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">3〜4択</span><span class="chip">1回で判定</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="doushi2">
+          <span class="leaf light two" style="--i:14" aria-hidden="true">開く</span>
+          <span>
+            <span class="app-name"><ruby>動詞<rt>どうし</rt></ruby>の <ruby>練習<rt>れんしゅう</rt></ruby> <span class="grade"><ruby>上級<rt>じょうきゅう</rt></ruby></span></span>
+            <span class="app-desc">にた <ruby>動詞<rt>どうし</rt></ruby>の <ruby>使<rt>つか</rt></ruby>い<ruby>分<rt>わ</rt></ruby>けや、<ruby>文<rt>ぶん</rt></ruby>に あう <ruby>動詞<rt>どうし</rt></ruby>の かたちを えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">使い分け・かたち</span><span class="chip">2〜4択</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="bun">
+          <span class="leaf light" style="--i:14" aria-hidden="true"><svg viewBox="0 0 40 40"><rect x="2" y="13" width="10" height="14" rx="3" fill="currentColor"/><rect x="15" y="13" width="10" height="14" rx="3" fill="currentColor" opacity=".75"/><rect x="28" y="13" width="10" height="14" rx="3" fill="currentColor" opacity=".5"/></svg></span>
+          <span>
+            <span class="app-name"><ruby>文<rt>ぶん</rt></ruby>を つくろう <span class="grade"><ruby>録音<rt>ろくおん</rt></ruby></span></span>
+            <span class="app-desc">「<ruby>家<rt>いえ</rt></ruby>で したこと」などを、いつ・どこで・なにを したかの <ruby>文<rt>ぶん</rt></ruby>で <ruby>話<rt>はな</rt></ruby>します。<ruby>録音<rt>ろくおん</rt></ruby>して <ruby>聞<rt>き</rt></ruby>き<ruby>返<rt>かえ</rt></ruby>せます。</span>
+            <span class="chips"><span class="chip">3〜5問</span><span class="chip">31の話題</span><span class="chip">いつ・どこで</span><span class="chip">録音</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="stage" aria-labelledby="st5">
+      <div class="stage-head">
+        <span class="stage-no" style="--i:4">5</span>
+        <h2 class="stage-name" id="st5"><ruby>会話<rt>かいわ</rt></ruby></h2>
+        <span class="stage-term">実用コミュニケーション</span>
+      </div>
+      <div class="apps">
+        <button class="app" type="button" data-app="serifu">
+          <span class="leaf light" style="--i:15" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M5 7h22a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H15l-7 6v-6H5a4 4 0 0 1-4-4V11a4 4 0 0 1 4-4z" fill="currentColor"/><path d="M33 14h2a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4h-1v5l-6-5h-9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg></span>
+          <span>
+            <span class="app-name">セリフを えらびましょう</span>
+            <span class="app-desc"><ruby>場面<rt>ばめん</rt></ruby>の <ruby>絵<rt>え</rt></ruby>を <ruby>見<rt>み</rt></ruby>て、「あなた」の セリフを えらびます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">46場面</span><span class="chip">3〜4択</span><span class="chip">2回まで</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="serifu2">
+          <span class="leaf dark" style="--i:16" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M5 7h22a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H15l-7 6v-6H5a4 4 0 0 1-4-4V11a4 4 0 0 1 4-4z" fill="currentColor"/><rect x="31" y="14" width="6" height="11" rx="3" fill="currentColor"/><path d="M28.5 22a5.5 5.5 0 0 0 11 0M34 28v5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+          <span>
+            <span class="app-name">セリフを いいましょう</span>
+            <span class="app-desc"><ruby>場面<rt>ばめん</rt></ruby>の <ruby>絵<rt>え</rt></ruby>を <ruby>見<rt>み</rt></ruby>て、「あなた」の セリフを <ruby>声<rt>こえ</rt></ruby>に <ruby>出<rt>だ</rt></ruby>して <ruby>言<rt>い</rt></ruby>います。<ruby>録音<rt>ろくおん</rt></ruby>して <ruby>聞<rt>き</rt></ruby>き<ruby>返<rt>かえ</rt></ruby>せます。</span>
+            <span class="chips"><span class="chip">10問</span><span class="chip">46場面</span><span class="chip">選択肢なし</span><span class="chip">録音</span><span class="chip">ヒントあり</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="app" type="button" data-app="aisatsu">
+          <span class="leaf light two" style="--i:17" aria-hidden="true">挨拶</span>
+          <span>
+            <span class="app-name"><ruby>挨拶語<rt>あいさつご</rt></ruby>の トレーニング</span>
+            <span class="app-desc"><ruby>朝<rt>あさ</rt></ruby>・<ruby>食事<rt>しょくじ</rt></ruby>・<ruby>玄関<rt>げんかん</rt></ruby>などの <ruby>場面<rt>ばめん</rt></ruby>を <ruby>見<rt>み</rt></ruby>て、あいさつを <ruby>言<rt>い</rt></ruby>います。<ruby>録音<rt>ろくおん</rt></ruby>して <ruby>聞<rt>き</rt></ruby>き<ruby>返<rt>かえ</rt></ruby>せます。</span>
+            <span class="chips"><span class="chip">8場面</span><span class="chip">12のあいさつ</span><span class="chip">録音</span></span>
+          </span>
+          <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+    </section>
+
+    <p class="note">練習の記録（さいこう点・設定など）は、この端末のブラウザに保存されます。職員から受け取った個人用リンク・施設のタブレット用リンクで開いたときは、1回（10問）ごとの成績が職員に自動で送られます。</p>
+  </div>
+</main>
+
+<!-- ======================= 練習を開いているとき ======================= -->
+<div id="shell" class="shell" hidden>
+  <header class="bar">
+    <button class="back" id="backBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>メニュー</button>
+    <div class="bar-title"><span id="barLeaf"></span><span class="bar-name" id="barName"></span></div>
+    <span class="bar-who" id="barWho" hidden></span>
+    <img class="bar-logo" id="barLogo" alt="">
+  </header>
+  <div class="frame-wrap" id="frameWrap"></div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<!-- 施設のタブレット：練習する人を選ぶ -->
+<div class="picker" id="picker" hidden role="dialog" aria-modal="true" aria-labelledby="pickTitle">
+  <div class="picker-in">
+    <div class="picker-top"><img id="pickLogo" alt=""><h2 id="pickTitle"><ruby>練習<rt>れんしゅう</rt></ruby>する <ruby>人<rt>ひと</rt></ruby>を えらんで ください</h2></div>
+    <div class="who-list" id="whoList"></div>
+    <details class="staff" id="staffBox">
+      <summary>職員の方へ：利用者を登録する・消す</summary>
+      <div class="staff-row">
+        <input id="rId" maxlength="20" autocomplete="off" placeholder="利用者番号（例：A01）" aria-label="利用者番号">
+        <input id="rName" maxlength="20" autocomplete="off" placeholder="名前（このタブレットだけに保存）" aria-label="名前">
+        <button id="rAdd" type="button">登録する</button>
+      </div>
+      <p class="staff-note" id="rMsg">成績一覧ページと同じ利用者番号を使ってください。名前はこのタブレットの中だけに保存され、送られるのは番号だけです。</p>
+      <div id="rList"></div>
+    </details>
+    <button class="picker-close" id="pickClose" type="button">とじる</button>
+  </div>
+</div>
+
+<div class="scrim" id="leaveScrim" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="leaveTitle">
+    <span class="leaf dark" aria-hidden="true"><svg viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <h2 id="leaveTitle">メニューに もどりますか？</h2>
+    <p>いまの <ruby>練習<rt>れんしゅう</rt></ruby>は ここで おわります。</p>
+    <div class="btns">
+      <button class="btn btn-primary" id="leaveBtn" type="button">メニューに もどる</button>
+      <button class="btn btn-plain" id="stayBtn" type="button"><ruby>練習<rt>れんしゅう</rt></ruby>を つづける</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* 練習ごとの設定
+   busy  : 問題を解いている途中なら true（途中なら「もどりますか？」を出す）
+   pause : 確認を出す前に、練習を一時停止する（風船ことば） */
+const QUIZ = d => { const q = d.getElementById('quiz'); return !!q && !q.hidden; };   // 共通デザインの練習：問題を解いている途中か
+const APPS = {
+  eawase:   { title:'絵合わせ', busy: QUIZ },
+  oto2:     { title:'音を選ぶ練習（上級）', busy: QUIZ },
+  gojuonrec:{ title:'五十音れんしゅう（録音）', busy: d => !!(d.body && d.body.dataset.rec === '1') },
+  serifu2:  { title:'セリフをいいましょう', busy: QUIZ },
+  goso:     { title:'語想起タイムアタック', busy: d => { const p = d.getElementById('play'); return !!p && !p.hidden; } },
+  bun:      { title:'文をつくろう', busy: QUIZ },
+  aisatsu:  { title:'挨拶語のトレーニング', busy: d => { const g = d.getElementById('game-screen'); return !!g && !g.classList.contains('hidden'); } },
+  onin:     { title:'音を選ぶ練習', busy: QUIZ },
+  gojuon:   { title:'50音ならべ', busy: QUIZ },
+  narabe:   { title:'ことば並べ替え（初級）', busy: QUIZ },
+  narabe2:  { title:'ことば並べ替え（上級）', busy: QUIZ },
+  nakama:   { title:'仲間えらび', busy: QUIZ },
+  fusen:    { title:'風船ことば',
+              busy: d => { const p = d.getElementById('play'); return !!p && !p.hidden; },
+              pause: d => { const s = d.getElementById('pauseScrim'), b = d.getElementById('pauseBtn'); if (s && s.hidden && b) b.click(); } },
+  setsumei: { title:'説明ことば',
+              busy: d => { const p = d.getElementById('play'); return !!p && !p.hidden; } },
+  meishi:   { title:'名詞の練習', busy: QUIZ },
+  doushi2:  { title:'動詞の練習（上級）', busy: QUIZ },
+  joshi:    { title:'助詞の練習', busy: QUIZ },
+  doushi:   { title:'動詞の練習', busy: QUIZ },
+  serifu:   { title:'セリフをえらびましょう', busy: QUIZ },
+};
+const BASE_TITLE = document.title;
+
+/* ===== 成績の送信 =====
+   ・利用者のスマホ：個人用リンク（…/?u=利用者番号&s=受け取りスクリプトの番号）で開く。番号はそのスマホに覚えておく。
+   ・施設のタブレット：タブレット用リンク（…/?t=1&s=…）で開く。練習の前に「練習する人」を選ぶ（30分なにもしないと選び直し）。
+   1回（10問）終わるたびに記録をためて送る。送れなかった分はたまったまま、次の機会に送る。 */
+const SEND = (() => {
+  const K = { user:'gg.user', dest:'gg.dest', queue:'gg.queue', shared:'gg.shared', roster:'gg.roster', who:'gg.who' };
+  const IDLE = 30 * 60 * 1000;
+  const get = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+  const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  const del = k => { try { localStorage.removeItem(k); } catch (e) {} };
+  const okId = v => /^[A-Za-z0-9_-]{1,20}$/.test(v || '');
+  try {
+    const q = new URLSearchParams(location.search);
+    const u = q.get('u'), d = q.get('s'), t = q.get('t');
+    if (t === '1') { put(K.shared, true); del(K.user); }
+    else if (okId(u)) { put(K.user, u); put(K.shared, false); }
+    if (d && /^[A-Za-z0-9_-]{20,140}$/.test(d)) put(K.dest, d);
+  } catch (e) {}
+  const shared = !!get(K.shared, false);
+  const fixed = shared ? null : get(K.user, null);
+  const dest = get(K.dest, null);
+  const url = dest ? 'https://script.google.com/macros/s/' + dest + '/exec' : null;
+  let sending = false, toastTimer = 0;
+
+  const roster = () => (get(K.roster, []) || []).filter(r => r && okId(r.id));
+  const nameOf = id => { const r = roster().find(x => x.id === id); return (r && r.name) || ''; };
+  function who() {
+    if (!shared) return fixed;
+    const w = get(K.who, null);
+    if (!w || !okId(w.id) || Date.now() - w.at > IDLE) return null;
+    return w.id;
+  }
+  function touch() { if (shared) { const w = get(K.who, null); if (w) { w.at = Date.now(); put(K.who, w); } } }
+  function choose(id) { put(K.who, { id, at: Date.now() }); status(); }
+  function addRoster(id, name) { const r = roster().filter(x => x.id !== id); r.push({ id, name }); r.sort((a, b) => a.id.localeCompare(b.id)); put(K.roster, r); }
+  function delRoster(id) { put(K.roster, roster().filter(x => x.id !== id)); const w = get(K.who, null); if (w && w.id === id) del(K.who); }
+
+  function status() {
+    const box = document.getElementById('me');
+    if (!fixed && !shared) { box.hidden = true; return; }
+    box.hidden = false;
+    const n = get(K.queue, []).length;
+    const sendTxt = !url ? '<ruby>送<rt>おく</rt></ruby>り<ruby>先<rt>さき</rt></ruby>が まだ <ruby>決<rt>き</rt></ruby>まっていません'
+      : n ? `まだ <ruby>送<rt>おく</rt></ruby>れていない <ruby>記録<rt>きろく</rt></ruby>が <b>${n}</b> つ あります（<ruby>電波<rt>でんぱ</rt></ruby>が もどったら <ruby>送<rt>おく</rt></ruby>ります）`
+          : '<ruby>練習<rt>れんしゅう</rt></ruby>の <ruby>記録<rt>きろく</rt></ruby>は <ruby>自動<rt>じどう</rt></ruby>で <ruby>送<rt>おく</rt></ruby>られます';
+    const id = who();
+    if (!shared) {
+      document.getElementById('meId').textContent = fixed;
+      document.getElementById('meState').innerHTML = sendTxt;
+    } else {
+      document.getElementById('meId').textContent = id ? (nameOf(id) || id) : 'だれも えらんでいません';
+      document.getElementById('meState').innerHTML = (id ? 'が <ruby>練習<rt>れんしゅう</rt></ruby>しています　' : '') +
+        '<button class="btn-mini" type="button" id="changeWho">' + (id ? 'かわる' : 'えらぶ') + '</button>　' + sendTxt;
+    }
+  }
+  function toast(html) {
+    const t = document.getElementById('toast');
+    t.innerHTML = html; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2600);
+  }
+  async function flush() {
+    if (!url || sending) { status(); return; }
+    const q = get(K.queue, []);
+    if (!q.length) { status(); return; }
+    sending = true;
+    try {
+      const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ records: q.slice(0, 100) }) });
+      const j = await res.json();
+      if (j && j.ok) {
+        const done = new Set(j.saved || []);
+        put(K.queue, get(K.queue, []).filter(r => !done.has(r.uid)));
+        toast('✓ <ruby>記録<rt>きろく</rt></ruby>を <ruby>送<rt>おく</rt></ruby>りました');
+      }
+    } catch (e) {}
+    sending = false;
+    status();
+    if (get(K.queue, []).length && navigator.onLine !== false) setTimeout(flush, 30000);
+  }
+  function add(rec) {
+    const id = who();
+    if (!id) return;
+    rec.user = id;
+    rec.uid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    rec.ts = new Date().toISOString();
+    put(K.queue, get(K.queue, []).concat([rec]).slice(-300));
+    touch();
+    status();
+    flush();
+  }
+  window.addEventListener('online', flush);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) flush(); });
+  return { add, flush, status, who, touch, choose, roster, addRoster, delRoster, nameOf, shared, okId, url, toast };
+})();
+
+/* ===== 録音を送る =====
+   職員が「声も送る」にした人だけ。録音の練習から届いた声を、この端末（IndexedDB）にためてから1つずつ送る。
+   送れなかった分（電波がないときなど）は残しておき、次の機会に送る。 */
+const AUD = (() => {
+  let db = null, busy = false, mem = [], timer = 0;
+  const ready = new Promise(res => {
+    try {
+      const rq = indexedDB.open('gg-send', 1);
+      rq.onupgradeneeded = () => rq.result.createObjectStore('audio', { keyPath: 'uid' });
+      rq.onsuccess = () => { db = rq.result; res(); };
+      rq.onerror = () => res(); rq.onblocked = () => res();
+    } catch (e) { res(); }
+  });
+  const all = () => new Promise(res => { try { const r = db.transaction('audio').objectStore('audio').getAll(); r.onsuccess = () => res(r.result || []); r.onerror = () => res([]); } catch (e) { res([]); } });
+  const put = rec => new Promise(res => { try { const t = db.transaction('audio', 'readwrite'); t.objectStore('audio').put(rec); t.oncomplete = () => res(true); t.onerror = t.onabort = () => res(false); } catch (e) { res(false); } });
+  const del = uid => new Promise(res => { try { const t = db.transaction('audio', 'readwrite'); t.objectStore('audio').delete(uid); t.oncomplete = t.onerror = t.onabort = () => res(); } catch (e) { res(); } });
+  const b64 = blob => new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(String(f.result).split(',')[1] || ''); f.onerror = () => rej(f.error); f.readAsDataURL(blob); });
+  async function list() { await ready; return (db ? await all() : []).concat(mem).sort((a, b) => (a.ts < b.ts ? -1 : 1)); }
+  async function add(rec) {
+    await ready;
+    if (!(db && await put(rec))) mem.push(rec);
+    flush();
+  }
+  async function flush() {
+    if (busy || !SEND.url) return;
+    busy = true;
+    let sent = 0, left = 0;
+    try {
+      const q = await list();
+      for (const r of q) {
+        let j = null;
+        try {
+          const data = await b64(r.blob);
+          const res = await fetch(SEND.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'audio', user: r.user, uid: r.uid, ts: r.ts, app: r.app, appName: r.appName, label: r.label, mime: r.mime, dur: r.dur, data }) });
+          j = await res.json();
+        } catch (e) { break; }
+        /* 受け取った（同じものを受け取り済みも）／もう送らなくてよい（「声も送る」が切られた など）ときは、ためた分から消す */
+        if (j && j.uid === r.uid && (j.ok || /^(novoice|size|user)$/.test(j.error || ''))) {
+          if (db) await del(r.uid);
+          mem = mem.filter(x => x.uid !== r.uid);
+          if (j.ok) sent++;
+        } else break;
+      }
+      left = (await list()).length;
+    } catch (e) {}
+    busy = false;
+    if (sent) SEND.toast('✓ <ruby>録音<rt>ろくおん</rt></ruby>を <ruby>送<rt>おく</rt></ruby>りました');
+    clearTimeout(timer);
+    if (left && navigator.onLine !== false) timer = setTimeout(flush, 45000);
+  }
+  window.addEventListener('online', flush);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) flush(); });
+  return { add, flush, list };
+})();
+
+/* 施設のタブレット：練習する人を選ぶ画面 */
+let pendingApp = null;
+function renderPicker() {
+  const list = SEND.roster();
+  $('whoList').innerHTML = list.length
+    ? list.map(r => `<button class="who" type="button" data-id="${r.id}"><span class="w-name"></span><span class="w-id">${r.id}</span></button>`).join('')
+    : '<p class="staff-note">まだ だれも 登録されていません。職員の方は下の「利用者を登録する」から登録してください。</p>';
+  $('whoList').querySelectorAll('.who').forEach(b => {
+    b.querySelector('.w-name').textContent = SEND.nameOf(b.dataset.id) || b.dataset.id;
+    b.addEventListener('click', async () => {
+      const id = b.dataset.id;
+      SEND.choose(id);
+      $('picker').hidden = true;
+      renderPlan();
+      /* その人の個人別メニューを読みこむ（電波が悪いときは少しだけ待って、覚えている分を使う） */
+      await Promise.race([PLAN.load(id), new Promise(r => setTimeout(r, 2500))]);
+      if (SEND.who() !== id) return;
+      if (!current) renderPlan();
+      if (pendingApp) { const a = pendingApp; pendingApp = null; openApp(a); }
+    });
+  });
+  $('rList').innerHTML = list.map(r => `<div class="r-item"><span></span><button type="button" data-del="${r.id}">消す</button></div>`).join('');
+  $('rList').querySelectorAll('.r-item').forEach((row, i) => { row.querySelector('span').textContent = list[i].id + (list[i].name ? '　' + list[i].name : ''); });
+  $('rList').querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = 'もう一度押すと消えます'; return; }
+    SEND.delRoster(b.dataset.del); renderPicker(); SEND.status();
+  }));
+}
+function showPicker(appId) {
+  pendingApp = appId || null;
+  renderPicker();
+  $('picker').hidden = false;
+  const first = $('whoList').querySelector('.who'); if (first) first.focus();
+}
+const $ = id => document.getElementById(id);
+const menu = $('menu'), shell = $('shell'), wrap = $('frameWrap'), scrim = $('leaveScrim');
+const LOGO = $('brandLogo').getAttribute('src');
+$('barLogo').src = LOGO;
+
+let current = null, frame = null, currentFix = null;
+
+/* ページの下にしまってある各アプリのHTMLを取り出す */
+function source(id, fix) {
+  const el = document.querySelector('script[type="text/plain"][data-app="' + id + '"]');
+  if (!el) return null;
+  let html = el.textContent.replace(/<\\\/script/gi, '</script').replace(/<\\!--/g, '<!' + '--');   // （このページ自体が壊れないよう、字を分けて書いています）
+  html = html.split('__GG_LOGO__').join(LOGO);
+  /* いま練習している人を練習の中へ知らせる（さいこう点・記録を人ごとに分けるため） */
+  /* 個人別メニューで決めた難しさ・しゅるい（GG_FIX）も知らせる */
+  const fx = fix && (fix.lv || fix.type || (fix.topics && fix.topics.length) || fix.n || fix.opts != null)
+    ? { lv: fix.lv || '', type: fix.type || '', topics: (fix.topics || []).slice(), n: fix.n || 0, opts: fix.opts == null ? null : fix.opts } : null;
+  html = html.replace(/<head>/i, m => m + '<scr' + 'ipt>window.GG_USER=' + JSON.stringify(SEND.who() || '') + ';window.GG_FIX=' + JSON.stringify(fx) + ';window.GG_VOICE=' + (voiceOn(SEND.who()) ? 'true' : 'false') + ';</scr' + 'ipt>');
+  /* 練習画面はいつも明るい配色にそろえる */
+  html = html.replace(/<html(?=[\s>])/i, '<html data-theme="light"');
+  return html;
+}
+
+function cardOf(id) { return document.querySelector('.app[data-app="' + id + '"]'); }
+
+/* ===== 個人別メニュー =====
+   職員が成績一覧ページで決めた「その人がやる練習と難しさ」。受け取りスクリプトから読み、この端末にも覚えておく
+   （電波がないときも前に読んだ分を使う）。決められているときは、その練習だけを出し、押すと決めた難しさですぐ始まる。 */
+const LVNAME = { easy:'簡単', normal:'普通', hard:'難しい' };
+const TYPENAME = { doushi2:{ use:'使い分け', form:'かたち', mix:'まぜる' }, eawase:{ word:'ことばと絵', pic:'同じ絵', shape:'形', color:'色', mix:'まぜる' }, onin:{ single:'一文字を埋める', all:'全部の文字を埋める' }, bun:{ place:'場所から', time:'時間から', thing:'人・ことから', mix:'まぜる' }, goso:{ cat:'カテゴリ', onset:'語頭音' } };
+/* 宿題のお題の名前（練習の中の問題の名前。成績一覧ページと同じ一覧） */
+const TOPICDEF = /*@@TOPICS@@*/{};
+function topicName(app, k) {
+  const d = TOPICDEF[app];
+  if (d) for (const g of d.groups) for (const it of g.items) if (it[0] === k) return it[1];
+  return String(k).replace(/^(cat|onset):/, '');
+}
+const PLAN = (() => {
+  const key = id => 'gg.plan.' + id;
+  const cleanTopics = a => (Array.isArray(a) ? a : []).map(t => String(t == null ? '' : t).slice(0, 40)).filter(Boolean).slice(0, 60);
+  const okDue = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v || '')) ? String(v) : '';
+  /* 宿題：topics＝お題、times＝やる回数、done＝受け取り先が数えた「やった回数」（メニューの順） */
+  function clean(a, done) {
+    const d = Array.isArray(done) ? done : [];
+    const out = [], cnt = [];
+    (Array.isArray(a) ? a : []).forEach((x, i) => {
+      if (!x || !APPS[x.app]) return;
+      const it = { app: x.app, lv: LVNAME[x.lv] ? x.lv : '', type: TYPENAME[x.app] && TYPENAME[x.app][x.type] ? x.type : '' };
+      const tp = cleanTopics(x.topics); if (tp.length) it.topics = tp;
+      const n = Math.max(0, Math.min(30, Math.floor(Number(x.times) || 0))); if (n) it.times = n;
+      const q = Math.floor(Number(x.n)), o = x.opts !== '' && x.opts != null ? Math.floor(Number(x.opts)) : NaN;
+      if (q >= 1 && q <= 30) it.n = q;          // 問題数
+      if (o >= 0 && o <= 12) it.opts = o;       // 選択肢の数
+      out.push(it); cnt.push(Math.max(0, Math.floor(Number(d[i]) || 0)));
+    });
+    return { items: out, done: cnt };
+  }
+  function get(id) {
+    if (!id) return null;
+    try {
+      const v = JSON.parse(localStorage.getItem(key(id)));
+      if (!v || !Array.isArray(v.items)) return null;
+      const c = clean(v.items, v.done);
+      return { items: c.items, done: c.done, at: v.at || '', voice: v.voice === true, due: okDue(v.due) };
+    } catch (e) { return null; }
+  }
+  async function load(id) {
+    if (!id || !SEND.url) return get(id);
+    try {
+      const res = await fetch(SEND.url + '?menu=' + encodeURIComponent(id), { cache: 'no-store' });
+      const j = await res.json();
+      if (j && j.ok && j.menu) {
+        const c = clean(j.items, j.done);
+        const v = { items: c.items, done: c.done, at: String(j.at || ''), voice: j.voice === true, due: okDue(j.due) };
+        try { localStorage.setItem(key(id), JSON.stringify(v)); } catch (e) {}
+        return v;
+      }
+    } catch (e) {}
+    return get(id);
+  }
+  return { get, load };
+})();
+/* 宿題の「やった回数」：この端末で終えた分もすぐ数える（受け取り先の数と多いほうを使う）。
+   メニューを決め直す（変えた日時が変わる）と、0から数え直す */
+const HW = (() => {
+  const key = id => 'gg.hw.' + id;
+  const sig = it => [it.app, it.lv || '', it.type || '', (it.topics || []).join(','), it.n || '', it.opts == null ? '' : it.opts].join('|');
+  function get(id, at) {
+    try { const v = JSON.parse(localStorage.getItem(key(id))); if (v && v.at === at && v.n && typeof v.n === 'object') return v; } catch (e) {}
+    return { at, n: {} };
+  }
+  function add(id, p, it) {
+    const v = get(id, p.at), s = sig(it);
+    v.n[s] = (v.n[s] || 0) + 1;
+    try { localStorage.setItem(key(id), JSON.stringify(v)); } catch (e) {}
+  }
+  function count(id, p, i) {
+    const local = get(id, p.at).n[sig(p.items[i])] || 0;
+    return Math.max(local, (p.done && p.done[i]) || 0);
+  }
+  return { add, count };
+})();
+const hasHW = p => !!p && (!!p.due || p.items.some(it => it.times));
+/* 職員が「声も送る」にした人か（受け取り先があるときだけ） */
+function voiceOn(id) { const p = id ? PLAN.get(id) : null; return !!(SEND.url && p && p.voice); }
+function activePlan() { const id = SEND.who(); const p = id ? PLAN.get(id) : null; return p && p.items.length ? p : null; }
+/* 名前のメモに「さん」などが付いていなければ「さん」を付ける */
+const honor = n => /(さん|様|さま|くん|君|ちゃん)$/.test(n) ? n : n + ' さん';
+const sameTopics = (a, b) => (a.topics || []).join('\n') === (b.topics || []).join('\n');
+const sameFix = (a, b) => a.app === b.app && (a.lv || '') === (b.lv || '') && (a.type || '') === (b.type || '') && sameTopics(a, b) && (a.n || 0) === (b.n || 0) && (a.opts == null ? -1 : a.opts) === (b.opts == null ? -1 : b.opts);
+function fixLabel(it) { return [it.type ? TYPENAME[it.app][it.type] : '', it.lv ? LVNAME[it.lv] : ''].filter(Boolean).join('・'); }
+/* お題のチップ：3つまでは名前、それより多いときは数 */
+function topicLabel(it) {
+  const t = it.topics || [];
+  if (!t.length) return '';
+  return t.length <= 3 ? 'お題：' + t.map(k => topicName(it.app, k)).join('・') : 'お題 ' + t.length + (t.length < 10 ? 'つ' : 'こ');
+}
+const WEEK = '日月火水木金土';
+const OPTCHIP = { narabe: n => 'まぜる字 ' + n, narabe2: n => 'まぜる字 ' + n, nakama: n => 'カード ' + n + '枚' };
+function dueText(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); if (!m) return '';
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  return (d.getMonth() + 1) + '月' + d.getDate() + '日（' + WEEK[d.getDay()] + '）';
+}
+let planSig = '';
+function renderPlan() {
+  const p = activePlan(), box = $('planBox'), id = SEND.who();
+  const hw = hasHW(p);
+  const counts = p ? p.items.map((it, i) => HW.count(id, p, i)) : [];
+  const sig = p ? id + '|' + JSON.stringify(p.items) + '|' + (p.due || '') + '|' + counts.join(',') : '';
+  document.querySelectorAll('#menu .stage').forEach(st => { st.hidden = !!p; });
+  $('menuLead').hidden = !!p;
+  box.hidden = !p;
+  if (sig === planSig) return;
+  planSig = sig;
+  box.innerHTML = '';
+  if (!p) return;
+  const who = SEND.shared ? honor(SEND.nameOf(id) || id) : 'あなた';
+  const head = document.createElement('div');
+  head.className = 'plan-head';
+  if (hw) {
+    const due = dueText(p.due);
+    head.innerHTML = '<h2 id="planTitle"><span></span>の <ruby>宿題<rt>しゅくだい</rt></ruby></h2>' + (due ? '<p class="hw-due"><b></b> までに やりましょう</p>' : '')
+      + '<small><ruby>職員<rt>しょくいん</rt></ruby>が <ruby>出<rt>だ</rt></ruby>した <ruby>宿題<rt>しゅくだい</rt></ruby>です。<ruby>押<rt>お</rt></ruby>すと すぐ はじまります。</small>';
+    head.querySelector('h2 span').textContent = who;
+    if (due) head.querySelector('.hw-due b').textContent = due;
+  } else {
+    head.innerHTML = '<h2 id="planTitle"></h2><small>職員が えらんだ 練習です。押すと すぐ はじまります。</small>';
+    head.querySelector('h2').textContent = who + 'の 練習';
+  }
+  box.appendChild(head);
+  const goal = p.items.map((it, i) => it.times ? { need: it.times, did: counts[i] } : null).filter(Boolean);
+  if (goal.length && goal.every(g => g.did >= g.need)) {
+    const all = document.createElement('p');
+    all.className = 'hw-all';
+    all.innerHTML = '<span class="hw-check" aria-hidden="true">✓</span><span><ruby>宿題<rt>しゅくだい</rt></ruby>が ぜんぶ できました。よく がんばりました！</span>';
+    box.appendChild(all);
+  }
+  const list = document.createElement('div');
+  list.className = 'apps';
+  p.items.forEach((it, i) => {
+    const src = cardOf(it.app); if (!src) return;
+    const b = src.cloneNode(true);
+    b.removeAttribute('data-app');
+    b.dataset.planApp = it.app;
+    const chips = fixLabel(it).split('・').filter(Boolean);
+    if (it.n) chips.push(it.n + (it.app === 'goso' ? 'つの お題' : '問'));
+    if (it.opts != null) chips.push(OPTCHIP[it.app] ? OPTCHIP[it.app](it.opts) : it.opts + '択');
+    const tl = topicLabel(it); if (tl) chips.push(tl);
+    const ch = b.querySelector('.chips');
+    ch.innerHTML = '';
+    chips.forEach(t => { const c = document.createElement('span'); c.className = 'chip fix'; c.textContent = t; ch.appendChild(c); });
+    if (it.topics && it.topics.length > 3) ch.lastChild.title = it.topics.map(k => topicName(it.app, k)).join('、');
+    if (it.times) {
+      const did = counts[i], ok = did >= it.times;
+      const m = document.createElement('span');
+      m.className = 'hw' + (ok ? ' ok' : '');
+      const dots = Array.from({ length: Math.min(it.times, 10) }, (_, k) => `<i class="${k < did ? 'on' : ''}"></i>`).join('');
+      m.innerHTML = `<span class="hw-dots" aria-hidden="true">${dots}</span><span class="hw-n">${ok ? '✓ できた　' : ''}${Math.min(did, 99)} / ${it.times}<ruby>回<rt>かい</rt></ruby></span>`;
+      m.setAttribute('aria-label', it.times + '回のうち ' + did + '回 やりました' + (ok ? '。できました' : ''));
+      ch.after(m);
+      if (ok) b.classList.add('hw-done');
+    }
+    b.addEventListener('click', () => openApp(it.app, true, it));
+    list.appendChild(b);
+  });
+  box.appendChild(list);
+}
+function refreshPlan() {
+  const id = SEND.who();
+  if (!id) { renderPlan(); return; }
+  PLAN.load(id).then(() => { if (!current && SEND.who() === id) renderPlan(); });
+}
+
+function openApp(id, push, fix) {
+  if (!APPS[id]) return;
+  if (SEND.shared && !SEND.who()) { showPicker(id); return; }
+  /* 個人別メニューがある人は、決められた練習だけを、決めた難しさで開く */
+  const plan = activePlan();
+  if (plan) {
+    if (!fix || !plan.items.some(x => sameFix(x, fix))) fix = plan.items.find(x => x.app === id) || null;
+    if (!fix) {
+      renderPlan();
+      if (current) closeApp(false);
+      else if (location.hash) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
+      return;
+    }
+  } else fix = null;
+  SEND.touch();
+  const html = source(id, fix);
+  if (!html) return;
+  if (frame) teardown();
+  current = id;
+  currentFix = fix || null;
+  const card = cardOf(id);
+  $('barLeaf').innerHTML = card ? card.querySelector('.leaf').outerHTML : '';
+  $('barName').innerHTML = card ? card.querySelector('.app-name').innerHTML : APPS[id].title;
+  if (fix && fixLabel(fix)) { const f = document.createElement('span'); f.className = 'bar-fix'; f.textContent = fixLabel(fix); $('barName').appendChild(f); }
+  frame = document.createElement('iframe');
+  frame.title = APPS[id].title;
+  frame.setAttribute('allow', 'autoplay; screen-wake-lock; fullscreen; microphone');
+  frame.srcdoc = html;
+  frame.addEventListener('load', () => { try { frame.contentWindow.focus(); } catch (e) {} }, { once: true });
+  wrap.appendChild(frame);
+  menu.hidden = true;
+  shell.hidden = false;
+  scrim.hidden = true;
+  document.title = APPS[id].title + '｜グリーン・グリーン';
+  const wid = SEND.shared ? SEND.who() : null;
+  $('barWho').hidden = !wid;
+  $('barWho').textContent = wid ? honor(SEND.nameOf(wid) || wid) : '';
+  if (push !== false && location.hash !== '#' + id) { try { location.hash = id; } catch (e) {} }
+}
+
+function teardown() {
+  if (frame) {
+    try { const w = frame.contentWindow; if (w && w.speechSynthesis) w.speechSynthesis.cancel(); } catch (e) {}
+    frame.remove();
+    frame = null;
+  }
+  current = null;
+  currentFix = null;
+}
+
+function closeApp(fromHash) {
+  const id = current;
+  teardown();
+  scrim.hidden = true;
+  shell.hidden = true;
+  menu.hidden = false;
+  document.title = BASE_TITLE;
+  SEND.status();
+  renderPlan();
+  refreshPlan();
+  if (!fromHash && location.hash) {
+    try { history.replaceState(null, '', location.pathname + location.search); }
+    catch (e) { try { location.hash = ''; } catch (e2) {} }
+  }
+  const card = id && (document.querySelector('#planBox .app[data-plan-app="' + id + '"]') || cardOf(id));
+  if (card && card.offsetParent) { try { card.focus({ preventScroll: true }); card.scrollIntoView({ block: 'nearest' }); } catch (e) {} }
+}
+
+/* 「メニュー」ボタン：解いている途中なら確認してから戻る */
+function requestLeave() {
+  if (!current) return;
+  let busy = true;
+  try { busy = APPS[current].busy(frame.contentDocument); } catch (e) {}
+  if (!busy) { closeApp(false); return; }
+  try { if (APPS[current].pause) APPS[current].pause(frame.contentDocument); } catch (e) {}
+  scrim.hidden = false;
+  $('stayBtn').focus();
+}
+function stay() {
+  scrim.hidden = true;
+  try { frame.contentWindow.focus(); } catch (e) {}
+}
+
+document.querySelectorAll('.app[data-app]').forEach(b => b.addEventListener('click', () => openApp(b.dataset.app)));
+
+$('pickLogo').src = LOGO;
+$('rAdd').addEventListener('click', () => {
+  const id = $('rId').value.trim(), name = $('rName').value.trim();
+  if (!SEND.okId(id)) { $('rMsg').textContent = '利用者番号は英数字（20文字まで）で入れてください。'; return; }
+  SEND.addRoster(id, name);
+  $('rId').value = ''; $('rName').value = '';
+  $('rMsg').textContent = id + ' を登録しました。';
+  renderPicker();
+});
+$('pickClose').addEventListener('click', () => { $('picker').hidden = true; pendingApp = null; SEND.status(); renderPlan(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !current) refreshPlan(); });
+setInterval(() => { if (!current && SEND.shared) renderPlan(); }, 60000);   // タブレット：30分たって選び直しになったら全部の練習にもどす
+$('me').addEventListener('click', e => { if (e.target.closest('#changeWho')) showPicker(null); });
+
+/* 練習の中から届いた成績（1セット分）を受け取る */
+window.addEventListener('message', e => {
+  if (!frame || e.source !== frame.contentWindow) return;
+  const d = e.data;
+  if (d && d.gg === 'menu') { if (current) closeApp(false); return; }
+  if (d && d.gg === 'audio') {
+    /* 練習からは録った声がいつも届く。職員へ送るのは「声も送る」の人だけ。
+       端末が覚えている設定が古いかもしれないので、オフなら受け取り先に読み直してから決める */
+    const id = SEND.who();
+    if (!current || !id || !SEND.url || !(d.blob instanceof Blob) || !d.blob.size || d.blob.size > 15 * 1024 * 1024) return;
+    const mime = String(d.mime || d.blob.type || 'audio/webm').split(';')[0].slice(0, 40);
+    const rec = { uid: Date.now().toString(36) + Math.random().toString(36).slice(2, 8), user: id, ts: new Date().toISOString(),
+      app: current, appName: APPS[current].title, label: String(d.label || '').slice(0, 80), mime, dur: Math.round((Number(d.dur) || 0) * 10) / 10, blob: d.blob };
+    if (voiceOn(id)) AUD.add(rec);
+    else PLAN.load(id).then(() => { if (voiceOn(id)) AUD.add(rec); });
+    return;
+  }
+  if (!d || d.gg !== 'result' || !current) return;
+  /* 宿題：決められた練習を1回終えたら、この端末でも すぐ数える */
+  try { const p = activePlan(), wid = SEND.who(); if (p && wid && currentFix && p.items.some(x => sameFix(x, currentFix))) HW.add(wid, p, currentFix); } catch (e) {}
+  const str = (v, n) => String(v == null ? '' : v).slice(0, n);
+  SEND.add({
+    app: current, appName: APPS[current].title,
+    typeName: str(d.typeName, 40), levelName: str(d.levelName, 60),
+    score: Number(d.score) || 0, max: Number(d.max) || 0,
+    marks: str(d.marks, 60),
+    items: (Array.isArray(d.items) ? d.items : []).map(x => str(x, 80)).join('／').slice(0, 1800),
+    sec: Number(d.sec) || 0,
+  });
+});
+$('backBtn').addEventListener('click', requestLeave);
+$('leaveBtn').addEventListener('click', () => closeApp(false));
+$('stayBtn').addEventListener('click', stay);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !scrim.hidden) stay(); });
+
+/* ブラウザの「戻る」やリンク（…#fusen など）にも対応 */
+window.addEventListener('hashchange', () => {
+  const id = location.hash.slice(1);
+  if (APPS[id]) { if (id !== current) openApp(id, false); }
+  else if (current) closeApp(true);
+});
+
+if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => ({ app: current }));
+
+function start(data) {
+  menu.classList.add('sprout');
+  setTimeout(() => menu.classList.remove('sprout'), 2500);   // 芽吹く動きは最初の1回だけ
+  SEND.status();
+  SEND.flush();
+  AUD.flush();
+  renderPlan();
+  if (SEND.who()) PLAN.load(SEND.who()).then(() => { if (!current) renderPlan(); });
+  if (SEND.shared && !SEND.who() && !APPS[location.hash.slice(1)]) showPicker(null);
+  const id = location.hash.slice(1);
+  if (APPS[id]) openApp(id, false);
+  else if (data && APPS[data.app]) openApp(data.app);
+}
+function boot() {
+  const hot = window.claude && window.claude.hot;
+  if (hot && hot.ready) hot.ready(start); else start((hot && hot.data) || {});
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+</script>
+
+<!-- =====================================================================
+  ここから下は、各練習アプリのHTMLそのものです（1つのアプリ＝1つの <script type="text/plain">）。
+  ・中身を書きかえると、そのアプリが変わります（問題の追加・修正など）。
+  ・ページが壊れないよう、中の「</script」は「<\/script」、コメントの始まりは「<\!--」の形で保存してあります（開くときに元に戻ります）。
+  ・風船ことば・説明ことばは、元のアプリの最後に色と文字をそろえる <style id="gg-theme"> を足しています。
+  ・音を選ぶ・助詞・動詞・名詞・50音・並べ替え（初級・上級）・仲間えらび・絵合わせ・セリフは共通デザイン（同じしくみ）で作られています。
+    問題は各アプリの最初のほう（DATA／DIFFS／EASY・NORMAL・HARD／MS など）にあります。
+  data-app：eawase＝絵合わせ／onin＝音を選ぶ練習／gojuon＝50音ならべ／narabe＝ことば並べ替え（初級）／narabe2＝ことば並べ替え（上級）／nakama＝仲間えらび／
+            fusen＝風船ことば／setsumei＝説明ことば／meishi＝名詞の練習／joshi＝助詞の練習／doushi＝動詞の練習／doushi2＝動詞の練習（上級）／serifu＝セリフをえらびましょう／
+            bun＝文をつくろう（録音）／goso＝語想起タイムアタック（録音）／oto2＝音を選ぶ練習（上級）／gojuonrec＝五十音れんしゅう（録音）／serifu2＝セリフをいいましょう（録音）／aisatsu＝挨拶語のトレーニング（録音。絵は images フォルダ）
+====================================================================== -->
+@@APP_SOURCES@@
+</body>
+</html>

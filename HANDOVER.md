@@ -1,0 +1,164 @@
+# ことばの練習　引き継ぎ書（Claude 用）
+
+グリーン・グリーン（ことばのリハビリデイサービス）の失語症の練習アプリ「ことばの練習」と、職員用の「成績一覧」ページの元ファイル一式です。
+この引き継ぎ書を最初に全部読んでから作業してください。担当の職員は松本さんです。
+
+- 利用者のアプリ：https://greengreen-training.github.io/kotoba-renshu/
+- 成績一覧（職員用）：https://greengreen-training.github.io/kotoba-renshu/seiseki.html
+- GitHub：`greengreen-training/kotoba-renshu`
+  - `main` 枝：公開しているもの（index.html・seiseki.html・images/）。GitHub Pages が main の一番上をそのまま公開します。
+  - `source` 枝：この元ファイル一式（組み立てる前のもの）。
+
+> 受け取りスクリプトの URL や Apps Script の場所は、だれでも見られるこの場所には書いていません。松本さんから聞いてください。
+
+---
+
+## 1. 松本さんとの約束ごと（いちばん大事）
+
+1. **説明・途中経過・手順は日本語だけ**で伝える。英語の表示を混ぜない（2回「日本語」と言われています）。画面のボタン名も日本語で書く。
+2. 利用者さんは失語症の方。画面の字は大きく、**表記は表記妥当性に従う**（ふだん漢字で書く語は漢字、カタカナ語はカタカナ）。漢字には読みがなを付ける。元ファイルでは `漢字[かな]` と書くと、`R()` が読みがなに変える。
+3. **利用者の名前は送らない。** スプレッドシートに送るのは利用者番号と成績だけ。名前は成績一覧ページの「名前のメモ」（その端末のブラウザだけ）。
+4. **パスワードは受け取りスクリプトの中だけ。** Claude はパスワードを入力欄に打ちこまない（松本さんに入れてもらう）。
+5. 録音（声）は、成績一覧ページで「声も送る」にした人のものだけを送る。
+6. 問題は、**答えが1つに決まるものだけ**にする。ほかの選択肢を入れても文が成り立つものは入れない（`newapps/apps/doushi2.js` の先頭の注意も見る）。
+7. **アドレス（URL）は変えない。** 利用者さんに配った QR がそのまま使えるようにする。GitHub のユーザー名・置き場所の名前は変えない。
+8. 直したら、テストを通してから公開する。公開したら、公開中のページで確かめてから、日本語で短く報告する。
+
+これまでに松本さんが決めたこと（もとに戻さない）：
+- 文をつくろう：「普通」＝なにを→いつ→どこで→つなげて と順に聞く。「難しい」＝1つの長い文で言う。お題は場所・時間・人やことの3つのパターン。
+- 語想起タイムアタック：60秒・録音だけ（＋1の数えるボタンは要らない）。
+- 声の送信についての案内文は、画面に出さない。
+- 風船ことば：〇×と 5・4・3・2・1 は大きく出す。
+- 難しさは「職員が設定するときの目安」。利用者ごとに、問題数・選択肢の数・お題・宿題の回数と期限を決められる。
+
+---
+
+## 2. しくみ
+
+```
+利用者の端末（アプリ）──成績・録音を送る──▶ 受け取りスクリプト（Google Apps Script・施設の Google アカウント）
+      ▲                                         ├ スプレッドシート：「記録」「メニュー」「録音」シート
+      │ ?menu=番号 でメニュー・宿題を読む          └ Google ドライブ：「ことばの練習 録音」フォルダ（番号ごと）
+      │
+成績一覧ページ（職員）──パスワード付きで読む・メニューを保存する──▶ 受け取りスクリプト
+```
+
+- アプリは `?u=番号&s=受け取りスクリプトのID` 付きのリンク（QR）で開くと、その人の端末になる。`?t=1` は施設のタブレット用（練習する人を選ぶ）。
+- 記録が送れないときは端末にためて、あとで送る（同じ記録は2回書かない）。
+
+---
+
+## 3. フォルダの中身
+
+| 場所 | 中身 |
+|---|---|
+| `newapps/common.js` `common.css` `shell.html` | 選ぶ形の練習の共通のしくみ（問題を出す・〇×・成績を送る） |
+| `newapps/rec.js` | 録音のしくみ |
+| `newapps/apps/*.js` | 練習ごとのデータと作り（絵合わせ・50音ならべ・並べ替え・仲間えらび・名詞・動詞上級・文をつくろう・セリフ2つ など） |
+| `newapps/ports/*.js` | ほかから移した練習（音を選ぶ練習・上級・助詞・動詞） |
+| `newapps/standalone/*.html` | 1ページでできた練習（五十音の録音・語想起） |
+| `src/*.html` | もとから別に作ってあった練習（風船ことば・説明ことば・挨拶語 ほか）。組み立てのときに手を加える |
+| `src/aisatsu_images/` | 挨拶語の絵（公開では `images/`） |
+| `work/template.html` | アプリ全体（メニュー・個人別メニュー・宿題・成績と録音の送信） |
+| `work/seiseki_template.html` | 成績一覧ページ（成績・カレンダー・回数ごと・問題ごとの変わり方・練習メニュー・ふりかえり・QR・設定） |
+| `work/deliver/成績受け取りスクリプト.gs` | 受け取りスクリプト（成績一覧ページの［スクリプトをコピー］にも入る） |
+| `scripts/build_*.py` `build.py` | 組み立て |
+| `scripts/extract_topics.js` | 宿題の「お題」の一覧を各練習のデータから作る（アプリと成績一覧の両方に入る） |
+| `scripts/gas_server.js` | 受け取りスクリプトを、Google の代わりのにせものの上で動かすテスト用サーバー |
+| `scripts/validate.py` `test_*.py` | テスト |
+| `scripts/*.sh` | 組み立て・テスト・公開をまとめて行う |
+| `tools/netlify_hikkoshi/` | 前の公開先（Netlify）から新しいアドレスへ自動で移すページ（前の QR 用） |
+| `assets/logo_b64.txt` | 施設のロゴ（使ってよいと許可をもらっています） |
+| `vendor/qrcode/` | QR コードを作るしくみ（MIT ライセンス） |
+
+---
+
+## 4. 組み立て・テスト・公開
+
+必要なもの：python3・node・Playwright（`pip install playwright` と `playwright install chromium`。Chrome があれば `CHROME=Chrome の場所` でも可）。
+
+```bash
+# 元ファイルを取り出す
+git clone --branch source https://github.com/greengreen-training/kotoba-renshu kotoba-src
+# 公開用（main）も別のフォルダに取り出す
+git clone --depth 1 --branch main https://github.com/greengreen-training/kotoba-renshu kotoba-pages
+
+cd kotoba-src
+bash scripts/build_all.sh      # 組み立て → work/deliver/netlify/ にできる
+bash scripts/test_all.sh       # 全部のテスト（「全部 通りました」と出ること）
+bash scripts/publish.sh ../kotoba-pages "変更の説明"   # main に入れて送る（1〜2分で公開に反映）
+```
+
+- 元ファイルを直したら、`source` 枝にも入れて送る（`git add -A; git commit; git push origin source`）。
+- 公開したら、公開中のページを開いて確かめる（新しい練習のカードがあるか、など）。
+- Claude の作業場所では、GitHub をつなぐ（claude.ai/code で greengreen-training をつなぐ）と、`greengreen-training/kotoba-renshu` に書きこみできる。
+
+---
+
+## 5. 練習の一覧
+
+| ID | 名前 | 元ファイル | 種類 | お題を選べる | 録音 |
+|---|---|---|---|---|---|
+| eawase | 絵合わせ | apps/eawase.js | ことばと絵・同じ絵・形・色・まぜる | | |
+| onin | 音を選ぶ練習 | ports/oto.js | 一文字・全部 | | |
+| oto2 | 音を選ぶ練習（上級） | ports/oto2.js | 空白2つ | | |
+| gojuon | 50音ならべ | apps/gojuon.js | | | |
+| gojuonrec | 五十音れんしゅう（録音） | standalone/gojuonrec.html | | 行 | ○ |
+| narabe / narabe2 | ことば並べ替え（初級／上級） | apps/narabe*.js | | | |
+| nakama | 仲間えらび | apps/nakama.js | | 仲間 | |
+| fusen | 風船ことば | src/fusen.html | | | |
+| setsumei | 説明ことば | src/setsumei.html | | | |
+| goso | 語想起タイムアタック | standalone/goso.html | カテゴリ・語頭音 | お題 | ○ |
+| meishi | 名詞の練習 | apps/meishi.js | | | |
+| joshi | 助詞の練習 | ports/joshi.js | | | |
+| doushi | 動詞の練習 | ports/doushi.js | | | |
+| doushi2 | 動詞の練習（上級） | apps/doushi2.js | 使い分け・かたち・まぜる | | |
+| bun | 文をつくろう | apps/bun.js・bun_topics.js | 場所・時間・人やこと・まぜる | 話題 | ○ |
+| serifu | セリフをえらびましょう | apps/serifu.js | | 場面 | |
+| serifu2 | セリフをいいましょう | apps/serifu2.js | | 場面 | ○ |
+| aisatsu | 挨拶語のトレーニング | src/aisatsu.html | | 場面 | ○ |
+
+難しさは どれも「簡単・普通・難しい」（五十音の録音・挨拶語は なし）。1回10問がふつう。
+
+### 新しい練習を足すとき（ぬけやすいので順に）
+1. `newapps/apps/〇〇.js` を作る（`APP` に make・render・reveal・itemLabel など。`doushi2.js` が見本）。人ごとの設定は `SET_SIZE`（問題数）・`optN(いつもの数, 最小, 最大)`（選択肢の数）・`topicPool()`（お題）を使う。
+2. `scripts/build_apps.py` の `APPS` に足す。
+3. `scripts/build.py` の `order` と `labels` に足す。
+4. `work/template.html`：メニューのカード、`APPS`（名前と「練習中か」）、種類があれば `TYPENAME`、職員向けの説明の ID 一覧。
+5. `work/seiseki_template.html`：`CATALOG`（問題数・選択肢の範囲・種類・お題）、`STAGE`（カレンダーの色分け）、短い名前、ふりかえり用の読みがな付きの名前 `FBNAME`。
+6. お題を選べるなら `scripts/extract_topics.js` に足す。
+7. `scripts/validate.py`（データの点検）・`test_apps.py`・`test_suite.py` に足す。
+8. 組み立て → テスト → 公開 → 公開中のページで確かめる。
+
+---
+
+## 6. 個人別メニュー・宿題のデータ
+
+- 1人ぶんのメニュー：`items`（練習のならび）・`due`（宿題の期限 `YYYY-MM-DD`）・`extra`（これから増える設定）・`at`（決めた日時）・`voice`（声を送るか）。
+- 1つの練習：`{ app, lv, type, topics:[…], times, n, opts }`
+  - `lv` 難しさ（easy・normal・hard・空＝本人がえらぶ）、`type` 種類、`topics` お題、`times` 宿題の回数、`n` 問題数、`opts` 選択肢の数（並べ替えは「まぜる字」の数で0もある）。
+- アプリは `window.GG_FIX` で練習にわたす。やった回数は、受け取りスクリプトが「決めた日時から何回やったか」を数えて返し、アプリは端末でも数える（多いほうを出す）。
+
+---
+
+## 7. 受け取りスクリプト（Google Apps Script）
+
+- 元：`work/deliver/成績受け取りスクリプト.gs`。成績一覧ページの「設定・はじめての準備」の［スクリプトをコピー］に、そのまま入る。
+- 読み書き：
+  - POST `records`（成績）・`action:'audio'`（録音）・`action:'setmenu'|'setvoice'|'setextra'`（パスワードが要る）
+  - GET `?menu=番号`（その人のメニュー・期限・やった回数。パスワードは要らない。点数は返さない）・`?key=パスワード`（全部の成績・メニュー・録音）・`?key=…&audio=ファイルID`
+- **知らない設定もそのまま保存して返す**（英字の名前で、数・はい／いいえ・短い文字・短い一覧だけ）。アプリや成績一覧に新しい設定を足すときは、たいてい**貼り直しは要らない**。
+- 貼り直しが要るのは：パスワードを変えるとき、シートを増やすとき、数え方を変えるとき など。そのときは松本さんに前もって伝える。
+- 貼り直しの手順と注意（過去に起きたこと）：
+  - 全部を消してから貼る → `STAFF_PASSWORD` の行だけ書きかえる → 保存 → ［デプロイ］→「デプロイを管理」→ 鉛筆 →「新バージョン」→［デプロイ］。
+  - **「新しいデプロイ」は使わない**（URL が変わり、利用者さんの成績が届かなくなる）。
+  - 以前、パスワードを書きこむときに「置きかえ」で別の行の同じ文字まで変わり、どのパスワードも受け付けなくなった。いまはその行を置きかえで変わらない書き方にしてある。
+  - 反映には少し時間がかかる。`?menu=番号` の答えに `"v":3` があれば、新しい版。
+
+---
+
+## 8. 経緯（短く）
+
+- 〜2026-11-24：各練習を1つのアプリにまとめた。個人別メニュー、成績一覧、録音の送信を作った。
+- 2026-11-26：公開先を Netlify から GitHub Pages に移した。古い Netlify のアドレスには `tools/netlify_hikkoshi` を置くと、前の QR から自動で移る（番号も引きつぐ）。
+- 2026-11-26〜27：宿題（お題・回数・期限）、人ごとの問題数・選択肢、まとめて設定、成績の「回数ごと」「問題ごとの変わり方」、ふりかえり資料（週・月・印刷）、動詞の練習（上級）、名前のメモをどの画面からでも付けられるようにした。受け取りスクリプトを、この先はほとんど貼り直さなくてよい形にした。

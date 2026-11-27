@@ -1,0 +1,36 @@
+/* ===== セリフを いいましょう：録音・ヒント・〇×をつける ===== */
+.choices.say{display:grid;grid-template-columns:1fr;gap:12px;max-width:680px;margin-left:auto;margin-right:auto}
+.say-row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.rec-btn,.play-btn,.cue-btn,.j-btn{min-height:72px;border-radius:999px;padding:0 26px;font-weight:900;font-size:22px;display:inline-flex;align-items:center;justify-content:center;gap:10px;line-height:1.6}
+.rec-btn{background:var(--ng);color:#fff;border:0;box-shadow:0 5px 0 #8f2416;min-width:220px}
+.rec-btn .ic{font-size:26px}
+.say .lb{white-space:nowrap}
+.say .ic,.say .emo{flex:none}
+.rec-btn rt,.play-btn rt,.j-btn rt{color:#fff}
+.rec-btn.on{background:#8f2416;box-shadow:0 0 0 0 rgba(192,57,43,.5);animation:recPulse 1.2s ease-in-out infinite}
+@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.5)}50%{box-shadow:0 0 0 16px rgba(192,57,43,0)}}
+.play-btn{background:var(--green);color:#fff;border:0;box-shadow:0 5px 0 #1b3d2d}
+.rec-btn:active:not(:disabled),.play-btn:active:not(:disabled),.j-btn:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.rec-state{text-align:center;font-weight:700;color:var(--muted);font-size:17px;min-height:1.6em}
+.rec-state b{font-size:22px;color:var(--ng)}
+.cue-btn{background:var(--card);border:3px solid var(--line);color:var(--green);min-height:62px;font-size:20px}
+.cue-btn:disabled{opacity:.45}
+.judge{background:var(--soft);border-radius:18px;padding:14px;display:grid;gap:10px}
+.j-q{text-align:center;font-family:var(--font-display);font-weight:900;font-size:24px;line-height:1.8}
+.j-q small{display:block;font-family:var(--font-body);font-size:15px;font-weight:700;color:var(--muted);line-height:1.8}
+.j-btn{min-width:200px;border:0;color:#fff;font-size:24px}
+.j-btn b{font-size:34px;line-height:1}
+.j-btn.ok{background:var(--ok);box-shadow:0 5px 0 #1d5a37}
+.j-btn.ng{background:#7d6b66;box-shadow:0 5px 0 #4e403c}
+.bub-r.hinted{background:#fff7e6;border-color:#e39a2d;color:#a8620a}
+.bub-r.hinted::after{background:#fff7e6;border-color:#e39a2d}
+.bub-t.hint{font-size:.95em}
+@media (prefers-reduced-motion:reduce){.rec-btn.on{animation:none;outline:6px solid rgba(192,57,43,.4)}}
+@media (max-width:560px){
+  .say-row{gap:10px}
+  .rec-btn,.play-btn,.j-btn{min-height:64px;font-size:18px;padding:0 12px;gap:6px;min-width:0;flex:1 1 40%}
+  .rec-btn .ic{font-size:20px}
+  .j-btn b{font-size:26px}
+  .cue-btn{min-height:56px;font-size:18px;flex:1 1 40%}
+  .j-q{font-size:20px}
+}

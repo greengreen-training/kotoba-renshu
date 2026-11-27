@@ -1,0 +1,5 @@
+.choices.tiles{grid-template-columns:repeat(auto-fill,minmax(84px,100px));justify-content:center}
+.ch.kana{font-size:42px}
+.ch.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+@media (max-width:560px){.choices.tiles{grid-template-columns:repeat(auto-fill,minmax(66px,82px))}.ch.kana{font-size:34px}}

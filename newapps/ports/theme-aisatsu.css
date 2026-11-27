@@ -1,0 +1,50 @@
+/* ===== グリーン・グリーン ことばの練習：ほかの練習と色・文字をそろえる（挨拶語トレーニング） ===== */
+:root{
+  --bg-gradient:linear-gradient(180deg,#f3f7f0 0%,#eaf2e4 100%);
+  --text-color:#1d2d25; --border-color:#2d5b45;
+  --primary-color:#2d5b45; --primary-hover:#1f4433;
+  --success-color:#3f8f5a; --success-hover:#2e7a48;
+  --action-color:#f2c94c; --action-hover:#e0b52f;
+  --danger-color:#c0392b; --danger-hover:#a53125;
+  --font-family:"Zen Maru Gothic","BIZ UDPGothic","Hiragino Maru Gothic ProN",sans-serif;
+}
+html,body{background:var(--bg-gradient)!important}
+.game-container{border-width:3px;border-color:#d3e3d0;box-shadow:0 6px 0 #d3e3d0;border-radius:24px;background:#fff}
+.btn{border-width:3px;box-shadow:0 5px 0 #1b3d2d}
+.btn:hover,.btn:focus-visible{box-shadow:0 8px 0 #1b3d2d}
+.btn:disabled{box-shadow:0 3px 0 #b9c2bc!important}
+.btn-secondary{background-color:#5f7067}
+.btn-action{color:#1d2d25}
+#stage-select-screen>div:nth-of-type(2){background:linear-gradient(135deg,#eef6e8 0%,#e1eed6 100%)!important;border-color:#2d5b45!important;box-shadow:0 4px 0 #2d5b45!important}
+#stage-select-screen h1,#char-select-screen h1{color:#2d5b45!important}
+#stage-select-screen h2{border-left-color:#85b348!important}
+.frame-dots .dot.active{background:#2d5b45}
+.frame-dots .dot.question.active{background:#85b348}
+/* 開発用の表示（読み上げのしくみの名前）は出さない */
+#voicevox-badge{display:none!important}
+#char-select-screen{background:linear-gradient(180deg,#f6faf3 0%,#e9f2e2 100%)!important}
+.game-header{gap:8px;border-bottom-color:#d3e3d0}
+.game-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
+.step-badge{white-space:nowrap;flex:none}
+.stage-view,.control-area,.game-text-area{box-sizing:border-box}
+/* スマホ：文字があふれないように */
+@media (max-width:520px){
+  .game-container{width:97vw;padding:10px 10px!important}
+  #stage-select-screen h1{font-size:clamp(21px,6.4vw,30px)!important;line-height:1.35!important}
+  #stage-select-screen h1 ruby rt{font-size:.45em}
+  #stage-select-screen p{font-size:14px!important}
+  #btn-random-start{font-size:21px!important;padding:10px 16px!important}
+  .stage-grid{gap:10px;padding:2px}
+  .stage-card{flex-direction:column;justify-content:center;text-align:center;gap:6px;padding:10px 4px;font-size:15.5px;line-height:1.35;min-height:102px;word-break:keep-all;overflow-wrap:anywhere}
+  .stage-text-group{align-items:center}
+  .stage-emoji{width:38px;height:38px;font-size:22px;border-radius:10px}
+  .game-header{gap:6px;padding-bottom:6px}
+  .game-title{font-size:19px}
+  .frame-dots{flex:none;gap:4px}
+  .frame-dots .dot{width:11px;height:11px;border-width:2.5px}
+  .step-badge{font-size:13px!important;padding:3px 8px!important}
+  .prompt-overlay{font-size:clamp(19px,6.2vw,26px);padding:9px 18px;white-space:nowrap;bottom:10px}
+  .praise-banner{font-size:19px!important;padding:7px 16px!important;max-width:94%;box-shadow:3px 3px 0 #1b3d2d!important}
+  .recording-status{font-size:17px!important}
+  .char-card .char-name{font-size:15px}
+}

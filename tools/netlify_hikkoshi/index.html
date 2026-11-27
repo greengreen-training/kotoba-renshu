@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>グリーン・グリーン ことばの練習</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f3f7f0;color:#1f3a1f;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Meiryo",sans-serif;text-align:center}
+  .box{padding:32px 24px;max-width:460px}
+  h1{font-size:26px;margin:0 0 16px}
+  p{font-size:20px;line-height:1.7;margin:0 0 20px}
+  a{display:inline-block;background:#2e7d32;color:#fff;text-decoration:none;font-size:22px;padding:14px 28px;border-radius:14px}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>ことばの練習</h1>
+  <p>アプリの場所が かわりました。<br>あたらしい 場所へ うつっています…</p>
+  <a id="go" href="https://greengreen-training.github.io/kotoba-renshu/">ここを おす</a>
+</div>
+<script>
+(function () {
+  var NEW = 'https://greengreen-training.github.io/kotoba-renshu/';
+  function get(k) { try { var v = localStorage.getItem(k); return v == null ? null : JSON.parse(v); } catch (e) { return null; } }
+  var okId = function (v) { return /^[A-Za-z0-9_-]{1,20}$/.test(v || ''); };
+  var okDest = function (v) { return /^[A-Za-z0-9_-]{20,140}$/.test(v || ''); };
+  var q = new URLSearchParams(location.search);
+  // この端末に残っている番号と受け取り先を、あたらしい場所へ引きつぐ（名前は引きつがない）
+  if (!q.get('u') && !q.get('t')) {
+    if (get('gg.shared') === true) q.set('t', '1');
+    else if (okId(get('gg.user'))) q.set('u', get('gg.user'));
+  }
+  if (!q.get('s') && okDest(get('gg.dest'))) q.set('s', get('gg.dest'));
+  var qs = q.toString();
+  var target = NEW + (qs ? '?' + qs : '') + (location.hash || '');
+  document.getElementById('go').href = target;
+  var moved = false;
+  function go() { if (moved) return; moved = true; location.replace(target); }
+  // まだ送れていない記録があれば、先に送る（4秒まで待つ）
+  var queue = get('gg.queue') || [], dest = get('gg.dest');
+  if (queue.length && okDest(dest)) {
+    setTimeout(go, 4000);
+    fetch('https://script.google.com/macros/s/' + dest + '/exec', {
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ records: queue.slice(0, 100) })
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j && j.ok) {
+        var done = {}; (j.saved || []).forEach(function (u) { done[u] = 1; });
+        try { localStorage.setItem('gg.queue', JSON.stringify(queue.filter(function (r) { return !done[r.uid]; }))); } catch (e) {}
+      }
+    }).catch(function () {}).then(go);
+  } else {
+    setTimeout(go, 600);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2e8b57">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="グリーン・グリーン">
+<title>ことばのリハビリデイサービス グリーン・グリーン｜音韻選択課題</title>
+<style>
+  :root{
+    --green:#2e8b57; --green-dark:#1f6e42; --green-light:#e8f5ec;
+    --cream:#fffdf5; --ink:#333333; --orange:#e67e22; --red:#c0392b;
+    --blue:#2f6fb3; --grey:#c8c8c8;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html{ -webkit-text-size-adjust:100%; }
+  html,body{ height:100%; }
+  body{
+    font-family:"BIZ UDGothic","UD デジタル 教科書体 N-R","Hiragino Maru Gothic ProN","メイリオ",Meiryo,sans-serif;
+    background:var(--cream); color:var(--ink);
+    display:flex; justify-content:center;
+    font-size:20px; line-height:1.5;
+  }
+  #app{ width:100%; max-width:760px; min-height:100%; padding:16px; padding-left:calc(16px + env(safe-area-inset-left)); padding-right:calc(16px + env(safe-area-inset-right)); padding-bottom:calc(16px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; }
+  .screen{ display:none; flex:1; flex-direction:column; }
+  .screen.active{ display:flex; }
+  button{ font-family:inherit; cursor:pointer; border:none; touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+  button:focus-visible{ outline:4px solid var(--blue); outline-offset:2px; }
+
+  /* ===== タイトル画面 ===== */
+  #title-screen{ justify-content:center; align-items:center; text-align:center; gap:12px; }
+  .title-row{ display:flex; align-items:center; justify-content:center; gap:10px; }
+  .title-row .logo{ width:62px; height:62px; flex-shrink:0; mix-blend-mode:multiply; }
+  @media (max-width:560px){ .title-row .logo{ width:46px; height:46px; } }
+  .title-small{ font-size:22px; color:var(--green-dark); font-weight:bold; letter-spacing:2px; }
+  .title-big{
+    font-size:42px; font-weight:bold; color:var(--green);
+    letter-spacing:2px; line-height:1.3;
+    text-shadow:2px 2px 0 #d5ecdc;
+  }
+  .title-sub{ font-size:26px; color:var(--ink); background:var(--green-light);
+    border-radius:14px; padding:6px 24px; }
+  .section-label{ font-size:21px; color:#555; font-weight:bold; margin-top:8px; }
+  .mode-btns{ display:flex; gap:12px; width:100%; max-width:520px; }
+  .mode-btn{
+    flex:1; background:#fff; border:4px solid #bbb; border-radius:18px;
+    padding:12px 6px; display:flex; flex-direction:column; align-items:center; gap:4px;
+    color:#666;
+  }
+  .mode-btn .m-name{ font-size:23px; font-weight:bold; }
+  .mode-btn.selected{
+    border-color:var(--green); background:var(--green-light); color:var(--green-dark);
+    box-shadow:0 0 0 3px #bfe3cc inset;
+  }
+  .mode-btn.selected .m-name::before{ content:"✓ "; color:var(--green); }
+  .level-btns{ display:flex; flex-direction:column; gap:14px; width:100%; max-width:430px; }
+  .level-btn{
+    font-size:33px; font-weight:bold; color:#fff;
+    border-radius:20px; padding:16px 10px; min-height:80px;
+    display:flex; justify-content:center; align-items:center; gap:14px;
+    box-shadow:0 5px 0 rgba(0,0,0,.22);
+    transition:transform .08s;
+  }
+  .level-btn:active{ transform:translateY(4px); box-shadow:0 1px 0 rgba(0,0,0,.22); }
+  .level-btn .stars{ font-size:25px; }
+  #btn-easy{ background:var(--green); }
+  #btn-normal{ background:var(--orange); }
+  #btn-hard{ background:var(--blue); }
+
+  /* ===== 課題画面 ===== */
+  .quiz-header{ display:flex; align-items:center; gap:14px; margin-bottom:8px; }
+  #quit-btn{
+    font-size:20px; font-weight:bold; color:#666; background:#efefef;
+    border:2px solid #bbb; border-radius:12px; padding:8px 16px; white-space:nowrap;
+  }
+  #progress-num{ font-size:24px; font-weight:bold; color:var(--green-dark); white-space:nowrap; }
+  #progress-bar{ flex:1; height:18px; background:#e4e4de; border-radius:9px; overflow:hidden; }
+  #progress-fill{ height:100%; width:0%; background:var(--green); border-radius:9px; transition:width .3s; }
+
+  .card{
+    background:#fff; border:3px solid #d8e8dd; border-radius:22px;
+    padding:14px 10px 10px; text-align:center; position:relative;
+    box-shadow:0 3px 10px rgba(0,0,0,.07);
+  }
+  .stimulus{ display:flex; justify-content:center; align-items:center; gap:24px; flex-wrap:wrap; }
+  .illust{ width:165px; height:165px; display:flex; justify-content:center; align-items:center; }
+  .illust .emoji{ font-size:115px; line-height:1; }
+  .illust svg,.illust img{ width:155px; height:155px; border-radius:16px; }
+  .kanji{ font-size:88px; font-weight:bold; line-height:1.1; }
+  .kanji.long{ font-size:60px; }
+
+  .mora-row{ display:flex; justify-content:center; gap:12px; margin:16px 0 6px; }
+  .mora-row.many{ gap:7px; }
+  .mora-row.many .mora{ width:64px; height:64px; font-size:38px; }
+  .mora-row.many .mora.blank{ font-size:32px; }
+  .mora-row.many .mora.blank.filled,
+  .mora-row.many .mora.blank.reveal{ font-size:38px; }
+  .mora{
+    width:82px; height:82px; border-radius:14px;
+    display:flex; justify-content:center; align-items:center;
+    font-size:50px; font-weight:bold;
+    background:var(--green-light); border:3px solid #bcd9c6;
+  }
+  .mora.blank{
+    background:#fafaf4; border:4px dashed #c9c9bd; color:#c9c9bd; font-size:42px;
+  }
+  .mora.blank.current{
+    background:#fff8e6; border-color:var(--orange); color:var(--orange);
+    animation:pulse 1.2s infinite;
+  }
+  @keyframes pulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.07);} }
+  .mora.blank.filled{
+    background:#e6f7ea; border:4px solid var(--green); color:var(--green-dark);
+    font-size:50px; animation:pop .35s;
+  }
+  .mora.blank.reveal{
+    background:#eef3fb; border:4px solid var(--blue); color:var(--blue);
+    font-size:50px; animation:pop .35s;
+  }
+  @keyframes pop{ 0%{transform:scale(.4);} 70%{transform:scale(1.15);} 100%{transform:scale(1);} }
+
+  .choices{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px;
+  }
+  .choice{
+    font-size:50px; font-weight:bold; color:var(--ink);
+    background:#fff; border:4px solid #999; border-radius:18px;
+    min-height:92px; box-shadow:0 4px 0 rgba(0,0,0,.15);
+    transition:transform .07s;
+  }
+  .choice:active{ transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.15); }
+  .choice.wrong{ background:#fdecea; color:var(--red); border-color:var(--red); box-shadow:none; cursor:default; }
+  .choice.used{ background:#eeeeee; color:#bbb; border-color:#ccc; box-shadow:none; cursor:default; }
+  .choice.right{ background:var(--green); color:#fff; border-color:var(--green-dark); }
+  .choice:disabled{ cursor:default; }
+
+  #judge{
+    position:absolute; inset:0; display:none; justify-content:center; align-items:center;
+    pointer-events:none; z-index:5;
+  }
+  #judge.show{ display:flex; }
+  #judge span{ font-size:180px; font-weight:bold; animation:pop .4s; }
+  #judge .maru{ color:rgba(226,60,60,.85); }
+  #judge .batu{ color:rgba(70,90,200,.75); }
+  #judge .sankaku{ color:rgba(230,126,34,.9); }
+
+  /* ===== 結果画面 ===== */
+  #result-screen{ justify-content:center; align-items:center; text-align:center; gap:18px; }
+  #result-stamp{ font-size:105px; }
+  #result-msg{ font-size:38px; font-weight:bold; color:var(--green-dark); }
+  #result-score{ font-size:32px; background:#fff; border:3px solid #d8e8dd;
+    border-radius:18px; padding:14px 34px; }
+  #result-score b{ font-size:54px; color:var(--red); }
+  .result-btns{ display:flex; flex-direction:column; gap:14px; width:100%; max-width:400px; margin-top:8px; }
+  .result-btn{
+    font-size:29px; font-weight:bold; border-radius:18px; padding:17px; color:#fff;
+    box-shadow:0 5px 0 rgba(0,0,0,.22);
+  }
+  .result-btn:active{ transform:translateY(4px); box-shadow:0 1px 0 rgba(0,0,0,.22); }
+  #retry-btn{ background:var(--green); }
+  #home-btn{ background:#8a8a8a; }
+
+  footer{ text-align:center; color:#9bb3a2; font-size:14px; padding-top:10px; }
+
+  @media (max-width:560px){
+    .kanji{ font-size:60px; } .kanji.long{ font-size:42px; }
+    .illust{ width:125px; height:125px; } .illust .emoji{ font-size:90px; }
+    .illust svg,.illust img{ width:120px; height:120px; }
+    .mora{ width:60px; height:60px; font-size:38px; }
+    .mora.blank{ font-size:32px; }
+    .mora.blank.filled{ font-size:38px; }
+    .mora.blank.reveal{ font-size:38px; }
+    .mora-row{ gap:8px; }
+    .mora-row.many{ gap:5px; }
+    .mora-row.many .mora{ width:48px; height:48px; font-size:28px; }
+    .mora-row.many .mora.blank{ font-size:24px; }
+    .mora-row.many .mora.blank.filled,
+    .mora-row.many .mora.blank.reveal{ font-size:28px; }
+    .choice{ font-size:40px; min-height:78px; }
+    .title-big{ font-size:31px; }
+    .mode-btn .m-name{ font-size:19px; }
+  }
+  @media (max-width:380px){
+    #app{ padding:10px; }
+    .kanji{ font-size:52px; } .kanji.long{ font-size:36px; }
+    .illust{ width:105px; height:105px; } .illust .emoji{ font-size:76px; }
+    .illust svg,.illust img{ width:100px; height:100px; }
+    .mora{ width:52px; height:52px; font-size:32px; }
+    .mora.blank{ font-size:27px; }
+    .mora.blank.filled,.mora.blank.reveal{ font-size:32px; }
+    .mora-row{ gap:6px; }
+    .mora-row.many{ gap:4px; }
+    .mora-row.many .mora{ width:44px; height:44px; font-size:25px; }
+    .mora-row.many .mora.blank{ font-size:21px; }
+    .mora-row.many .mora.blank.filled,.mora-row.many .mora.blank.reveal{ font-size:25px; }
+    .choices{ gap:10px; }
+    .choice{ font-size:36px; min-height:70px; border-radius:14px; }
+    .title-big{ font-size:27px; }
+    .level-btn{ font-size:28px; min-height:70px; }
+    #judge span{ font-size:130px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- タイトル・モード・難易度選択 -->
+  <section id="title-screen" class="screen active">
+    <div class="title-small">ことばのリハビリデイサービス</div>
+    <div class="title-row">
+      <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAABbCAYAAAD3AUKaAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAABoySURBVHhe7Zx5lF1Vlf8/59zhvVevxqQqSSWViUyQQCBMYRCQIMggKPKjsVGhbdN220qDvQQDyqDYETsOwYmILttG0YUCMkhEQBMIhJCJIXNSGSqpSg2pKVX1pnvvOaf/uLeqkqpKwEpeF+lfPmu9Vcl755537/fus88+e5/7hDHGcJy8Ifu+cZyjy3GB88xxgfPMcYHzzHGB88xxgfPMcYHzzHGB88xxgfPMcYHzzHGB88xxgfOMeP8mezThiRkMIDCAhUD0bYgBjDFoYzAYbGkN0GpoeF9bsEFijMYojQ4Uxui+TQAwRtOZ6WTp2yt4ZukL+IEfvT/0tvO+tWCDQgUBHV4zG2tfIWbHmTXhKixpIyK70BhUoKlvaeDHj/2Spe+sYvyIShZ99duUFhQhBANa/P8m70sLNkbh+Vl2ta3nuTcX8urOx1i18zlSfmto0ZHbUH5A/b567n94IYvfeJmudIo9++pZs2ld5F4GEtdgUNFLY9CRk8kP7zOBDcZoPNXF5oaXeXrtf7Kr4y0ClaXTr2dn/Rq00WBAa01HqpO7fvQAr21+E2UUwkAm8HnptZcxmB55DQatA3yVI+unyXodpP39pIJ2PJ0ln2M4ry5Ch18QXqgYyJp6MYA2Hn6Q5fVtv2flrmfwSfdMdJawmD7qQq6ceRu2TJL1Mry0ehlfW7SAQKmefhzb5tRJM/jpvAdIuC7GaHLaY0/L22yqXU5zpoaU34nWPrbt8KFpc5k26rwDzuToklcLFsaQzmXxVAD6Xe6jUXhBhhVbH+f1XX8gJ7rFBRBoY6hp3URX0AJGkclm+N0fn8IPgoO6wUAQBGij0UbTlqnj+Xd+yBNr7mdd03M0dGykPbuHTq+RtN9JIlZ8bLoIjSGbyfK9Xz7EgkcX0ZHtRCmFHmDAaDRB0MWu5rW8sfspNFmECT1oaPfhMTm/lZqm9Sij8Hyfnfvq+4wMgZGCeMxF2gJP5Vhd8xwbGpfi46GNRHV3ZwwFopBhyYo8yptPgQNFa7qD1zeu5cmlf+Jfvv1V1mxdh6/8ngi3p60ytKSbWbL+V3gmzYFzf/dkZTAERtHQVoNAE3NdThhZxcEOVGNbNlPGnoAjbbr8FtbXLEUbBQf4ZAApLSaWz8a1igecCo8WeRHYGIMf+Gyr3cXelgYyuTTv7NjM3Q8tYMWGtWilenUxoFSW6oaVtPt7DhNWGTSatN+CQROPxbnhimuI2U63SWJbDhMqxnDj5dciDHRk9uGJHAbd75YV2sOZNekSbOEcexYshCFQPq+uXYFnFCDRSlHXvo+Fv/kFbemuMDgyBiPAU1l27XsLFYVfB/V10EuACUBoYrbLmTNOY2rlBISQWJZDWWEpX/rkP1FZXgFCoPwsAh8hDKAwSAQWtizgxBEfYFhsNAh5mJt65ORB4FCkQGs2b9/WMzCFAeMravbtZdHjj6BNODkZDDmVpiVdi8CKlsQDYwxI4YbtLElZYQn3feF2Thg5jtknzuTB27/BuTNmYUsbANdJRKs5g8BBCrCky+ljLueCk27AsWN5lDYkDwKHtqaNIZ3N9g5MEb6U77Ni/VpSmTQGgTSEw9/o6GYcLHAoD6H9Coui+HCECXMSru0wreoEHvrKfH7w5W8yc8JULGkhhcASmtJEBROKz2Jc6clMKZ/NmWOu4eMz72TO9JuJWSVIYSNEHiQ4gLz1blsWlcPK++qFMQbP9/A9L3pH4NhximLlGBGg+1xw9w0SgC0cxlecFg1rEEJgWRZjRowiEYsjpUREUYURNoXxkXx89h184oz5XDtrHpdMn8vUUWdjW3GkzLfthuRHYAOOdLjyokuRloMRRJYKSInrxLBdNwrmNDGZZPzwUwC3T0ch4ZiwGVUyjaqyqcjoJhjoCfu6l88HHiWlhW0nce04lowhhERphVI+Wgco40cjJ1w254P8CAy4jsPZJ89izmnnELNimMjqbGkxYcRoCuKJaK2nsSyLyaNnUyBiiAEyZkJYxO0izppwNY5MHhT6GgwBBq3DZXbPMRiMMSjl0ZVrZUfzalbVPMuyHb/llepHWbHzcTbuXkJd6zo6ss0EOoMmOOoZuLwtlcNMV0BnKsXvX3qWXy1+grTyiMcT3HXzv/Lhsy4gE+wn7rpIUUDOT7Nq+9Ms3/kbNAoTWa4UFjG7kItP/Awzx1yCFC6YcBINAh9fKzpzGTKZDOMqRuHaDkKE1h2oHPWprSxe+RD7/VpyZBDYCKPR+Ajp4uJSIIczc8JFzBg3hyJrBI7tRqPkyN1I3gTuxhiDMprmtmY21WyjPZXm4jNnE+h2nlq1kLLiCi6dMZcCp5TOXDNPvjGf+nQ1RhikkSTdUi468ZOcPGoOUrgERtOc6mLlm6tZsuo1tjfUUNfUyMSq8Tx8x3zKS0sRBCgNO1vW8qe3F7E/qOszF2gMMnxPRDfSSBJ2MROGn8lZU65kVNG0KBo5skGed4Hp8ZUaE+UHPD/NixsWsb5pCVJqThl1GXNO/DQxu4R9HTv5w5rv0a5qqCqazvlTP8XE0lPRKLY31PHssr/y9F+fZ3+mI/S/URVj4ujxPDxvAZXDh4cJeK+ZJ1bOpy61MYqf+9pj9xjp1j70wpawGZuYyfXnzSPhlvbkngfLIAU2KK0xKiDQPlnTRdrrQuscxbEkMWsEtuUipEAIgUCGvk0YvCDHntbVPLF6ATmRQWoHx5ZMG3MJV039HEI41HVsYE/jFmZNvhJXOmSyHn9a8QoLH/05KT+DMqqfrxw7cgw/u2sBYyrKUUGO5Tv+wPLqR1GE8fahBntPL0IhjE1hvIQbz/42w5PjsYR1cONBMGiBvSDDmm2L2dK8lPZsC57ORnO9oKywkvHDTmP2pGtIOMMQSIQApTXt6XqeWvkADdnqKCdhENgk7DizJ36C2ZOuRhgLLSRCQ1uqg4d+9wjPLv8L6Vw2kqT/KY8dOYaf3xVacEemkd8s/xrtfl3fZv3oFVjgCpdzx3+Kc6ZegyMTPSHfkTBI+xeAxHELaOzcSZe/j5xK4alOUqqD2o6trNr9DIvf/DFprzkKoQSB8ti5702acjujAaoRaAw+OZVm1e6naeqsRgobSwjSXprHnn+KJ199nlSuK4o6BsaSEoRAq4D6/VvoCOr7NhmQ8EoElnCZVn4hsydfgSNiUaTS7TwOpP/NPRyDFNhgWzaTK0+jLD4RLbyeFVl4XgZPZ9jZto4Nda9hlAnLQCrD1oZVBMbrTsdHpyDQWpH121mx5VkUHlobdu2t5dHn/4DneQf4woEvMBlPEHNdApNlR+MqlA4jkcMigjA/IV2G2VO5eOancewkiHDO0CaH0jm09jEE0Ve/a68HMUiBQSBIOKWcOfEqHFXUY6WhZUYimxSrdjxNW3Y3mIDW1B5q2zb2c4gCMEKgdcCuttXs3V9NLpvhseefJeX1LrcPhRBQUTqMAjeGH+SoaazuiQ4Oh8DFljaTSmdxwwVfJmlXIJBoo8npNI1du9jS8Abbm9+gOb2TrGpDaf+Q1e2BsO677777+r757giEkAhpURQrpbWjmZZMDUKY0CJMuKgAUDpNcaKSkUWT2LJ3BTvaVmGMOkQGS6BRDCsYRVlsIr9+4Rka2pphgHxB99FGgG1JPnTmBZwz41RsJ0ZZcgRZP01Xth0lcxhhECh0lA8J1Zck7VLOqrqGS2b+IwX2MKQIx9X+dD3PvfMjlm76JZubXmVd/TLe3vUim3e/ihYerl1I0k5iJO8aZQxS4BAhDLaMM6FiOs1te2jN7UF2T0OWwbJtRiZncu7Ua7BFgndqXqaxa2tkXQcL3PM/IYlbxYwpPZU/LlvCvvbWAct53W8JKSiNFXHn526jNFmCJQXDklWcNPo8Zo6fg6uTpFM+SI0UNi4JiuxRTK+8iKvP+BKTR5yJYxUghEEgSGXbePyNb7G7800CYcAohDFooUnRya7WdWzau4xiexgVJeMQIszcHYpBRhG9GDRaK1K5NqobV7Gt4Q2U1owqn8CYkpOoKptOwi4i52d5+q0HqW5ZEh05gGqEFlFZPIUrT/kqty/4Fmt2bAjzlAM0F4AlLa467xK++k9fImm7YDRK6NDtGAh0gK+zZP0UOS+DLQSF8TIcN4Et4ljR3dOA0QHv1P2VP29ciB8oEAdWQQTCaIQlqUhO5Yaz76XIHYZ4l1DuiAXuxqAJlI+vPYQQ2DKGxELKcBzngi6ee+shNja/AKav/fYikVQWn8RHZ93Ngp8t4tmVS9ADRA8CkJZFaWEx37n1bmaMn0rWz1HXsJeG5kYyXg5twlFUlChk1PAKKoYPJ+G6uG4CW4iepBEYlIGs38YTq+ZT0/EWmAFGmYRCewQfnvEvTBl5HlKGMf7hOGoCg0GbIKoeAIgoQW5jgJzvsWr7M7y84xfhjNzPhsPpUeIwffQFXHbibby06hXuefh7eIHXr+zvSItkQZI7bv4C5808izXb1vP9n/+Q1nQnmSCH0uH+CWkJXGGTcGO4tsOUMRP4/Kc/x4yxk4jbTk9/gVG0pnbyyLJ55EwXJiyP9kzaUtoUyOFccfLnmTTyDCzLiW7A4QU+/Kd/EyJaZrjRy0EKJ3pf4NouUyvPoNQZhRAKI0yfkEeEQ1IqqsqmE3NsZkw6kWHFxUjCso4EpBA40mHsyCrunfvvzJp2Mnc++E2+/N37qG1vIpXLoJWO2oZj31M++zNdNHW18fq2N/nWw987IB8NYLCEpChWwZzp/8io5FQcEkhhIYREijgTSk7nujPuYNLIs5EyrKq8F/mOogWHiZ0DVz/dXQsRVoU9P8u63S/y4paH8UUWGU7pYVtASEmJNZIbz/sPSgpG05lK8d1f/5Snlj6PFoZELM5JE6dw4cyz+PilH8F4AXf/5D95ZfNajNH0DJ4B6LZEx3G466Yvcu2Fl+M6vRZsIMziaYXGoyPbwO6GzeT8gEmV0ylNjsYRibD2JQbe5TkQgxPYmHByMwJfKbysTybI4ekcRhtsKYk7DolYHMdJhJvwBBgT4HlZNu35K89vexhlMthGYIRGY2PZLhdMvJFzT7geaTn4ns/ydWv578cf4/qPfozZp5xGwnJxpEWgA1ZtW89tC+4hGxxojQNjAEdIRiRLePS7P6c8WYIlwpgnjB/CW2BElEAyYRkrzKUIpAwXRH8rgxJYacWmmmqefGExzak2mve30NTSTGe6CyNCT5qIxakaOZqx5aO57tIrmDFuMjEnhhYBnsqxo2kVL2/8LW1qD1obbGExLFHJDbO/TmmsEoSFweAHAYFWOJaDY4WWYzDsT3Xw9Z89yJ9XLunnnwdCIEjEC/i3T3yGv//QR3GEjBxUmKgPZZAgQIre0tORMmiBX1+3hi99/+t0eWlEdAG9HfWWLy3LpjiR5Irz5zD36huoKC2PEj8ebekGXt/0FNWtr5IjxeiCyXzi/AeIiXg4DKPMebhQ6L1gZTS76vfw93fdQmeu8xBidJ9BiGNZTB07mYfmzWdYUQlGCAg0nbkuNtRsZefeMDE0qrScM6bPpCiWxLLCEGyg3t8r7+6lB0AKyZSqCVSNHB0ZT99iu4gkFiilaO3azxN/eY67f7KAjmwKISSOFaeicDwXn3oTowqnYYCUnyKT6wwvvlugPosSQ7izsq6pgazKHkbc7hcgLQoTCb74iZsoKyxGConyfVpT7dz/8EJufeAe5v/ih8z/xQ+48wfz+eTtn2dnwx58P9zIfSQMSmAhBIWJQs476XQk4VA+HAJBJvBYvX0DP33yEbK+jwl9Ca5dQGnhOIwxZEmFm/swPTeuH8bg+T6762p7Eu6HJloSuzH+4cN/x+yTZiGlxGjD9obd3LLgHv68ahmpyIcbAZ1Bjpr2Jm5ZcA8vrlhKoI6sTjcogQ0Qi7lcccEHqSgqQyMiqzs0EoGXy/Hn5S+zZfcOjA6zaRY2w5MVWAhU4JPONUXC9l9caGPwtWJP415eWLsMpX0Q4e6gkG63oDBCoaWitKCQmy+9lk995P8Rs2NgwA8Cnnv5RTbVbEUT7isGgTBhQGiMoba5nh89/gjVtbtBq3776d4rgxIYwpBq3MgqrptzFS7W4Q0pwgDtqQ4W/vphsiobegApKIoPx2ChUTS074omnT5uAUMQ+GzZtY1bvvs13tm5iZjrIEw46YUbAMLNKwYL13YYVzaaH9/1Lf75uk8Tc2OhOxEC27G57tKrGFYyHMtYAw4UrQ11rU18fv4dtKW7MO+2/fYQDGqSo/uC/YCahjr+9f551HY2IzFoQc8kNxBhMqaEhV+5n1MnnAQCaprf4bHV9wIBUyrO5aNn3I4tbMACE25v9QPF8nVr+PYjP6Yj08mtfzeXqWMnUltfR3umk737Gmnv3I9jO1SNqGTs8BGcNmMm5cXl2PbBTx0ZwPM9Ntfu4OuLvs+W2u09cbQEFAJh2RQ4MaaOGMP8L32NsSNHI99llA7EoAUmEjmbybK6eiPzFs6nNdOOZeiZnA7VcTwW48bLruXWG+ZiC2joqObXy+8iMBkqi07ik+ffjyNdDFa4Q93zeGvHZr6x6Hs0djTzkfPmcMdNXyDpxgFQOsCP9h5LBLYlsWQUhfQkbA6OY40xpP0ce5r2suix/2bdzi10pMOIaFhRKSeOO4FzTpnFZed/kJJEUbhrqOfo984RCUzkFzPZDI+99Cw/fOy/yGn/oPDoQMIkkEVBLM6VZ17EvLm3YduSlq7d/Oq1O8nodsoSVXz2wu/gykIwgqzvsbO+llu/czd1rQ1MHFnFj+6cz7jyMWGcIHojGENYOdHGC/9q3TNZCmws6UbL31Cq7sWE7/u0Z1JkvRyWZVEQT1DkxnEs66Bc9MARy+E5YoGJSvJZL8cfl73Id361iIzyw4khsmILQFi4tsU500/n+suv5dzppxGzbIyA9vReHl3+VdqDOortSj538YM4VjFaQV3jXr7yw/ms37UFN2Zz+6f+jes++GFc2+4TvhmU0jTtr2b97pfpUI10ZhrJ+QExO0ZpYgRVZTM5ZexFxOyiMMA4hGB9l/xHwlERGMAYjR/47G5t4BdP/pb1O7bQ2NZKLBZj/MhKJo0ay8cuvYoTqyZi2zHsbivC0JHZx2Nv3EtTdhuFcgRzP7iQuDOc1v37+e4jD/HMipewpcOZ007mwdu/STIWj5a5B36/IdBZ3qr5Cy9tXUQgcmEa2XQvhDW2SDC5/HwuO/mzFLvDENE213xy1ASm+yKVIlBB+FcrhBA40sKyLGzLDqu/fYZbZ7aF362+n/quDSRlOZ+96EGETvK7F5/m+0/8F/gecTfJnTd9kasvugzHsvv5Q4PBVzk21b3K4vXfISCIFtXdN8IgkNiWzWnjPsacqZ/CkbHQfQxQkjpaHNWehRA4tk0iFqeoIElpsoiSgkKSiQLibgzbCv3fQMNPiLDsjpToIGDrnm38avEfML7CslzGjhjNnNkfiJav/W1CEPr3sqIRWCIRTWihE+n9lyFQmg01L1DfuQ1tQgPIJ0dV4L4cSsx+GANGY4k4k8vPJp01PPjbX9LU1RbuTXfi3HDltRTFC0LL7a8vEFZDiuPDcUXRAZbbSzgJQlZ3snb7YgLlv+sq9Ejpfxb/63SnPgMKnDJOP+Fy/vzqq7xdvRGjNUIKiouKOXfG6Uhhhan3Q900IXCtIsaPmIIgiGz3oAYgFBpNc2cNgcr83xfYEO6+xEjOGf9RdK6E3/3laTztI0345Oa0MeOoLB1+aGF7EDgyxilVl5AQyQEE7qXDayarWhEHrBjzwZALDBJtAsoTY5hWcSG//9PT1DY39exPi9kxLj/ngzi2BaJ/fuIgjMC2LEaXnMyMUZdgGRstA4wIk+pRIwACk6PTawqffc6jFQ+9wJH1Tq28mNbOLItX/JVAKEAjhaAkkeQDp58VxqaHsUhCfTFCEnOSXDj9M5w9/npckYx2ToZFzO4+jFHs298QiXv4fo+EoRdYCApjpYwumcSyt1fSsL8FESVWLCmZMv4ECt2CaP/B4YXojhakkCScJOdOvZbrT7+XmaOupsAaiSPD50VM+GsUtKVa31OS6kg4qnHwYDAYlA7Y29TA3G98hdr2BjChNcZdl5uvvJ5brvuHnurCeyd6NMyEJar2TD17W7azt62aTNBKYLKMKzuLcyZfhR3Fw/ngfSFwNpdlyZrXmPeTB8LFCQINJBMJ7rjxn7l+ztXvYYIbiDBGMNGzyiARxqBMgEKjpSRG9/MY+SF/Pb9HBIac57HsrVUopXtndQGu7VA1srLvIX8DInIZdvQKNyzaVhzXKiAuYoNKQf4tDLnAxhjaujpYveEdjBAHVCcg7hypwAcSeuhuV9Dtr/PlGroZUoGNMXhKs2nnVvZ1tIHurUYDJBIJigqK+xx1bDG0AgPZnMeSN5YTaAUyTM+AQSJJxhLYtj1I//v+YEgFBujKpKiuq4kCfnqGrAQSbv+05LHGkJ99R6qD1q62yJ67nUPoHW3bGfoTPEKG7PxNVAlpbGmmI5M+QNxejmXX0M0QCmzQSrGlphpf+f1mcyNABYPfj/B+YcgEFtEGkHVbNw5kvBhjyHm56ImeARocIwyZwAZDxs9SXVsz4G81GCCdzYbRRZ5j1XwyhAJDJpelJdXBgcnE3gaGrmyKVDZ7DNvvEAoMkMmk0br/g910x8h+joaWfX0/OqYYOoENpDJZ0EFUVj/gAwzCQE751Dbu7dkgPdCNeL8zdAJjSOWy0V62Pojw0VqlFE3tLX0/PaYYQoHB87zerfs9hM+7GgxGGeqaGlDRL1ofiwypwEapQwYIAgiUYsuuanLRj9gdiwydwIaeJfGh0EZT19xIU3tLd/NjjqETWIC0rXDJFv2WbfdGFSEEkvBXAbPZDEtXvo4+3ENw72OGTGCDIOG4DI+XUhYvpqygkLLCEoYV9b7KS4dRVlTKjpoatFbHogEPfU3u/zpDZsH/v3Bc4DxzXOA8c1zgPHNc4DzzPxVfS5w5jmrgAAAAAElFTkSuQmCC" alt="グリーン・グリーンのロゴ">
+      <div class="title-big">グリーン・グリーン</div>
+    </div>
+    <div class="title-sub">音を選ぶ練習</div>
+
+    <div class="section-label">① 練習のしかたを選ぶ</div>
+    <div class="mode-btns">
+      <button class="mode-btn selected" id="mode-single" onclick="setMode('single')">
+        <span class="m-name">一文字を埋める</span>
+      </button>
+      <button class="mode-btn" id="mode-all" onclick="setMode('all')">
+        <span class="m-name">全部の文字を埋める</span>
+      </button>
+    </div>
+
+    <div class="section-label">② 難しさを選ぶと始まります</div>
+    <div class="level-btns">
+      <button class="level-btn" id="btn-easy"  onclick="startQuiz('easy')">簡単 <span class="stars">★</span></button>
+      <button class="level-btn" id="btn-normal" onclick="startQuiz('normal')">普通 <span class="stars">★★</span></button>
+      <button class="level-btn" id="btn-hard"  onclick="startQuiz('hard')">難しい <span class="stars">★★★</span></button>
+    </div>
+    <footer>音韻選択課題（2〜6モーラ語）／各難易度30語からランダムに10問出題</footer>
+  </section>
+
+  <!-- 課題画面 -->
+  <section id="quiz-screen" class="screen">
+    <div class="quiz-header">
+      <button id="quit-btn" onclick="goHome()">← やめる</button>
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+      <div id="progress-num">1/10</div>
+    </div>
+    <div class="card">
+      <div id="judge"></div>
+      <div class="stimulus">
+        <div class="illust" id="illust"></div>
+        <div class="kanji" id="kanji"></div>
+      </div>
+      <div class="mora-row" id="mora-row"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <!-- 結果画面 -->
+  <section id="result-screen" class="screen">
+    <div id="result-stamp">💮</div>
+    <div id="result-msg">素晴らしい！</div>
+    <div id="result-score"><b>10</b> ／ 10 点</div>
+    <div class="result-btns">
+      <button class="result-btn" id="retry-btn" onclick="retry()">もう一度</button>
+      <button class="result-btn" id="home-btn" onclick="goHome()">メニューに戻る</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* =====================================================================
+   語彙データ（各難易度30語）
+   ・2〜6モーラ語（促音・長音・拗音は含まない。
+     撥音「ん」は「難しい」の長い高頻度語でのみ使用）
+   ・blank: 「一文字を埋める」モードで空欄にするモーラ位置（0始まり）
+   ・dist : ディストラクタ5つ（正答モーラと合わせて6択）
+            うち1つは語内の別モーラ（例：猫→「こ」）
+   難易度設計（各難易度内で一定）：
+     簡単   … 高頻度語。空欄は語頭固定。
+              ディストラクタは正答と母音・子音がともに異なる音4＋語内モーラ1
+     普通   … 中頻度語。空欄は語頭または語尾。
+              音韻的に近い音（母音か子音が同じ）2＋遠い音2＋語内モーラ1
+     難しい … なじみのある語を中心に、4〜6モーラの長い語（新幹線など）を含む。
+              空欄は語頭・語中・語尾すべて。
+              全て正答と母音または子音が同じ音4＋語内モーラ1
+   出題：30語からランダムに10問（1セット）。回答は2チャンス制：
+   誤答した選択肢は選べなくなり、もう1回だけ選び直せます。
+   1回目で正答=〇(1点)、2回目で正答=△(0.5点)、
+   2回誤答=×(0点)で正答を青色提示して次の問題へ。
+   「全部の文字を埋める」モードでは全モーラが空欄になり、
+   6択＝語の全モーラ＋dist（語内モーラを除く）で構成されます。
+   AI生成イラストに差し替える場合は emoji/svg の代わりに
+   img:"データURLまたはファイルパス" を指定してください。
+   ===================================================================== */
+const DATA = {
+  easy: [
+    { word:"ねこ",    kanji:"猫",   emoji:"🐈", blank:0, dist:["こ","す","ろ","ゆ","た"] },
+    { word:"いぬ",    kanji:"犬",   emoji:"🐕", blank:0, dist:["ぬ","か","そ","ま","ろ"] },
+    { word:"さかな",  kanji:"魚",   emoji:"🐟", blank:0, dist:["な","い","ろ","ゆ","て"] },
+    { word:"くるま",  kanji:"車",   emoji:"🚗", blank:0, dist:["ま","あ","そ","に","へ"] },
+    { word:"はな",    kanji:"花",   emoji:"🌷", blank:0, dist:["な","き","そ","め","ろ"] },
+    { word:"やま",    kanji:"山",   emoji:"⛰️", blank:0, dist:["ま","き","す","に","ろ"] },
+    { word:"うみ",    kanji:"海",   emoji:"🌊", blank:0, dist:["み","ね","ら","へ","ろ"] },
+    { word:"くつ",    kanji:"靴",   emoji:"👟", blank:0, dist:["つ","あ","ね","ほ","み"] },
+    { word:"かさ",    kanji:"傘",   emoji:"☂️", blank:0, dist:["さ","い","て","ね","ろ"] },
+    { word:"ほし",    kanji:"星",   emoji:"⭐", blank:0, dist:["し","え","つ","ま","ら"] },
+    { word:"ほね",    kanji:"骨",   emoji:"🦴", blank:0, dist:["ね","ゆ","る","え","さ"] },
+    { word:"あし",    kanji:"足",   emoji:"🦶", blank:0, dist:["し","て","ゆ","へ","ろ"] },
+    { word:"くち",    kanji:"口",   emoji:"👄", blank:0, dist:["ち","せ","ね","ろ","め"] },
+    { word:"あめ",    kanji:"雨",   emoji:"🌧️", blank:0, dist:["め","き","す","ね","ろ"] },
+    { word:"かみ",    kanji:"紙",   emoji:"📄", blank:0, dist:["み","ね","ろ","ひ","て"] },
+    { word:"とり",    kanji:"鳥",   emoji:"🐦", blank:0, dist:["り","ら","せ","へ","む"] },
+    { word:"みず",    kanji:"水",   emoji:"💧", blank:0, dist:["ず","せ","と","ろ","へ"] },
+    { word:"いえ",    kanji:"家",   emoji:"🏠", blank:0, dist:["え","か","て","ろ","ほ"] },
+    { word:"くも",    kanji:"雲",   emoji:"☁️", blank:0, dist:["も","せ","に","ら","て"] },
+    { word:"ゆび",    kanji:"指",   emoji:"👆", blank:0, dist:["び","せ","ね","ま","ろ"] },
+    { word:"はし",    kanji:"箸",   emoji:"🥢", blank:0, dist:["し","ね","ろ","ゆ","せ"] },
+    { word:"さら",    kanji:"皿",   emoji:"🍽️", blank:0, dist:["ら","い","き","ね","ひ"] },
+    { word:"いす",    kanji:"椅子", emoji:"🪑", blank:0, dist:["す","か","て","ろ","ね"] },
+    { word:"てがみ",  kanji:"手紙", emoji:"✉️", blank:0, dist:["み","す","ろ","ま","ふ"] },
+    { word:"こめ",    kanji:"米",   emoji:"🍚", blank:0, dist:["め","ね","ら","す","に"] },
+    { word:"なべ",    kanji:"鍋",   emoji:"🍲", blank:0, dist:["べ","き","て","ろ","ひ"] },
+    { word:"たまねぎ",kanji:"玉葱", emoji:"🧅", blank:0, dist:["ま","き","す","ろ","へ"] },
+    { word:"はこ",    kanji:"箱",   emoji:"📦", blank:0, dist:["こ","き","す","ろ","め"] },
+    { word:"かぎ",    kanji:"鍵",   emoji:"🔑", blank:0, dist:["ぎ","て","ろ","ひ","ゆ"] },
+    { word:"ふく",    kanji:"服",   emoji:"👕", blank:0, dist:["く","ね","せ","え","あ"] }
+  ],
+  normal: [
+    { word:"たまご",  kanji:"卵",   emoji:"🥚", blank:0, dist:["ま","て","か","す","ろ"] },
+    { word:"めがね",  kanji:"眼鏡", emoji:"👓", blank:2, dist:["め","れ","の","か","す"] },
+    { word:"はさみ",  kanji:"鋏",   emoji:"✂️", blank:0, dist:["み","か","ひ","そ","ゆ"] },
+    { word:"すいか",  kanji:"西瓜", emoji:"🍉", blank:2, dist:["す","た","き","ね","ほ"] },
+    { word:"さくら",  kanji:"桜",   emoji:"🌸", blank:0, dist:["ら","た","す","ひ","め"] },
+    { word:"くすり",  kanji:"薬",   emoji:"💊", blank:2, dist:["く","ひ","る","か","そ"] },
+    { word:"かがみ",  kanji:"鏡",   emoji:"🪞", blank:0, dist:["み","た","き","せ","ゆ"] },
+    { word:"たぬき",  kanji:"狸",   emoji:"🦝", blank:2, dist:["た","し","か","へ","ろ"] },
+    { word:"さいふ",  kanji:"財布", emoji:"👛", blank:0, dist:["ふ","た","す","め","ろ"] },
+    { word:"ゆびわ",  kanji:"指輪", emoji:"💍", blank:0, dist:["わ","ふ","よ","せ","ろ"] },
+    { word:"いちご",  kanji:"苺",   emoji:"🍓", blank:0, dist:["ご","き","う","た","ろ"] },
+    { word:"やさい",  kanji:"野菜", emoji:"🥬", blank:2, dist:["や","き","え","ろ","ま"] },
+    { word:"なし",    kanji:"梨",   emoji:"🍐", blank:0, dist:["し","に","ま","ろ","ゆ"] },
+    { word:"かえる",  kanji:"蛙",   emoji:"🐸", blank:0, dist:["る","け","わ","す","ろ"] },
+    { word:"うさぎ",  kanji:"兎",   emoji:"🐰", blank:0, dist:["ぎ","く","お","て","ら"] },
+    { word:"きつね",  kanji:"狐",   emoji:"🦊", blank:2, dist:["き","の","せ","か","る"] },
+    { word:"ねずみ",  kanji:"鼠",   emoji:"🐭", blank:0, dist:["み","の","め","か","る"] },
+    { word:"はち",    kanji:"蜂",   emoji:"🐝", blank:0, dist:["ち","ひ","わ","そ","る"] },
+    { word:"ひつじ",  kanji:"羊",   emoji:"🐑", blank:0, dist:["じ","ふ","き","ま","ろ"] },
+    { word:"さる",    kanji:"猿",   emoji:"🐒", blank:1, dist:["さ","り","ふ","ね","め"] },
+    { word:"とら",    kanji:"虎",   emoji:"🐯", blank:0, dist:["ら","ち","の","き","へ"] },
+    { word:"かめ",    kanji:"亀",   emoji:"🐢", blank:1, dist:["か","ま","せ","り","ほ"] },
+    { word:"ゆき",    kanji:"雪",   emoji:"⛄", blank:0, dist:["き","よ","く","ね","ま"] },
+    { word:"つき",    kanji:"月",   emoji:"🌙", blank:0, dist:["き","と","す","ね","ら"] },
+    { word:"ふね",    kanji:"船",   emoji:"⛵", blank:1, dist:["ふ","に","て","か","よ"] },
+    { word:"たいこ",  kanji:"太鼓", emoji:"🥁", blank:0, dist:["こ","と","か","す","ろ"] },
+    { word:"たこ",    kanji:"蛸",   emoji:"🐙", blank:1, dist:["た","か","と","せ","ゆ"] },
+    { word:"えび",    kanji:"海老", emoji:"🦐", blank:0, dist:["び","け","い","そ","む"] },
+    { word:"かに",    kanji:"蟹",   emoji:"🦀", blank:1, dist:["か","ぬ","き","ほ","せ"] },
+    { word:"うま",    kanji:"馬",   emoji:"🐴", blank:0, dist:["ま","ふ","お","せ","り"] }
+  ],
+  hard: [
+    { word:"たけ",      kanji:"竹",     emoji:"🎋", blank:1, dist:["た","き","こ","せ","ね"] },
+    { word:"まつ",      kanji:"松",     emoji:"🌲", blank:1, dist:["ま","ち","と","す","ふ"] },
+    { word:"げた",      kanji:"下駄",   emoji:"🩴", blank:0, dist:["た","が","ご","け","ね"] },
+    { word:"おんせん",  kanji:"温泉",   emoji:"♨️", blank:2, dist:["お","さ","そ","て","ね"] },
+    { word:"にんじん",  kanji:"人参",   emoji:"🥕", blank:2, dist:["に","ず","ぞ","し","き"] },
+    { word:"くじら",    kanji:"鯨",     emoji:"🐋", blank:0, dist:["ら","き","こ","す","ふ"] },
+    { word:"えんぴつ",  kanji:"鉛筆",   emoji:"✏️", blank:2, dist:["つ","き","し","み","ひ"] },
+    { word:"けむし",    kanji:"毛虫",   emoji:"🐛", blank:0, dist:["し","か","く","て","め"] },
+    { word:"でんわ",    kanji:"電話",   emoji:"☎️", blank:2, dist:["で","か","ま","た","な"] },
+    { word:"ふんすい",  kanji:"噴水",   emoji:"⛲", blank:2, dist:["ふ","し","そ","く","つ"] },
+    { word:"かたな",    kanji:"刀",     emoji:"🗡️", blank:1, dist:["な","ち","と","ま","わ"] },
+    { word:"ゆかた",    kanji:"浴衣",   emoji:"👘", blank:0, dist:["た","や","よ","ふ","む"] },
+    { word:"はしご",    kanji:"梯子",   emoji:"🪜", blank:2, dist:["は","ぐ","げ","こ","ろ"] },
+    { word:"まんげつ",  kanji:"満月",   emoji:"🌕", blank:2, dist:["ま","が","ご","け","て"] },
+    { word:"かみなり",  kanji:"雷",     emoji:"⚡", blank:2, dist:["り","ぬ","ね","ま","わ"] },
+    { word:"ひまわり",  kanji:"向日葵", emoji:"🌻", blank:1, dist:["わ","み","も","た","な"] },
+    { word:"くつした",  kanji:"靴下",   emoji:"🧦", blank:2, dist:["た","す","そ","き","み"] },
+    { word:"てぶくろ",  kanji:"手袋",   emoji:"🧤", blank:2, dist:["ろ","き","こ","す","つ"] },
+    { word:"にわとり",  kanji:"鶏",     emoji:"🐔", blank:2, dist:["り","た","て","こ","の"] },
+    { word:"すずむし",  kanji:"鈴虫",   emoji:"🦗", blank:2, dist:["し","み","も","く","ふ"] },
+    { word:"いのしし",  kanji:"猪",     emoji:"🐗", blank:1, dist:["し","に","ね","と","も"] },
+    { word:"かなづち",  kanji:"金槌",   emoji:"🔨", blank:1, dist:["ち","ぬ","の","ま","わ"] },
+    { word:"のこぎり",  kanji:"鋸",     emoji:"🪚", blank:0, dist:["こ","な","ね","と","ほ"] },
+    { word:"ものさし",  kanji:"物差し", emoji:"📏", blank:1, dist:["も","な","ね","と","ほ"] },
+    { word:"しんかんせん",kanji:"新幹線",  emoji:"🚄", blank:2, dist:["せ","き","こ","た","ま"] },
+    { word:"しんぶんし",  kanji:"新聞紙",  emoji:"📰", blank:2, dist:["し","び","ぼ","ふ","す"] },
+    { word:"おまわりさん",kanji:"お巡りさん",emoji:"👮", blank:1, dist:["り","み","も","な","た"] },
+    { word:"おとしだま",  kanji:"お年玉",  emoji:"🧧", blank:1, dist:["ま","ち","て","こ","の"] },
+    { word:"めだまやき",  kanji:"目玉焼き",emoji:"🍳", blank:2, dist:["き","み","も","さ","わ"] },
+    { word:"せんたくき",  kanji:"洗濯機",  svg:"sentakuki", blank:2, dist:["き","ち","と","か","な"] }
+  ]
+};
+
+/* ===== 絵文字のない低頻度語用の簡易イラスト（SVG） ===== */
+const SVGS = {
+  suzuri:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#f2efe6"/><rect x="14" y="48" width="72" height="34" rx="9" fill="#3b3b3b"/><ellipse cx="50" cy="58" rx="26" ry="8" fill="#101010"/><g transform="rotate(24 66 30)"><rect x="63" y="8" width="7" height="42" rx="3.5" fill="#b0752f"/><path d="M63 50 l3.5 12 3.5 -12z" fill="#1a1a1a"/></g></svg>`,
+  ikada:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#dff1fa"/><rect x="0" y="64" width="100" height="36" fill="#7ec8e3"/><rect x="14" y="36" width="72" height="10" rx="5" fill="#b98150"/><rect x="14" y="47" width="72" height="10" rx="5" fill="#a9743f"/><rect x="14" y="58" width="72" height="10" rx="5" fill="#b98150"/><rect x="24" y="32" width="6" height="40" rx="3" fill="#7c4f22"/><rect x="70" y="32" width="6" height="40" rx="3" fill="#7c4f22"/><path d="M0 70 q10 -6 20 0 t20 0 t20 0 t20 0 t20 0" stroke="#5ab0d6" fill="none" stroke-width="3"/></svg>`,
+  yagura:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#eef6ee"/><polygon points="40,22 60,22 73,90 27,90" fill="#c98d4e"/><polygon points="30,12 70,12 64,24 36,24" fill="#8a5a2b"/><rect x="44" y="4" width="12" height="8" fill="#c0392b"/><line x1="36" y1="34" x2="64" y2="34" stroke="#8a5a2b" stroke-width="5"/><line x1="33" y1="55" x2="67" y2="55" stroke="#8a5a2b" stroke-width="5"/><line x1="30" y1="76" x2="70" y2="76" stroke="#8a5a2b" stroke-width="5"/><line x1="37" y1="34" x2="65" y2="76" stroke="#8a5a2b" stroke-width="3.5"/><line x1="63" y1="34" x2="35" y2="76" stroke="#8a5a2b" stroke-width="3.5"/></svg>`,
+  kokeshi:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#fdf3e3"/><circle cx="50" cy="30" r="18" fill="#f7d9c4"/><path d="M32 28 q0 -18 18 -18 t18 18 q-8 -8 -18 -8 t-18 8z" fill="#333"/><rect x="28" y="16" width="8" height="14" rx="4" fill="#333"/><rect x="64" y="16" width="8" height="14" rx="4" fill="#333"/><circle cx="43" cy="31" r="2.4" fill="#333"/><circle cx="57" cy="31" r="2.4" fill="#333"/><path d="M45 39 q5 4 10 0" stroke="#c0392b" fill="none" stroke-width="2.4" stroke-linecap="round"/><path d="M36 48 h28 q4 22 -2 40 h-24 q-6 -18 -2 -40z" fill="#c0392b"/><circle cx="50" cy="66" r="8" fill="#f5e6c8"/><circle cx="50" cy="66" r="4" fill="#e67e22"/></svg>`,
+  tawashi:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#eef6ee"/><path d="M50 40 q-13 -18 0 -21 q13 3 0 21" fill="none" stroke="#555" stroke-width="4"/><ellipse cx="50" cy="62" rx="31" ry="22" fill="#8a5a2b"/><ellipse cx="50" cy="62" rx="31" ry="22" fill="none" stroke="#5f3d18" stroke-width="7" stroke-dasharray="2.5 5"/><ellipse cx="50" cy="62" rx="18" ry="12" fill="none" stroke="#6e441d" stroke-width="3" stroke-dasharray="2 4"/></svg>`,
+  sudare:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#f3f7f0"/><rect x="20" y="8" width="60" height="9" rx="4.5" fill="#7c4f22"/><rect x="23" y="20" width="54" height="6.5" rx="3" fill="#dcb26e"/><rect x="23" y="29" width="54" height="6.5" rx="3" fill="#d2a55e"/><rect x="23" y="38" width="54" height="6.5" rx="3" fill="#dcb26e"/><rect x="23" y="47" width="54" height="6.5" rx="3" fill="#d2a55e"/><rect x="23" y="56" width="54" height="6.5" rx="3" fill="#dcb26e"/><rect x="23" y="65" width="54" height="6.5" rx="3" fill="#d2a55e"/><rect x="23" y="74" width="54" height="6.5" rx="3" fill="#dcb26e"/><rect x="23" y="83" width="54" height="6.5" rx="3" fill="#d2a55e"/><line x1="35" y1="17" x2="35" y2="92" stroke="#7c4f22" stroke-width="2.4"/><line x1="65" y1="17" x2="65" y2="92" stroke="#7c4f22" stroke-width="2.4"/></svg>`,
+  waraji:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#fdf3e3"/><ellipse cx="50" cy="56" rx="25" ry="36" fill="#d9b06c" stroke="#a9743f" stroke-width="4"/><line x1="28" y1="42" x2="72" y2="42" stroke="#a9743f" stroke-width="3"/><line x1="26" y1="56" x2="74" y2="56" stroke="#a9743f" stroke-width="3"/><line x1="28" y1="70" x2="72" y2="70" stroke="#a9743f" stroke-width="3"/><line x1="30" y1="82" x2="70" y2="82" stroke="#a9743f" stroke-width="3"/><path d="M50 26 L32 46 M50 26 L68 46 M50 26 v14" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
+  mikoshi:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#fdf0f0"/><circle cx="50" cy="16" r="5" fill="#e6b422"/><path d="M22 44 Q50 20 78 44 L72 48 H28 Z" fill="#5b3a1a"/><rect x="33" y="48" width="34" height="26" fill="#c0392b" stroke="#e6b422" stroke-width="2.5"/><line x1="50" y1="48" x2="50" y2="74" stroke="#e6b422" stroke-width="2.5"/><rect x="8" y="78" width="84" height="7" rx="3.5" fill="#7c4f22"/><rect x="8" y="88" width="84" height="7" rx="3.5" fill="#7c4f22"/><rect x="38" y="74" width="6" height="14" fill="#8a5a2b"/><rect x="56" y="74" width="6" height="14" fill="#8a5a2b"/></svg>`,
+  tsuzumi:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#eef2f8"/><path d="M30 30 C46 44 46 56 30 70 L70 70 C54 56 54 44 70 30 Z" fill="#8a5a2b"/><ellipse cx="27" cy="50" rx="9" ry="24" fill="#f5e6c8" stroke="#c0392b" stroke-width="4"/><ellipse cx="73" cy="50" rx="9" ry="24" fill="#f5e6c8" stroke="#c0392b" stroke-width="4"/><path d="M34 32 L66 44 M34 44 L66 32 M34 56 L66 68 M34 68 L66 56" stroke="#e05545" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+  kamado:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#f5f1e6"/><ellipse cx="50" cy="42" rx="17" ry="6" fill="#2e2e2e"/><path d="M33 42 q0 16 17 16 q17 0 17 -16z" fill="#454545"/><rect x="46" y="30" width="8" height="6" rx="3" fill="#2e2e2e"/><path d="M18 90 q0 -38 32 -38 q32 0 32 38z" fill="#e8dfcc" stroke="#c9b892" stroke-width="3"/><path d="M38 90 q0 -17 12 -17 q12 0 12 17z" fill="#3b2a1a"/><path d="M50 78 q-5 6 0 11 q6 -5 0 -11" fill="#e67e22"/><path d="M50 82 q-2.5 3 0 6 q3 -3 0 -6" fill="#f6c344"/></svg>`,
+  kotatsu:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#fdf3e3"/><circle cx="50" cy="28" r="7" fill="#f39c12"/><rect x="48" y="19" width="4" height="5" rx="2" fill="#2e8b57"/><rect x="20" y="36" width="60" height="10" rx="5" fill="#8a5a2b"/><path d="M26 46 L74 46 L86 82 L14 82 Z" fill="#e07a3f"/><path d="M32 46 L44 82 M68 46 L56 82" stroke="#f2b28a" stroke-width="3" fill="none"/><rect x="24" y="82" width="9" height="10" fill="#5f3d18"/><rect x="67" y="82" width="9" height="10" fill="#5f3d18"/></svg>`,
+  sentakuki:`<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="14" fill="#eef2f8"/><rect x="18" y="12" width="64" height="78" rx="8" fill="#ffffff" stroke="#9db2c7" stroke-width="3"/><rect x="18" y="12" width="64" height="15" rx="7" fill="#d7e3f0"/><circle cx="70" cy="19.5" r="3" fill="#2f6fb3"/><circle cx="59" cy="19.5" r="3" fill="#e67e22"/><rect x="24" y="17" width="18" height="5" rx="2.5" fill="#9db2c7"/><circle cx="50" cy="58" r="21" fill="#cfe4f5" stroke="#9db2c7" stroke-width="4"/><path d="M31 58 q9.5 -8 19 0 t19 0" stroke="#5aa7dd" stroke-width="4" fill="none"/></svg>`
+};
+
+/* ===== 効果音（Web Audio） ===== */
+let actx = null;
+function beep(freq, dur, delay=0, type="sine", vol=0.25){
+  try{
+    if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==="suspended") actx.resume();
+    const t = actx.currentTime + delay;
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t+dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t); o.stop(t+dur);
+  }catch(e){}
+}
+function soundCorrect(){ beep(880,.18); beep(1319,.4,.15); }
+function soundTick(){ beep(1046,.12,0,"sine",0.2); }
+function soundWrong(){ beep(180,.28,0,"square",0.12); }
+
+/* ===== 音声読み上げ ===== */
+function speak(text){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "ja-JP"; u.rate = 0.85; u.pitch = 1.0;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ===== ゲーム進行 ===== */
+const $ = id => document.getElementById(id);
+const SET_SIZE = 10;           // 1セットの出題数
+let mode = "single";           // "single"=一文字 / "all"=全部
+let level = "easy", queue = [], qIndex = 0, score = 0;
+let locked = false, fillIndex = 0, errCount = 0;
+
+function shuffle(a){
+  const b = a.slice();
+  for(let i=b.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [b[i],b[j]] = [b[j],b[i]];
+  }
+  return b;
+}
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+function setMode(m){
+  mode = m;
+  $("mode-single").classList.toggle("selected", m==="single");
+  $("mode-all").classList.toggle("selected", m==="all");
+}
+
+function startQuiz(lv){
+  level = lv;
+  /* 30語からランダムに10問（順序もランダム、難易度は固定） */
+  queue = shuffle(DATA[lv]).slice(0, SET_SIZE);
+  qIndex = 0; score = 0;
+  show("quiz-screen");
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const item = queue[qIndex];
+  locked = false; fillIndex = 0; errCount = 0;
+  $("judge").className = ""; $("judge").innerHTML = "";
+
+  /* 進捗 */
+  $("progress-num").textContent = (qIndex+1) + "/" + queue.length;
+  $("progress-fill").style.width = (qIndex / queue.length * 100) + "%";
+
+  /* 刺激（イラスト＋漢字） */
+  const il = $("illust");
+  if(item.img)       il.innerHTML = `<img src="${item.img}" alt="">`;
+  else if(item.svg)  il.innerHTML = SVGS[item.svg];
+  else               il.innerHTML = `<span class="emoji">${item.emoji}</span>`;
+  $("kanji").textContent = item.kanji;
+  $("kanji").className = "kanji" + (item.kanji.length>=3 ? " long" : "");
+
+  /* かなのマス（5モーラ以上はマスを小さく） */
+  const morae = [...item.word];
+  $("mora-row").classList.toggle("many", morae.length >= 5);
+  let opts;
+  if(mode === "single"){
+    $("mora-row").innerHTML = morae.map((m,i)=>
+      i===item.blank
+        ? `<div class="mora blank current" id="cell-${i}">？</div>`
+        : `<div class="mora">${m}</div>`
+    ).join("");
+    opts = shuffle([morae[item.blank], ...item.dist]);
+  }else{
+    $("mora-row").innerHTML = morae.map((m,i)=>
+      `<div class="mora blank${i===0?" current":""}" id="cell-${i}">${i===0?"？":""}</div>`
+    ).join("");
+    /* 6択 = 語の全モーラ（重複除く）＋dist から補充 */
+    const uniq = [...new Set(morae)];
+    const extra = item.dist.filter(d=>!uniq.includes(d)).slice(0, 6-uniq.length);
+    opts = shuffle([...uniq, ...extra]);
+  }
+
+  $("choices").innerHTML = opts.map(o=>
+    `<button class="choice" onclick="pick(this,'${o}')">${o}</button>`).join("");
+}
+
+function pick(btn, kana){
+  if(locked || btn.disabled) return;
+  const item = queue[qIndex];
+  const morae = [...item.word];
+
+  if(mode === "single"){
+    const answer = morae[item.blank];
+    if(kana === answer){
+      locked = true;
+      btn.classList.add("right");
+      fillCell(item.blank, kana, "filled");
+      celebrate(item);
+    }else{
+      handleWrong(btn, item);
+    }
+  }else{
+    const expected = morae[fillIndex];
+    if(kana === expected){
+      fillCell(fillIndex, kana, "filled");
+      fillIndex++;
+      /* この文字がこの後も必要なら押せるまま残す */
+      if(!morae.slice(fillIndex).includes(kana)){
+        btn.classList.add("used"); btn.disabled = true;
+      }
+      if(fillIndex >= morae.length){
+        locked = true;
+        celebrate(item);
+      }else{
+        soundTick();
+        const next = $("cell-"+fillIndex);
+        next.classList.add("current");
+        next.textContent = "？";
+      }
+    }else{
+      handleWrong(btn, item);
+    }
+  }
+}
+
+/* 2チャンス制：1回目の誤答は選択肢を消して再挑戦、2回目で終了 */
+function handleWrong(btn, item){
+  errCount++;
+  const morae = [...item.word];
+  /* 選んだ音は選べなくする（全部モードでこの後必要な音は除く） */
+  if(mode === "single" || !morae.slice(fillIndex).includes(btn.textContent)){
+    btn.classList.add("wrong");
+    btn.disabled = true;
+  }
+  if(errCount >= 2){ failQuestion(item); return; }
+  $("judge").innerHTML = `<span class="batu">×</span>`;
+  $("judge").classList.add("show");
+  soundWrong();
+  setTimeout(()=>{ if($("judge").querySelector(".batu")) $("judge").classList.remove("show"); }, 700);
+}
+
+function fillCell(i, kana, cls){
+  const cell = $("cell-"+i);
+  cell.textContent = kana;
+  cell.classList.remove("current");
+  cell.classList.add(cls);
+}
+
+/* 正答：1回目=〇(1点)、2回目=△(0.5点) */
+function celebrate(item){
+  const half = errCount > 0;
+  score += half ? 0.5 : 1;
+  $("judge").innerHTML = half
+    ? `<span class="sankaku">△</span>`
+    : `<span class="maru">〇</span>`;
+  $("judge").classList.add("show");
+  soundCorrect();
+  setTimeout(()=>speak(item.word), 500);
+  document.querySelectorAll(".choice").forEach(b=>b.disabled=true);
+  setTimeout(nextQuestion, 2000);
+}
+
+/* 2回誤答：×を表示し、正答を青色で提示してから次の問題へ */
+function failQuestion(item){
+  locked = true;
+  const morae = [...item.word];
+  if(mode === "single"){
+    fillCell(item.blank, morae[item.blank], "reveal");
+  }else{
+    for(let i=fillIndex; i<morae.length; i++) fillCell(i, morae[i], "reveal");
+  }
+  $("judge").innerHTML = `<span class="batu">×</span>`;
+  $("judge").classList.add("show");
+  soundWrong();
+  setTimeout(()=>speak(item.word), 600);
+  document.querySelectorAll(".choice").forEach(b=>b.disabled=true);
+  setTimeout(nextQuestion, 2400);
+}
+
+function nextQuestion(){
+  qIndex++;
+  if(qIndex < queue.length){ renderQuestion(); }
+  else{ showResult(); }
+}
+
+function showResult(){
+  const n = queue.length;
+  let stamp, msg;
+  if(score >= n*0.9){ stamp="💮"; msg="素晴らしい！"; }
+  else if(score >= n*0.6){ stamp="🌸"; msg="よくできました！"; }
+  else{ stamp="🌱"; msg="がんばりました！"; }
+  $("result-stamp").textContent = stamp;
+  $("result-msg").textContent = msg;
+  const disp = (score % 1 === 0) ? score : score.toFixed(1);
+  $("result-score").innerHTML = `<b>${disp}</b> ／ ${n} 点`;
+  $("progress-fill").style.width = "100%";
+  show("result-screen");
+  speak(msg);
+}
+
+function retry(){ startQuiz(level); }
+function goHome(){
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  show("title-screen");
+}
+</script>
+</body>
+</html>

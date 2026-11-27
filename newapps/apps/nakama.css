@@ -1,0 +1,4 @@
+.cat-ask{font-size:24px;font-weight:700;line-height:2.2}
+.cat-name{font-family:var(--font-display);font-weight:900;font-size:clamp(34px,7vw,48px);color:var(--green)}
+.remain{font-size:20px;font-weight:700;color:var(--muted);line-height:1.8}
+.remain b{font-family:var(--font-display);font-size:30px;color:#e39a2d;margin:0 2px}

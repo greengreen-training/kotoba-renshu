@@ -1,0 +1,9 @@
+.stim{display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap}
+.kanji{font-size:84px;font-weight:700;line-height:1.1}
+.kanji.long{font-size:58px}
+.ch.kana{font-size:42px}
+.ch.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+@media (max-width:560px){.kanji{font-size:58px}.kanji.long{font-size:40px}.stim{gap:14px}.ch.kana{font-size:34px}}
+.left-note{text-align:center;margin:6px 0 0;font-weight:700;color:var(--muted);font-size:18px}
+.left-note b{font-size:24px;color:var(--green)}

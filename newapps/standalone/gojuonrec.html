@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2d5b45">
+<title>五十音れんしゅう（録音）｜グリーン・グリーン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700;900&display=swap">
+<style>
+@@COMMON_CSS@@
+/* ===== 五十音れんしゅう（録音） ===== */
+.rows{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.rowbtn{position:relative;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:20px;padding:12px 16px 10px;min-height:112px;box-shadow:0 4px 0 var(--line)}
+.rowbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.rowbtn .nm{display:block;font-family:var(--font-display);font-weight:900;font-size:34px;line-height:1.3;color:var(--green)}
+.rowbtn .ks{display:block;font-size:20px;letter-spacing:.16em;color:var(--muted);margin-top:4px}
+.rowbtn .done{position:absolute;top:10px;right:10px;background:var(--ok);color:#fff;border-radius:999px;font-size:14px;font-weight:700;padding:1px 10px;line-height:1.8}
+@media (hover:hover){.rowbtn:hover{border-color:var(--green)}}
+.toggle{margin-top:18px;text-align:center}
+.small-btn{min-height:48px;padding:0 18px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--green);font-weight:700;font-size:17px}
+.r-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.r-name{font-family:var(--font-display);font-weight:900;font-size:34px;color:var(--green);line-height:1.4}
+.kana{display:flex;justify-content:center;gap:clamp(6px,2vw,16px);margin:6px 0 22px}
+.kana span{flex:1 1 0;max-width:150px;aspect-ratio:1/1.08;display:grid;place-items:center;background:var(--card);border:3px solid var(--green);border-radius:20px;font-size:clamp(48px,11vw,104px);font-weight:700;line-height:1}
+.ctrl{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:24px}
+.big{width:190px;height:190px;border-radius:50%;border:0;color:#fff;font-weight:900;font-size:26px;display:grid;place-items:center;line-height:1.35;text-align:center;font-family:var(--font-display)}
+.big .ic{display:block;font-size:40px;line-height:1;margin-bottom:4px}
+.big rt{color:#fff}
+.big.rec{background:var(--ng);box-shadow:0 7px 0 #8f2416}
+.big.stop{background:#8f2416;animation:recPulse 1.2s ease-in-out infinite}
+.big.play{background:var(--green);box-shadow:0 7px 0 #1b3d2d}
+.big.play.on{background:#1b3d2d}
+.big:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big:disabled{opacity:.45}
+label.big{cursor:pointer;position:relative}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.55)}50%{box-shadow:0 0 0 24px rgba(192,57,43,0)}}
+@media (prefers-reduced-motion:reduce){.big.stop{animation:none;outline:8px solid rgba(192,57,43,.45)}}
+.status{text-align:center;min-height:42px;font-size:22px;font-weight:700;margin:20px 0 4px;line-height:1.9}
+.status.rec{color:var(--ng)} .status.ok{color:var(--ok)} .status.err{color:var(--ng);font-size:18px}
+.count{text-align:center;color:var(--muted);margin:0 0 18px}
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:8px}
+.nav .btn{flex:1;max-width:260px;padding:0 12px}
+.takes{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px 16px;margin-top:22px}
+.takes h2{font-family:var(--font-display);font-weight:900;font-size:21px;color:var(--green);margin-bottom:6px}
+.take{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:8px 0;border-top:1.5px solid var(--line)}
+.take:first-of-type{border-top:0}
+.take .when{font-variant-numeric:tabular-nums;line-height:1.7}
+.take button{min-height:46px;padding:0 16px;border-radius:12px;font-weight:700;font-size:16px;border:2px solid var(--green);background:var(--card);color:var(--green)}
+.take button.del{border-color:#d9b2ac;color:var(--ng)}
+.take button.del.armed{background:var(--ng);border-color:var(--ng);color:#fff}
+.note{color:var(--muted);font-size:15px;line-height:1.9;margin-top:16px}
+@media (max-width:560px){
+  .rows{grid-template-columns:repeat(2,1fr);gap:10px}
+  .rowbtn{min-height:96px;padding:10px 12px}
+  .rowbtn .nm{font-size:30px}
+  .rowbtn .ks{font-size:16px;letter-spacing:.06em}
+  .r-name{font-size:28px}
+  .kana{gap:5px;margin-bottom:16px}
+  .kana span{border-radius:14px;font-size:min(12.5vw,58px);aspect-ratio:1/1.15}
+  .ctrl{gap:14px}
+  .big{width:146px;height:146px;font-size:21px}
+  .big .ic{font-size:32px}
+  .status{font-size:19px}
+  .take .when{font-size:15px}
+  .take button{padding:0 10px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <section id="home">
+    <header class="t-head">
+      <span class="t-leaf" aria-hidden="true" style="font-size:24px">あい</span>
+      <h1 class="t-name"><ruby>五十音<rt>ごじゅうおん</rt></ruby>れんしゅう<span class="t-grade"><ruby>録音<rt>ろくおん</rt></ruby></span></h1>
+    </header>
+    <p class="t-lead"><ruby>行<rt>ぎょう</rt></ruby>を えらんで、<ruby>声<rt>こえ</rt></ruby>に <ruby>出<rt>だ</rt></ruby>して <ruby>読<rt>よ</rt></ruby>みます。<ruby>録音<rt>ろくおん</rt></ruby>して、<ruby>自分<rt>じぶん</rt></ruby>の <ruby>声<rt>こえ</rt></ruby>を <ruby>聞<rt>き</rt></ruby>き<ruby>返<rt>かえ</rt></ruby>せます。</p>
+    <p class="sec"><ruby>行<rt>ぎょう</rt></ruby>を えらんで ください</p>
+    <div class="rows" id="rows"></div>
+    <div id="dakuBox" hidden><p class="sec"><ruby>濁音<rt>だくおん</rt></ruby>・<ruby>半濁音<rt>はんだくおん</rt></ruby></p><div class="rows" id="rowsD"></div></div>
+    <p class="toggle"><button class="small-btn" id="dakuBtn" type="button"></button></p>
+    <p class="note" id="storeNote"></p>
+  </section>
+
+  <section id="row" hidden>
+    <div class="r-head">
+      <span class="r-name" id="rName"></span>
+      <button class="quit" id="toHome" type="button">← <ruby>行<rt>ぎょう</rt></ruby>を えらぶ</button>
+    </div>
+    <div class="kana" id="kana"></div>
+    <div class="ctrl" id="ctrl"></div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+    <p class="count" id="count"></p>
+    <div class="nav">
+      <button class="btn" id="prevBtn" type="button"></button>
+      <button class="btn" id="nextBtn" type="button"></button>
+    </div>
+    <div class="takes" id="takes" hidden></div>
+  </section>
+</div>
+
+<script>
+'use strict';
+@@REC@@
+const ROWS = [
+  { id:'a',  name:'あ行', k:['あ','い','う','え','お'] }, { id:'ka', name:'か行', k:['か','き','く','け','こ'] },
+  { id:'sa', name:'さ行', k:['さ','し','す','せ','そ'] }, { id:'ta', name:'た行', k:['た','ち','つ','て','と'] },
+  { id:'na', name:'な行', k:['な','に','ぬ','ね','の'] }, { id:'ha', name:'は行', k:['は','ひ','ふ','へ','ほ'] },
+  { id:'ma', name:'ま行', k:['ま','み','む','め','も'] }, { id:'ya', name:'や行', k:['や','ゆ','よ'] },
+  { id:'ra', name:'ら行', k:['ら','り','る','れ','ろ'] }, { id:'wa', name:'わ行', k:['わ','を','ん'] },
+  { id:'ga', name:'が行', k:['が','ぎ','ぐ','げ','ご'], daku:true }, { id:'za', name:'ざ行', k:['ざ','じ','ず','ぜ','ぞ'], daku:true },
+  { id:'da', name:'だ行', k:['だ','ぢ','づ','で','ど'], daku:true }, { id:'ba', name:'ば行', k:['ば','び','ぶ','べ','ぼ'], daku:true },
+  { id:'pa', name:'ぱ行', k:['ぱ','ぴ','ぷ','ぺ','ぽ'], daku:true },
+];
+const KEEP = 30, MAX_SEC = 60, MAX_BYTES = 14 * 1024 * 1024;
+/* 職員が「声も送る」にした人は、録った声をメニューに渡す（メニューが職員へ送る） */
+/* 録った声はメニューに渡す（職員へ送るかは、メニューが「声も送る」の設定で決める） */
+const $ = id => document.getElementById(id);
+const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
+const WHO = (typeof window.GG_USER === 'string' && /^[A-Za-z0-9_-]{1,20}$/.test(window.GG_USER)) ? window.GG_USER : '';
+const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const DAKU_KEY = 'gg.gojuonrec.daku' + (WHO ? '.' + WHO : '');
+const isToday = t => new Date(t).toDateString() === new Date().toDateString();
+const z2 = n => String(n).padStart(2, '0');
+const fmtWhen = t => { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()}（${'日月火水木金土'[d.getDay()]}）${z2(d.getHours())}:${z2(d.getMinutes())}`; };
+const fmtDur = s => { s = Math.max(0, Math.round(s || 0)); return s >= 60 ? Math.floor(s / 60) + '分' + z2(s % 60) + '秒' : s + '秒'; };
+
+/* ---------- 保存（この端末の中：IndexedDB。使えないときは開いている間だけ） ---------- */
+const DB = (() => {
+  let db = null, mem = { meta: [], blob: new Map() };
+  const open = () => new Promise(res => {
+    try {
+      const rq = indexedDB.open('gg-rec', 1);
+      rq.onupgradeneeded = () => { const d = rq.result; d.createObjectStore('meta', { keyPath: 'id' }); d.createObjectStore('blob'); };
+      rq.onsuccess = () => { db = rq.result; res(true); };
+      rq.onerror = () => res(false);
+      rq.onblocked = () => res(false);
+    } catch (e) { res(false); }
+  });
+  const tx = (stores, mode) => db.transaction(stores, mode);
+  const done = t => new Promise((res, rej) => { t.oncomplete = () => res(); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); });
+  async function list() {
+    if (!db) return mem.meta.slice();
+    return new Promise(res => { const r = tx(['meta'], 'readonly').objectStore('meta').getAll(); r.onsuccess = () => res(r.result || []); r.onerror = () => res([]); });
+  }
+  async function add(meta, blob) {
+    if (!db) { mem.meta.push(meta); mem.blob.set(meta.id, blob); return; }
+    const t = tx(['meta', 'blob'], 'readwrite'); t.objectStore('meta').put(meta); t.objectStore('blob').put(blob, meta.id); await done(t);
+  }
+  async function blob(id) {
+    if (!db) return mem.blob.get(id) || null;
+    return new Promise(res => { const r = tx(['blob'], 'readonly').objectStore('blob').get(id); r.onsuccess = () => res(r.result || null); r.onerror = () => res(null); });
+  }
+  async function del(ids) {
+    if (!ids.length) return;
+    if (!db) { mem.meta = mem.meta.filter(m => !ids.includes(m.id)); ids.forEach(i => mem.blob.delete(i)); return; }
+    const t = tx(['meta', 'blob'], 'readwrite'); ids.forEach(i => { t.objectStore('meta').delete(i); t.objectStore('blob').delete(i); }); await done(t);
+  }
+  return { open, list, add, blob, del, get ok() { return !!db; } };
+})();
+
+/* ---------- 状態 ---------- */
+const S = { recs: [], rowId: 'a', daku: !!lsGet(DAKU_KEY, false), busy: false, playing: '', armed: '' };
+const row = id => ROWS.find(r => r.id === id);
+/* 職員が決めた行（宿題のお題）だけを出す */
+const MYROWS = (f => (f && Array.isArray(f.topics) ? ROWS.filter(r => f.topics.map(String).includes(r.id)) : []))(window.GG_FIX);
+const visible = () => MYROWS.length ? MYROWS : ROWS.filter(r => S.daku || !r.daku);
+const recsOf = rid => S.recs.filter(r => r.row === rid).sort((a, b) => b.at - a.at);
+async function reload() { S.recs = (await DB.list()).filter(r => (r.user || '') === WHO && row(r.row)); }
+
+/* ---------- 再生 ---------- */
+let audio = null, audioUrl = '';
+function stopPlay() { if (audio) { try { audio.pause(); } catch (e) {} audio = null; } if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = ''; } S.playing = ''; }
+async function play(id) {
+  const was = S.playing; stopPlay();
+  if (was === id) { renderRow(); return; }
+  const b = await DB.blob(id);
+  if (!b) { setStatus('err', 'この録音は 読みこめませんでした。'); return; }
+  audioUrl = URL.createObjectURL(b);
+  audio = new Audio(audioUrl); S.playing = id;
+  audio.onended = () => { stopPlay(); renderRow(); };
+  audio.onerror = () => { stopPlay(); setStatus('err', 'この録音は、この端末では 再生できませんでした。'); renderRow(); };
+  renderRow();
+  try { await audio.play(); } catch (e) { stopPlay(); setStatus('err', 'もう一度「聞く」を 押して ください。'); renderRow(); }
+}
+
+/* ---------- 録音 ---------- */
+function setStatus(kind, html) { const s = $('status'); s.className = 'status' + (kind ? ' ' + kind : ''); s.innerHTML = R(html || ''); }
+async function save(blob, dur, mime) {
+  if (!blob || !blob.size) { setStatus('err', '録音[ろくおん]が 空[から]でした。もう一度[いちど] どうぞ。'); return; }
+  if (blob.size > MAX_BYTES) { setStatus('err', '録音[ろくおん]が 長[なが]すぎます。短[みじか]く 録[と]り直[なお]して ください。'); return; }
+  const r = row(S.rowId);
+  const meta = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), user: WHO, row: r.id, at: Date.now(), dur: dur || 0, mime: mime || blob.type || 'audio/webm' };
+  try {
+    await DB.add(meta, blob);
+    await reload();
+    const old = recsOf(r.id).slice(KEEP).map(x => x.id);
+    if (old.length) { await DB.del(old); await reload(); }
+    setStatus('ok', '保存[ほぞん]しました ✓　「聞[き]く」で 聞[き]けます');
+    /* 職員へは「練習した」記録だけ（声は送らない） */
+    try { window.parent.postMessage({ gg: 'result', typeName: r.name, levelName: '録音', score: 1, max: 0, marks: '', items: [r.k.join('')], sec: Math.round(dur || 0) }, '*'); } catch (e) {}
+    { try { window.parent.postMessage({ gg: 'audio', blob, mime: meta.mime, dur: dur || 0, label: r.name + '（' + r.k.join('') + '）' }, '*'); } catch (e) {} }
+  } catch (e) {
+    setStatus('err', '保存[ほぞん]できませんでした（端末[たんまつ]の 空[あ]きが 少[すく]ない かも しれません）。');
+  }
+}
+function durOf(file) {
+  return new Promise(res => {
+    const u = URL.createObjectURL(file), a = new Audio();
+    const end = v => { clearTimeout(t); URL.revokeObjectURL(u); res(isFinite(v) && v > 0 ? v : 0); };
+    const t = setTimeout(() => end(0), 3000);
+    a.preload = 'metadata'; a.onloadedmetadata = () => end(a.duration); a.onerror = () => end(0); a.src = u;
+  });
+}
+async function toggleRec() {
+  if (S.busy) return;
+  if (REC.busy()) { REC.stop(); return; }
+  stopPlay();
+  const ok = await REC.start({
+    max: MAX_SEC,
+    onTick: s => { setStatus('rec', `録音中[ろくおんちゅう]… <b>${s}</b>秒[びょう]　読[よ]み おわったら「とめる」`); },
+    onDone: async t => {
+      document.body.dataset.rec = ''; S.busy = true; renderRow();
+      if (t) { try { URL.revokeObjectURL(t.url); } catch (e) {} await save(t.blob, t.dur, t.mime); }
+      else setStatus('err', '音[おと]が 録[と]れませんでした。もう一度[いちど] どうぞ。');
+      S.busy = false; renderRow();
+    },
+    onError: code => { document.body.dataset.rec = ''; setStatus('err', REC_ERR[code] || REC_ERR.unsupported); renderRow(true); },
+  });
+  if (ok) { document.body.dataset.rec = '1'; renderRow(); }
+}
+
+/* ---------- 画面 ---------- */
+function rowBtn(r) {
+  const today = recsOf(r.id).some(x => isToday(x.at));
+  return `<button class="rowbtn" type="button" data-row="${r.id}"><span class="nm">${r.name}</span><span class="ks">${r.k.join('')}</span>${today ? '<span class="done">今日 ✓</span>' : ''}</button>`;
+}
+function renderHome() {
+  const base = MYROWS.length ? MYROWS : ROWS;
+  $('rows').innerHTML = base.filter(r => !r.daku).map(rowBtn).join('');
+  $('rowsD').innerHTML = base.filter(r => r.daku).map(rowBtn).join('');
+  $('dakuBox').hidden = MYROWS.length ? !MYROWS.some(r => r.daku) : !S.daku;
+  $('dakuBtn').hidden = !!MYROWS.length;
+  $('dakuBtn').innerHTML = S.daku ? R('濁音[だくおん]・半濁音[はんだくおん]を かくす') : R('濁音[だくおん]・半濁音[はんだくおん]も 出[だ]す');
+  $('storeNote').innerHTML = DB.ok ? '録音は 1つの行につき 新しい30回分まで この端末に残ります。' : 'この端末では録音を残せないため、この画面を閉じると録音は消えます。';
+}
+let fileFallback = !REC.can;
+function renderRow(fromError) {
+  if (fromError === true) fileFallback = true;
+  const r = row(S.rowId), list = recsOf(r.id), last = list[0];
+  const vr = visible(), i = vr.findIndex(x => x.id === r.id), prev = vr[i - 1], next = vr[i + 1];
+  const recording = REC.busy(), lock = recording || S.busy;
+  $('rName').textContent = r.name;
+  $('kana').innerHTML = r.k.map(k => `<span>${k}</span>`).join('');
+  $('kana').setAttribute('aria-label', r.k.join(' '));
+  const recBtn = S.busy ? `<button class="big rec" type="button" disabled><span>${R('保存中[ほぞんちゅう]…')}</span></button>`
+    : !fileFallback ? `<button class="big ${recording ? 'stop' : 'rec'}" type="button" id="recBtn"><span><span class="ic" aria-hidden="true">${recording ? '■' : '●'}</span>${recording ? 'とめる' : R('録音[ろくおん]する')}</span></button>`
+    : `<label class="big rec"><span><span class="ic" aria-hidden="true">●</span>${R('録音[ろくおん]する')}</span><input class="vh" type="file" accept="audio/*" capture id="recFile"></label>`;
+  const playBtn = last ? `<button class="big play${S.playing === last.id ? ' on' : ''}" type="button" data-play="${last.id}" ${lock ? 'disabled' : ''}><span><span class="ic" aria-hidden="true">${S.playing === last.id ? '■' : '▶'}</span>${S.playing === last.id ? 'とめる' : R('聞[き]く')}</span></button>` : '';
+  $('ctrl').innerHTML = recBtn + playBtn;
+  const today = list.filter(x => isToday(x.at)).length;
+  $('count').innerHTML = R(`今日[きょう]の 録音[ろくおん] ${today}回[かい]　／　ぜんぶで ${list.length}回[かい]`);
+  $('prevBtn').innerHTML = '← ' + (prev ? prev.name : R('前[まえ]の 行[ぎょう]')); $('prevBtn').disabled = !prev || lock; $('prevBtn').dataset.row = prev ? prev.id : '';
+  $('nextBtn').innerHTML = (next ? next.name : R('次[つぎ]の 行[ぎょう]')) + ' →'; $('nextBtn').disabled = !next || lock; $('nextBtn').dataset.row = next ? next.id : '';
+  $('toHome').disabled = lock;
+  const t = $('takes');
+  t.hidden = !list.length;
+  t.innerHTML = list.length ? `<h2>${R('この 行[ぎょう]の 録音[ろくおん]')}</h2>` + list.slice(0, 10).map((x, n) => `<div class="take">
+      <span class="when"><b>${list.length - n}${R('回目[かいめ]')}</b>　${fmtWhen(x.at)}（${fmtDur(x.dur)}）</span>
+      <button type="button" data-play="${x.id}" ${lock ? 'disabled' : ''}>${S.playing === x.id ? '■ とめる' : '▶ ' + R('聞[き]く')}</button>
+      <button type="button" class="del${S.armed === x.id ? ' armed' : ''}" data-del="${x.id}" ${lock ? 'disabled' : ''}>${S.armed === x.id ? R('本当[ほんとう]に 消[け]す') : R('消[け]す')}</button></div>`).join('') : '';
+}
+function openRow(id) { if (!row(id)) return; stopPlay(); S.rowId = id; S.armed = ''; setStatus('', ''); $('home').hidden = true; $('row').hidden = false; renderRow(); window.scrollTo(0, 0); }
+function goHome() { stopPlay(); S.armed = ''; $('row').hidden = true; $('home').hidden = false; renderHome(); window.scrollTo(0, 0); }
+
+document.addEventListener('click', async e => {
+  const rb = e.target.closest('.rowbtn'); if (rb) { openRow(rb.dataset.row); return; }
+  if (e.target.closest('#dakuBtn')) { S.daku = !S.daku; lsSet(DAKU_KEY, S.daku); renderHome(); return; }
+  if (e.target.closest('#toHome')) { if (!REC.busy() && !S.busy) goHome(); return; }
+  const nv = e.target.closest('#prevBtn, #nextBtn'); if (nv) { if (nv.dataset.row) openRow(nv.dataset.row); return; }
+  if (e.target.closest('#recBtn')) { toggleRec(); return; }
+  const pb = e.target.closest('[data-play]'); if (pb && !pb.disabled) { play(pb.dataset.play); return; }
+  const db = e.target.closest('[data-del]');
+  if (db && !db.disabled) {
+    const id = db.dataset.del;
+    if (S.armed !== id) { S.armed = id; renderRow(); return; }
+    if (S.playing === id) stopPlay();
+    S.armed = ''; await DB.del([id]); await reload(); renderRow();
+  }
+});
+document.addEventListener('change', async e => {
+  const el = e.target.closest('#recFile'); if (!el || !el.files[0]) return;
+  const f = el.files[0]; el.value = '';
+  S.busy = true; renderRow();
+  await save(f, await durOf(f), (f.type || '').split(';')[0] || 'audio/mp4');
+  S.busy = false; renderRow();
+});
+
+(async function () {
+  await DB.open();
+  await reload();
+  renderHome();
+})();
+</script>
+</body>
+</html>

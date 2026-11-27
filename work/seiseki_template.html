@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2d5b45">
+<title>成績一覧｜グリーン・グリーン ことばの練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700;900&display=swap">
+<style>
+/* 職員用：利用者の一覧 → 1人の練習ごとの推移と記録。ことばの練習アプリと同じ緑と文字で、情報は詰めて並べる */
+:root{
+  --paper:#f3f7f0; --card:#ffffff; --ink:#1d2d25; --muted:#4d5f55; --line:#d3e3d0;
+  --green:#2d5b45; --leaf:#85b348; --soft:#e5f0dc;
+  --lv-easy:#3f8f5a; --lv-normal:#3a6fb5; --lv-hard:#c77d12; --lv-other:#7a857e;
+  --warn:#b06a00; --bad:#c0392b;
+  --font-display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic",sans-serif;
+  --font-body:"BIZ UDPGothic","Hiragino Sans","Meiryo",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;min-height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.7;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--leaf);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px));display:grid;gap:18px}
+.head{display:flex;align-items:center;gap:14px}
+.head img{width:54px;height:auto}
+.head h1{font-family:var(--font-display);font-weight:900;font-size:clamp(26px,4vw,34px);color:var(--green);line-height:1.3;text-wrap:balance}
+.head p{font-size:14px;color:var(--muted);font-weight:700}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--line)}
+.tab{border:0;background:transparent;padding:10px 16px;font-weight:700;color:var(--muted);border-bottom:4px solid transparent;margin-bottom:-2px}
+.tab[aria-selected="true"]{color:var(--green);border-bottom-color:var(--green)}
+.panel{display:grid;gap:16px}
+.box{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:18px}
+.box h2{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--green);margin-bottom:8px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.btn{min-height:42px;padding:0 16px;border-radius:10px;border:1.5px solid var(--green);background:var(--card);color:var(--green);font-weight:700}
+.btn.primary{background:var(--green);color:#fff}
+.btn.small{min-height:34px;padding:0 10px;font-size:14px}
+.btn.danger{border-color:#d9b2ad;color:var(--bad)}
+.field{display:grid;gap:4px;min-width:0}
+.field label{font-size:14px;font-weight:700;color:var(--muted)}
+.field input,.field select{min-height:44px;padding:6px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;width:100%}
+.field input:focus,.field select:focus{border-color:var(--green);outline:none}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.msg{font-size:14px;color:var(--muted)}
+.msg.err{color:var(--bad);font-weight:700}
+.msg.ok{color:var(--green);font-weight:700}
+.empty{color:var(--muted);padding:18px;border:1.5px dashed var(--line);border-radius:14px;background:var(--card)}
+
+/* 利用者の一覧 */
+.users{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.user{display:grid;gap:2px;text-align:left;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card)}
+.user[aria-pressed="true"]{border-color:var(--green);box-shadow:0 0 0 3px var(--soft)}
+.user .id{font-family:var(--font-display);font-weight:900;font-size:22px;color:var(--green);font-variant-numeric:tabular-nums}
+.user .nm{font-weight:700}
+.user .meta{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:0 8px;line-height:1.8;background:var(--soft);color:var(--green)}
+.pill.idle{background:#fbeee0;color:var(--warn)}
+@media (hover:hover){.user:hover{border-color:var(--green)}}
+
+/* 1人の詳しい記録 */
+.detail-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.detail-head .id{font-family:var(--font-display);font-weight:900;font-size:30px;color:var(--green)}
+.detail-head .nm{font-size:20px;font-weight:700}
+.kpis{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted)}
+.kpis b{font-family:var(--font-display);font-size:22px;color:var(--ink);margin-right:2px;font-variant-numeric:tabular-nums}
+.practices{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.prac{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px 14px 10px;display:grid;gap:6px;min-width:0}
+.prac h3{font-family:var(--font-display);font-weight:700;font-size:18px}
+.sec-h{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--green);margin-top:4px}
+.prac .sub{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.chart{width:100%;height:auto;display:block}
+.chart .grid{stroke:#e3ebe0;stroke-width:1}
+.chart .axis{fill:var(--muted);font-size:11px;font-family:var(--font-body);font-variant-numeric:tabular-nums}
+.chart .ln{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.chart .pt{stroke:#fff;stroke-width:2}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend svg{width:14px;height:14px}
+.tblwrap{overflow-x:auto;background:var(--card);border:1.5px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-size:13px;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1.5px solid var(--line);white-space:nowrap;background:#f6faf3}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.num{text-align:right;white-space:nowrap}
+td.marks{font-weight:700;letter-spacing:1px;white-space:nowrap}
+.marks .o{color:#d63a3a}.marks .t{color:#e67e22}.marks .x{color:var(--lv-normal)}
+details summary{cursor:pointer;color:var(--green);font-size:13px;font-weight:700}
+/* 練習カレンダー */
+.cal{--st1:#2a78d6;--st2:#eb6834;--st3:#1baf7a;--st4:#eda100;--st5:#e87ba4;--st0:#9aa79f;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px}
+.cal-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.cal-top h3{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--green);min-width:8em;text-align:center}
+.cal-top .sum{font-size:14px;color:var(--muted)}
+.cal-top .sum b{font-family:var(--font-display);font-size:20px;color:var(--ink)}
+.cal-nav{min-height:38px;padding:0 12px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--green);font-weight:700}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-w{font-size:13px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0}
+.cal-w.sun{color:#c0392b}.cal-w.sat{color:#2f62c8}
+.cal-d{position:relative;min-height:92px;border:1.5px solid #e3ebe0;border-radius:10px;background:#fff;padding:4px 5px;text-align:left;display:flex;flex-direction:column;gap:2px;font:inherit;color:var(--ink);min-width:0}
+.cal-d.blank{border:0;background:transparent}
+.cal-d.c1{background:#f0f7ea}.cal-d.c2{background:#dcefcc}.cal-d.c3{background:#c3e3a6}
+.cal-d.today{border-color:var(--green);border-width:2.5px}
+.cal-d.sel{outline:3px solid var(--leaf);outline-offset:1px}
+.cal-d[disabled]{cursor:default}
+.cal-d:not([disabled]):hover{border-color:var(--green)}
+.cal-n{font-size:13px;font-weight:700;line-height:1.2}
+.cal-n.sun{color:#c0392b}.cal-n.sat{color:#2f62c8}
+.cal-c{position:absolute;top:4px;right:5px;font-family:var(--font-display);font-weight:700;font-size:13px;line-height:1.2}
+.cal-chips{display:flex;flex-direction:column;gap:1px;min-width:0}
+.chip-p{display:flex;align-items:center;gap:3px;font-style:normal;font-size:11.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip-p b,.cal-leg b{flex:none;width:9px;height:9px;border-radius:3px;display:inline-block}
+.chip-more{font-size:11px;color:var(--muted)}
+.cal-s{font-size:11.5px;color:var(--muted);margin-top:auto;line-height:1.3}
+.cal-v{font-size:11.5px;line-height:1.3}
+.cal-leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);align-items:center}
+.cal-leg span{display:inline-flex;align-items:center;gap:5px}
+.cal-leg i{display:inline-block;width:16px;height:12px;border-radius:3px;border:1px solid #e3ebe0}
+.cal-day{border-top:1.5px dashed var(--line);padding-top:10px;display:grid;gap:8px}
+.cal-day h4{font-family:var(--font-display);font-size:17px;color:var(--green)}
+@media (max-width:640px){
+  .cal-d{min-height:58px;padding:3px}
+  .chip-p{font-size:0;gap:0}
+  .cal-chips{flex-direction:row;flex-wrap:wrap;gap:2px}
+  .cal-s,.chip-more{display:none}
+  .cal-c{font-size:11px;top:3px;right:3px}
+}
+/* さいきん4週間（録音の練習） */
+.mini{display:grid;grid-template-columns:repeat(7,16px);gap:3px}
+.mini i{width:16px;height:16px;border-radius:4px;background:#f1f4ef;border:1px solid #e3ebe0;display:block}
+.mini i.c1{background:#cfe8b9;border-color:#cfe8b9}.mini i.c2{background:#9fd07a;border-color:#9fd07a}.mini i.c3{background:#5f9e3c;border-color:#5f9e3c}
+.mini i.today{outline:2px solid var(--green);outline-offset:1px}
+/* 問題ごとの くわしい表 */
+.rec-row.has-q{cursor:pointer}
+.rec-row td:nth-child(2){min-width:7.5em}
+.rec-row.has-q:hover td{background:#f8fbf5}
+.q-open{min-height:30px;padding:0 10px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--green);font-size:13px;font-weight:700;margin-top:4px;letter-spacing:0}
+.q-row td{background:#f8fbf5;padding:6px 10px 12px}
+.qtbl{width:auto;min-width:min(100%,520px);background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.qtbl th,.qtbl td{font-size:13.5px;padding:5px 10px;white-space:normal;letter-spacing:0}
+.qtbl td.mk{font-weight:700;font-size:16px;text-align:center}
+.qtbl td.mk.o{color:#d63a3a}.qtbl td.mk.t{color:#e67e22}.qtbl td.mk.x{color:var(--lv-normal)}
+.qtbl td.wrong{color:var(--bad);font-weight:700}
+details p{font-size:13px;color:var(--muted);margin-top:4px;word-break:break-all}
+
+/* リンク・QR */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.qcard{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:8px;justify-items:center;text-align:center;break-inside:avoid}
+.qcard{word-break:keep-all;overflow-wrap:anywhere}
+.qcard .ttl{font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--green)}
+.qcard .id.small{font-size:20px}
+.qcard .id{font-family:var(--font-display);font-weight:900;font-size:26px}
+.qcard .nm{font-weight:700}
+.qcard .qr svg{width:180px;height:180px;display:block}
+.qcard .lnk{font-size:11px;color:var(--muted);word-break:break-all}
+.qcard .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.howto{font-size:13px;color:var(--muted)}
+
+/* 練習メニュー（個人別） */
+.m-now{font-size:14px;color:var(--muted);line-height:1.9}
+.m-now b{color:var(--green)}
+.m-stage{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--green);margin:14px 0 4px;padding-bottom:2px;border-bottom:1.5px solid var(--line)}
+.m-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px 8px;padding:6px 4px;border-radius:10px}
+.m-row.on{background:#f1f8ec}
+.m-on{display:flex;align-items:center;gap:10px;font-weight:700;min-height:42px;cursor:pointer;min-width:0}
+.m-on input{width:22px;height:22px;accent-color:var(--green);flex:none}
+.m-sel{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.m-row select{min-height:38px;border:1.5px solid var(--line);border-radius:8px;background:#fff;padding:2px 6px;max-width:190px}
+.m-row select:disabled{opacity:.4}
+.m-row .m-none{font-size:13px;color:var(--muted);white-space:nowrap}
+.m-dup,.m-del{min-width:38px;min-height:38px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--green);font-weight:700}
+.m-del{color:var(--bad)}
+.pill.fix{background:var(--green);color:#fff}
+.pill.hw{background:#e8f1fb;color:#2a5f9e}
+/* 宿題・問題数・選択肢・お題 */
+.m-bulk{border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 10px;display:grid;gap:8px;background:#fbfdf9}
+.m-bulk-h{font-weight:700;color:var(--green);margin:0}
+.m-bulk-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.m-bulk-row select,.m-bulk-row input[type=date]{min-height:38px;border:1.5px solid var(--line);border-radius:8px;background:#fff;padding:2px 6px}
+.m-more{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:2px 0 4px 32px}
+.m-k{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.m-tbtn.set{background:var(--green);color:#fff;border-color:var(--green)}
+.m-topics{grid-column:1 / -1;margin:2px 0 6px 32px;border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:8px 12px;display:grid;gap:8px}
+.m-tg{border:0;padding:0;margin:0;display:grid;gap:6px}
+.m-tg legend{font-weight:700;font-size:14px;color:var(--green);padding:0}
+.m-tg-btns{display:flex;gap:6px;flex-wrap:wrap}
+.m-tps{display:flex;flex-wrap:wrap;gap:4px 6px}
+.m-tp{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px 3px 8px;cursor:pointer;font-size:14px;min-height:36px;background:#fff}
+.m-tp input{width:18px;height:18px;accent-color:var(--green)}
+.m-tp:has(input:checked){background:#e7f3df;border-color:var(--green);font-weight:700}
+.hw-box{margin-top:8px;border:1.5px solid #cfe0f3;background:#f6faff;border-radius:12px;padding:8px 12px;display:grid;gap:4px;color:var(--ink)}
+.hw-top{margin:0}
+.hw-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.hw-list li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13.5px}
+.hw-nm{flex:1 1 220px;min-width:0}
+.hw-bar{width:110px;height:10px;border-radius:999px;background:#dde7f2;overflow:hidden;flex:none}
+.hw-bar i{display:block;height:100%;background:#2a78d6;border-radius:999px}
+.hw-list li.ok .hw-bar i{background:var(--green)}
+.hw-ok{color:var(--green);font-weight:700}
+/* ふりかえり（利用者さんへ） */
+.seg{display:flex;gap:6px}
+.seg label{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:4px 14px 4px 10px;cursor:pointer;min-height:40px;background:#fff}
+.seg label:has(input:checked){background:#e7f3df;border-color:var(--green);font-weight:700}
+.seg input{accent-color:var(--green)}
+.lbl-t{font-size:13px;font-weight:700;color:var(--muted)}
+#fbNote{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;font-size:15px;line-height:1.7}
+.fb-sheet{max-width:760px;margin:14px auto 0;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:28px 32px;color:#1f2a22;font-family:"BIZ UDPGothic","Zen Maru Gothic",sans-serif;display:grid;gap:18px}
+.fb-sheet rt{font-size:.42em;color:#3d5a45}
+.fb-top{display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--green);padding-bottom:12px}
+.fb-top img{width:54px;height:auto}
+.fb-top .t{display:grid;gap:2px}
+.fb-top .org{font-size:13px;color:var(--muted)}
+.fb-top h1{margin:0;font-size:26px;line-height:1.7;color:var(--green)}
+.fb-who{font-size:24px;font-weight:700;line-height:1.8}
+.fb-who.blank{border-bottom:2px solid #9aa89f;display:inline-block;padding-right:6px}
+.nm-edit{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;margin-left:auto}
+.nm-in{min-height:38px;border:1.5px solid var(--line);border-radius:8px;padding:2px 10px;font:inherit;font-size:15px;width:12em;max-width:100%;background:#fff}
+.fb-who small{font-size:16px;font-weight:400;margin-left:10px;color:#46574b}
+.fb-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fb-kpi{border:2px solid #d5e6cc;border-radius:14px;padding:10px 12px;text-align:center;background:#f6fbf3}
+.fb-kpi .k{font-size:16px;font-weight:700;line-height:1.9}
+.fb-kpi .v{font-size:40px;font-weight:700;line-height:1.2;color:var(--green)}
+.fb-kpi .v small{font-size:18px;margin-left:2px}
+.fb-kpi .c{font-size:14px;line-height:1.9;color:#46574b}
+.fb-days{display:flex;flex-wrap:wrap;gap:6px}
+.fb-day{width:44px;text-align:center;font-size:13px;line-height:1.5}
+.fb-day i{display:block;width:34px;height:34px;margin:2px auto 0;border-radius:50%;border:2px solid #c8d8c0;background:#fff}
+.fb-day.on i{background:var(--green);border-color:var(--green)}
+.fb-month .fb-day{width:38px}.fb-month .fb-day i{width:26px;height:26px}
+.fb-h{margin:0;font-size:19px;line-height:1.9;color:var(--green);border-left:6px solid var(--green);padding-left:10px}
+.fb-tbl{width:100%;border-collapse:collapse}
+.fb-tbl th,.fb-tbl td{border-bottom:1.5px solid #e2ebdd;padding:8px 6px;font-size:16px;line-height:1.9;text-align:left;vertical-align:middle}
+.fb-tbl th{font-size:14px;color:#46574b;font-weight:700}
+.fb-tbl td.n{text-align:right;white-space:nowrap;font-weight:700}
+.fb-bar{display:flex;align-items:center;gap:8px}
+.fb-bar span{flex:1;height:14px;border-radius:999px;background:#e5eee0;overflow:hidden;min-width:80px}
+.fb-bar span i{display:block;height:100%;background:var(--green);border-radius:999px}
+.fb-bar b{width:3.2em;text-align:right}
+.fb-up{color:#c0392b;font-weight:700}.fb-down{color:#2a5f9e;font-weight:700}
+.fb-hw li{font-size:16px;line-height:2}
+.fb-note{border:2px dashed #c8d8c0;border-radius:14px;padding:12px 16px;font-size:18px;line-height:2;white-space:pre-wrap;min-height:70px}
+.fb-foot{font-size:12px;color:var(--muted);text-align:right}
+@media (max-width:560px){ .fb-sheet{padding:18px 14px} .fb-kpi .v{font-size:30px} .fb-kpis{gap:6px} }
+/* 回数ごと・問題ごとの変わり方 */
+.seq-chart{max-width:100%;height:auto}
+.seq-ln{fill:none;stroke:#c9d3cc;stroke-width:1.5}
+.seq-avg{fill:none;stroke:var(--green);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.seq-chart circle{stroke:#fff;stroke-width:1.5}
+.seq-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px}
+.seq-legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.seq-legend i.avg{width:18px;height:4px;border-radius:2px;background:var(--green);vertical-align:3px}
+.seq details summary{cursor:pointer;font-weight:700;color:var(--green);font-size:14px}
+.qa-ctl{align-items:center;gap:8px}
+.qa-ctl select{min-height:38px;border:1.5px solid var(--line);border-radius:8px;background:#fff;padding:2px 6px}
+.qa-wrap{max-height:560px;overflow:auto}
+.qa-t{border-collapse:separate;border-spacing:0;background:#fff;width:auto!important;min-width:0}
+.qa-t th,.qa-t td{font-size:13px;padding:4px 6px;white-space:nowrap;border-bottom:1px solid var(--line)}
+.qa-t thead th{position:sticky;top:0;background:#f3f8ef;z-index:1}
+.qa-t .qa-q{position:sticky;left:0;background:#fff;text-align:left;font-weight:700;max-width:220px;white-space:normal;min-width:120px;z-index:1}
+.qa-t thead .qa-q{z-index:2;background:#f3f8ef}
+.qa-d{text-align:center;line-height:1.3}
+.qa-d small{display:block;font-size:10.5px;color:var(--muted);font-weight:400}
+.qa-c{text-align:center;font-weight:700;font-size:16px;position:relative;min-width:30px}
+.qa-c.o{color:#d63a3a}.qa-c.t{color:#e67e22}.qa-c.x{color:var(--lv-normal);background:#eef4fb}
+.qa-c.none{color:#c4ccc6;font-weight:400}
+.qa-w{position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--bad)}
+.qa-t td.num small{display:block;font-size:10.5px;color:var(--muted)}
+.pill.voice{background:#fbeee0;color:var(--warn)}
+.voice-box{border:1.5px solid #f1d7b5;background:#fffaf2;border-radius:12px;padding:8px 12px;margin:10px 0 6px;display:grid;gap:2px}
+.recs .play{min-width:92px}
+.recs td.lbl{min-width:180px}
+@media (max-width:560px){
+  .m-row{grid-template-columns:minmax(0,1fr) auto}
+  .m-row .m-sel{order:3;grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:6px;padding-left:32px}
+  .m-row .m-more{order:4}
+  .m-row .m-topics{order:5;margin-left:0}
+}
+
+/* 設定 */
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:8px}
+ol.steps li{line-height:1.8}
+ol.steps b{color:var(--green)}
+pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.5;white-space:pre}
+.note{font-size:13px;color:var(--muted);line-height:1.8}
+
+@media print{
+  body{background:#fff}
+  .head,.tabs,#p-data,#p-setup,#p-menu,.no-print{display:none!important}
+  #p-links{display:block!important}
+  #p-fb{display:none!important}
+  body.print-fb #p-links{display:none!important}
+  body.print-fb #p-fb{display:block!important}
+  body.print-fb .box,body.print-fb .panel{border:0;box-shadow:none;padding:0;margin:0}
+  .fb-sheet{border:0!important;box-shadow:none!important;padding:0!important}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .qcard{border:1.5px solid #999}
+  .qcard .acts{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <img src="@@LOGO@@" alt="グリーン・グリーンのロゴ">
+    <div>
+      <h1>成績一覧</h1>
+      <p>グリーン・グリーン ことばの練習（職員用）</p>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="ページの切りかえ">
+    <button class="tab" role="tab" id="t-data" aria-controls="p-data" aria-selected="true" type="button">成績</button>
+    <button class="tab" role="tab" id="t-menu" aria-controls="p-menu" aria-selected="false" type="button">練習メニュー（個人別）</button>
+    <button class="tab" role="tab" id="t-fb" aria-controls="p-fb" aria-selected="false" type="button">ふりかえり（利用者さんへ）</button>
+    <button class="tab" role="tab" id="t-links" aria-controls="p-links" aria-selected="false" type="button">利用者のリンク・QR</button>
+    <button class="tab" role="tab" id="t-setup" aria-controls="p-setup" aria-selected="false" type="button">設定・はじめての準備</button>
+  </nav>
+
+  <!-- ===== 成績 ===== -->
+  <section class="panel" id="p-data" role="tabpanel" aria-labelledby="t-data">
+    <div class="row no-print">
+      <button class="btn primary" id="reload" type="button">最新の成績を読みこむ</button>
+      <div class="field" style="min-width:160px">
+        <select id="range" aria-label="期間">
+          <option value="30">この30日</option>
+          <option value="90">この90日</option>
+          <option value="0">すべての期間</option>
+        </select>
+      </div>
+      <button class="btn small" id="csv" type="button">表（CSV）を保存</button>
+      <span class="msg" id="loadMsg"></span>
+    </div>
+    <div id="users"></div>
+    <div id="detail"></div>
+  </section>
+
+  <!-- ===== 練習メニュー（個人別） ===== -->
+  <section class="panel" id="p-menu" role="tabpanel" aria-labelledby="t-menu" hidden>
+    <div class="box">
+      <h2>利用者ごとの 練習メニュー</h2>
+      <p class="howto">利用者さんごとに「出す練習」と「難しさ」を決めます。決めた人のアプリには、その練習だけが出て、押すと決めた難しさで すぐ始まります。何も決めていない人には、全部の練習が出ます。</p>
+      <p class="howto">保存すると、その人がアプリを次に開いたとき（施設のタブレットでは、その人を選んだとき）から変わります。QRコードを渡し直す必要はありません。</p>
+      <div class="row" style="margin-top:10px">
+        <div class="field" style="min-width:220px"><label for="mUser">利用者を えらぶ</label><select id="mUser"></select></div>
+        <div class="field" style="min-width:160px"><label for="mNew">または 利用者番号を入れる</label><input id="mNew" maxlength="20" autocomplete="off" placeholder="A01"></div>
+        <button class="btn" id="mPick" type="button" style="align-self:end">この番号で決める</button>
+      </div>
+      <p class="msg" id="mMsg" style="margin-top:8px"></p>
+    </div>
+    <div class="box" id="mEdit" hidden>
+      <div class="detail-head"><span class="id" id="mId"></span><span class="nm" id="mName"></span><span class="nm-edit" id="mNameEdit"></span></div>
+      <p class="m-now" id="mNow"></p>
+      <div class="voice-box">
+        <label class="m-on"><input type="checkbox" id="mVoice"><span>🎙 <b>声も送る</b>：録音の練習（セリフをいいましょう・五十音れんしゅう・挨拶語のトレーニング・文をつくろう・語想起タイムアタック）で録った声を、職員に送ります</span></label>
+        <p class="howto">本人（ご家族）の同意をもらってから オンにしてください。声は施設の Google ドライブの「ことばの練習 録音」フォルダに保存され、このページの「成績」でも聞けます。押すと すぐ変わります。</p>
+        <span class="msg" id="mVoiceMsg"></span>
+      </div>
+      <p class="howto" style="margin:6px 0 10px">出す練習に ✓ を入れ、難しさを えらびます。「本人がえらぶ」にすると、いつもどおり えらぶ画面が出ます。同じ練習を ちがう難しさで2つ出すときは［＋］を押します。<br>
+        ✓ を入れると、その人に合わせた <b>問題数・選択肢の数・お題</b> と、<b>宿題の回数</b> も決められます（決めないときは、難しさで決まる いつもの数です）。</p>
+      <div class="m-bulk">
+        <p class="m-bulk-h">まとめて 決める（✓ を入れた練習 ぜんぶに）</p>
+        <div class="m-bulk-row"><span>難しさを</span>
+          <button class="btn small" type="button" data-blv="easy">簡単</button><button class="btn small" type="button" data-blv="normal">普通</button><button class="btn small" type="button" data-blv="hard">難しい</button><button class="btn small" type="button" data-blv="">本人がえらぶ</button><span>に する</span></div>
+        <div class="m-bulk-row"><label for="mBulkN">問題数を</label><select id="mBulkN"><option value="">えらぶ</option><option value="-">おまかせ（いつもの数）に もどす</option></select>
+          <label for="mBulkTimes">宿題の回数を</label><select id="mBulkTimes"><option value="">えらぶ</option><option value="0">決めない</option></select></div>
+        <div class="m-bulk-row"><label for="mDue">宿題の期限</label><input type="date" id="mDue"><button class="btn small" type="button" id="mDueClear">期限なし</button><span class="note">決めなくても かまいません。期限は 利用者さんの画面に「〇月〇日までに」と出ます。</span></div>
+        <span class="msg" id="mBulkMsg"></span>
+      </div>
+      <div id="mList"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn primary" id="mSave" type="button">保存する（この人のアプリに届きます）</button>
+        <button class="btn danger" id="mClear" type="button">決めた練習を全部はずす</button>
+        <span class="msg" id="mSaveMsg"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ふりかえり（利用者さんへ渡す 週ごと・月ごとの まとめ） ===== -->
+  <section class="panel" id="p-fb" role="tabpanel" aria-labelledby="t-fb" hidden>
+    <div class="box no-print">
+      <h2>ふりかえりの 資料を つくる</h2>
+      <p class="howto">利用者さんと 期間を えらぶと、利用者さんに 渡す 1枚の まとめが できます。［印刷する］から 紙にも PDF にも できます（印刷の画面で「PDF に保存」を えらびます）。名前は この端末の「名前のメモ」を使います。</p>
+      <div class="row" style="margin-top:10px">
+        <div class="field" style="min-width:200px"><label for="fbUser">利用者</label><select id="fbUser"></select></div>
+        <div class="field"><span class="lbl-t">期間</span><div class="seg"><label><input type="radio" name="fbKind" value="week" checked><span>週ごと</span></label><label><input type="radio" name="fbKind" value="month"><span>月ごと</span></label></div></div>
+        <div class="field" style="min-width:240px"><label for="fbWhen">いつの分</label><select id="fbWhen"></select></div>
+      </div>
+      <div class="field" id="fbNameBox" style="margin-top:10px" hidden><label for="fbName">資料に出す名前（名前のメモ。この端末だけに保存し、送信はしません）</label>
+        <div class="row" id="fbNameRow"></div></div>
+      <div class="field" style="margin-top:10px"><label for="fbNote">職員からの ひとこと（そのまま 資料に 入ります。漢字には 印刷のときに 読みがなが 付きません）</label>
+        <textarea id="fbNote" rows="3" placeholder="例：毎日 声を 出して 練習できましたね。来週も いっしょに がんばりましょう。"></textarea></div>
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="fbPrint" type="button">印刷する（PDF にも できます）</button><button class="btn" id="fbAuto" type="button">ひとことの 例を 入れる</button><span class="msg" id="fbMsg"></span></div>
+    </div>
+    <div id="fbSheet"></div>
+  </section>
+
+  <!-- ===== リンク・QR ===== -->
+  <section class="panel" id="p-links" role="tabpanel" aria-labelledby="t-links" hidden>
+    <div class="box no-print">
+      <h2>利用者を加える</h2>
+      <div class="grid2">
+        <div class="field"><label for="newId">利用者番号（英数字。例：A01）</label><input id="newId" maxlength="20" autocomplete="off" placeholder="A01"></div>
+        <div class="field"><label for="newName">名前のメモ（この端末だけに保存・送信はしません）</label><input id="newName" maxlength="30" autocomplete="off" placeholder="例：山田さん"></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="addUser" type="button">リンクとQRを作る</button>
+        <button class="btn" id="printCards" type="button">カードを印刷する</button>
+        <span class="msg" id="linkMsg"></span>
+      </div>
+      <p class="howto" style="margin-top:8px"><b>利用者さんのスマホ：</b>その人のQRコードを読み、開いた画面を「ホーム画面に追加」してもらうと、次から1回のタップで始められます。</p>
+      <p class="howto"><b>施設のタブレット：</b>「施設のタブレット用」のQRコードで開いて「ホーム画面に追加」します。はじめに出る「練習する人を えらんで ください」の画面の「職員の方へ」から、利用者番号と名前（タブレットの中だけに保存）を登録してください。30分 何もしないと、次の人が選び直す画面にもどります。</p>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <!-- ===== 設定 ===== -->
+  <section class="panel" id="p-setup" role="tabpanel" aria-labelledby="t-setup" hidden>
+    <div class="box">
+      <h2>この端末の設定</h2>
+      <div class="grid2">
+        <div class="field"><label for="cfgUrl">受け取りURL（Apps Script のウェブアプリURL）</label><input id="cfgUrl" inputmode="url" autocomplete="off" placeholder="https://script.google.com/macros/s/……/exec"></div>
+        <div class="field"><label for="cfgKey">職員用パスワード（スクリプトに書いたもの）</label><input id="cfgKey" type="password" autocomplete="off"></div>
+        <div class="field"><label for="cfgApp">利用者に渡すアプリのURL</label><input id="cfgApp" inputmode="url" autocomplete="off" placeholder="https://〇〇〇.netlify.app/"></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="saveCfg" type="button">保存して成績を読みこむ</button>
+        <button class="btn danger" id="clearCfg" type="button">この端末の設定を消す</button>
+        <span class="msg" id="cfgMsg"></span>
+      </div>
+      <p class="note" style="margin-top:8px">設定・パスワード・名前のメモは、この端末のブラウザだけに保存されます。スプレッドシートに送られるのは利用者番号と成績だけです。</p>
+    </div>
+
+    <div class="box">
+      <h2>はじめての準備（1回だけ）</h2>
+      <ol class="steps">
+        <li><b>アプリを公開する：</b>アプリは GitHub Pages で公開しています。利用者用アプリは <a href="https://greengreen-training.github.io/kotoba-renshu/" target="_blank" rel="noopener">https://greengreen-training.github.io/kotoba-renshu/</a>、このページはその後ろに <code>seiseki.html</code> を付けたものです。アプリを新しくするときは Claude に頼めば、同じURLのまま入れかわります（渡したリンクやQRはそのまま使えます）。</li>
+        <li><b>スプレッドシートを作る：</b>施設の Google アカウントで Google ドライブを開き、新しいスプレッドシートを作ります（名前の例：ことばの練習 成績）。</li>
+        <li><b>スクリプトを入れる：</b>スプレッドシートのメニュー「拡張機能」→「Apps Script」を開きます。もとからある文字を全部消して、下の［スクリプトをコピー］で写したものを貼り付けます。上のほうの <code>STAFF_PASSWORD</code> の「ここを職員用のパスワードに変える」を、職員だけが知る言葉に書きかえて、保存（💾）します。</li>
+        <li><b>ウェブアプリとして公開する：</b>右上の「デプロイ」→「新しいデプロイ」→ 歯車から「ウェブアプリ」を選びます。「次のユーザーとして実行」は<b>自分</b>、「アクセスできるユーザー」は<b>全員</b>にして「デプロイ」。はじめてのときは「アクセスを承認」→ アカウントを選ぶ →「詳細」→「（プロジェクト名）に移動」→「許可」と進みます。</li>
+        <li><b>このページに設定する：</b>表示された「ウェブアプリのURL」（最後が <code>/exec</code>）をコピーして、上の「受け取りURL」に貼り、パスワードも入れて［保存して成績を読みこむ］を押します。</li>
+        <li><b>利用者さんに渡す：</b>「利用者のリンク・QR」で利用者番号を入れ、できたQRコードやリンクを渡します。施設のタブレットには「施設のタブレット用」のQRコードを使います。</li>
+      </ol>
+      <p class="note" style="margin-top:10px">スクリプトを直したときは、「デプロイ」→「デプロイを管理」→ 鉛筆 → バージョンを「新バージョン」にして「デプロイ」します。「新しいデプロイ」にするとURLが変わり、渡したリンクから成績が届かなくなります。<br>録音（声）を受け取れるスクリプトにしたあとは、デプロイのときに「アクセスを承認」が出ます。Google ドライブに録音を保存するためなので、同じように「許可」してください。</p>
+      <div class="row" style="margin:12px 0 6px"><button class="btn" id="copyGas" type="button">スクリプトをコピー</button><span class="msg" id="gasMsg"></span></div>
+      <pre class="code" id="gasCode">@@GAS_CODE@@</pre>
+    </div>
+  </section>
+</div>
+
+<script>
+/* QRコードを作るライブラリ（qrcode-generator 1.4.4、Kazuhiko Arase、MITライセンス）をそのまま入れています */
+@@QRLIB@@
+</script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const LS = { url:'gg.staff.url', key:'gg.staff.key', app:'gg.staff.app', names:'gg.staff.names', range:'gg.staff.range' };
+const ls = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+};
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const z2 = n => String(n).padStart(2, '0');
+const fmtD = d => `${d.getMonth() + 1}/${d.getDate()}`;
+const fmtDT = d => `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${z2(d.getHours())}:${z2(d.getMinutes())}`;
+const fmtSec = s => s >= 60 ? `${Math.floor(s / 60)}分${z2(s % 60)}秒` : `${s}秒`;
+const fmtN = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
+const DAY = 86400000;
+const LV = [
+  { key:'easy',   name:'簡単',   test:/簡単/,  color:'var(--lv-easy)',   shape:'circle' },
+  { key:'normal', name:'普通',   test:/普通/,  color:'var(--lv-normal)', shape:'square' },
+  { key:'hard',   name:'難しい', test:/難しい/, color:'var(--lv-hard)',   shape:'tri' },
+  { key:'other',  name:'そのほか', test:/./,   color:'var(--lv-other)',  shape:'diamond' },
+];
+const lvOf = s => LV.find(l => l.test.test(s || '')) || LV[3];
+const marker = (shape, x, y, r, color, title) => {
+  const t = title ? `<title>${esc(title)}</title>` : '';
+  if (shape === 'square') return `<rect class="pt" x="${x - r}" y="${y - r}" width="${r * 2}" height="${r * 2}" rx="1.5" style="fill:${color}">${t}</rect>`;
+  if (shape === 'tri') return `<polygon class="pt" points="${x},${y - r * 1.2} ${x + r * 1.1},${y + r * .8} ${x - r * 1.1},${y + r * .8}" style="fill:${color}">${t}</polygon>`;
+  if (shape === 'diamond') return `<polygon class="pt" points="${x},${y - r * 1.2} ${x + r * 1.2},${y} ${x},${y + r * 1.2} ${x - r * 1.2},${y}" style="fill:${color}">${t}</polygon>`;
+  return `<circle class="pt" cx="${x}" cy="${y}" r="${r}" style="fill:${color}">${t}</circle>`;
+};
+
+let rows = [], selected = null;
+let menus = null;   // 個人別メニュー（受け取りスクリプトから。古いスクリプトのときは null）
+let audios = [], audioFolder = '';   // 録音の一覧（「声も送る」にした人のもの）
+
+/* 練習の一覧（ことばの練習アプリのメニューと同じ順） */
+const LVS = [['easy', '簡単'], ['normal', '普通'], ['hard', '難しい']];
+/* qn：問題数として えらべる数　opt：選択肢の数（label・unit・えらべる数・難しさごとの いつもの数）　topics：お題を えらべる練習
+   title：アプリが記録に書く練習の名前 */
+const QN = [3, 5, 8, 10, 15, 20];
+const CATALOG = [
+  { stage:'① 絵と形', apps:[ { id:'eawase', name:'絵合わせ', title:'絵合わせ', types:[['word','ことばと絵'], ['pic','同じ絵'], ['shape','形'], ['color','色'], ['mix','まぜる']], qn:QN, opt:{ vals:[2,3,4,5,6], def:{ easy:3, normal:4, hard:6 } } } ] },
+  { stage:'② 音と文字', apps:[ { id:'onin', name:'音を選ぶ練習', title:'音を選ぶ練習', types:[['single','一文字を埋める'], ['all','全部の文字を埋める']], qn:QN, opt:{ vals:[2,3,4,5,6], def:{ easy:6, normal:6, hard:6 } } },
+      { id:'oto2', name:'音を選ぶ練習（上級）', title:'音を選ぶ練習（上級）', qn:QN, opt:{ vals:[3,4,5,6,7,8], def:{ easy:6, normal:6, hard:8 } } },
+      { id:'gojuon', name:'50音ならべ', title:'50音ならべ', qn:QN, opt:{ vals:[2,3,4,6,8,10], def:{ easy:3, normal:6, hard:10 }, note:'空きのマスの数より1つ以上 多くなります' } },
+      { id:'gojuonrec', name:'五十音れんしゅう（録音）', title:'五十音れんしゅう（録音）', nolv:true, topics:true, timesNote:'1つの行を録音するごとに1回' },
+      { id:'narabe', name:'ことば並べ替え（初級）', title:'ことば並べ替え（初級）', qn:QN, opt:{ label:'まぜる字', unit:'つ', vals:[0,1,2,3,4], def:{ easy:0, normal:1, hard:2 } } },
+      { id:'narabe2', name:'ことば並べ替え（上級）', title:'ことば並べ替え（上級）', qn:QN, opt:{ label:'まぜる字', unit:'つ', vals:[0,1,2,3,4], def:{ easy:0, normal:1, hard:2 } } } ] },
+  { stage:'③ ことば', apps:[ { id:'nakama', name:'仲間えらび', title:'仲間えらび', qn:QN, topics:true, opt:{ label:'カードの数', unit:'枚', vals:[4,5,6,7,8,9,10], def:{ easy:6, normal:8, hard:9 } } },
+      { id:'fusen', name:'風船ことば', title:'風船ことば', qn:QN, opt:{ vals:[2,3,4,6], def:{ easy:3, normal:4, hard:6 }, needLv:true } },
+      { id:'setsumei', name:'説明ことば', title:'説明ことば', qn:QN, opt:{ vals:[2,3,4,6], def:{ easy:3, normal:4, hard:6 }, needLv:true } },
+      { id:'goso', name:'語想起タイムアタック（録音）', title:'語想起タイムアタック', types:[['cat','カテゴリ'], ['onset','語頭音']], qn:[1,2,3,4,5], qlabel:'お題の数', qunit:'つ', topics:true } ] },
+  { stage:'④ 文', apps:[ { id:'meishi', name:'名詞の練習', title:'名詞の練習', qn:QN, opt:{ vals:[2,3,4], def:{ easy:3, normal:4, hard:4 }, note:'問題によっては少なくなります' } },
+      { id:'joshi', name:'助詞の練習', title:'助詞の練習', qn:QN, opt:{ vals:[2,3,4,5], def:{}, note:'問題によっては少なくなります' } },
+      { id:'doushi', name:'動詞の練習', title:'動詞の練習', qn:QN, opt:{ vals:[2,3,4], def:{ easy:3, normal:3, hard:4 }, note:'問題によっては少なくなります' } },
+      { id:'doushi2', name:'動詞の練習（上級）', title:'動詞の練習（上級）', types:[['use','使い分け'], ['form','かたち'], ['mix','まぜる']], qn:QN, opt:{ vals:[2,3,4], def:{ easy:3, normal:3, hard:4 }, note:'「かたち」の簡単は いつも2択です。選べる数は 問題の数まで' } },
+      { id:'bun', name:'文をつくろう（録音）', title:'文をつくろう', types:[['place','場所から'], ['time','時間から'], ['thing','人・ことから'], ['mix','まぜる']], qn:[1,2,3,4,5,6,8,10], topics:true } ] },
+  { stage:'⑤ 会話', apps:[ { id:'serifu', name:'セリフをえらびましょう', title:'セリフをえらびましょう', qn:QN, topics:true, opt:{ vals:[2,3,4,5], def:{ easy:3, normal:3, hard:4 } } },
+      { id:'serifu2', name:'セリフをいいましょう（録音）', title:'セリフをいいましょう', qn:QN, topics:true },
+      { id:'aisatsu', name:'挨拶語のトレーニング（録音）', title:'挨拶語のトレーニング', nolv:true, topics:true, timesNote:'1つの場面を終えるごとに1回' } ] },
+];
+/* お題の一覧（ことばの練習アプリの各練習のデータから取り出したもの） */
+const TOPICDEF = /*@@TOPICS@@*/{};
+function topicName(app, k) {
+  const d = TOPICDEF[app];
+  if (d) for (const g of d.groups) for (const it of g.items) if (it[0] === k) return it[1];
+  return String(k).replace(/^(cat|onset):/, '');
+}
+const TIMES = [1, 2, 3, 4, 5, 7, 10, 14];
+const QN_OPTS_HTML = () => QN.map(v => `<option value="${v}">${v}問</option>`).join('');
+const optText = (a, v) => { const o = a.opt || {}; return o.label ? `${o.label} ${v}${o.unit || ''}` : `${v}択`; };
+const APPDEF = {}; CATALOG.forEach(g => g.apps.forEach(a => { APPDEF[a.id] = a; }));
+const okUser = v => /^[A-Za-z0-9_-]{1,20}$/.test(v || '');
+function planText(items) {
+  if (!items || !items.length) return '';
+  return items.map(it => {
+    const a = APPDEF[it.app]; if (!a) return '';
+    const t = it.type && a.types ? (a.types.find(x => x[0] === it.type) || [, ''])[1] : '';
+    const l = it.lv ? (LVS.find(x => x[0] === it.lv) || [, ''])[1] : (a.nolv ? '' : '本人がえらぶ');
+    const extra = [it.n ? it.n + (a.qunit || '問') : '', it.opts != null && a.opt ? optText(a, it.opts) : '',
+      it.topics && it.topics.length ? 'お題：' + (it.topics.length <= 3 ? it.topics.map(k => topicName(it.app, k)).join('・') : it.topics.length + (it.topics.length < 10 ? 'つ' : 'こ')) : '',
+      it.times ? it.times + '回' : ''];
+    const sub = [t, l].concat(extra).filter(Boolean).join('・');
+    return a.name + (sub ? '（' + sub + '）' : '');
+  }).filter(Boolean).join('、');
+}
+
+/* ---------- タブ ---------- */
+const TABS = ['data', 'menu', 'fb', 'links', 'setup'];
+function showTab(k) {
+  TABS.forEach(t => { $('t-' + t).setAttribute('aria-selected', t === k); $('p-' + t).hidden = t !== k; });
+  if (k === 'links') renderCards();
+  if (k === 'menu') renderMenuTab();
+  if (k === 'fb') renderFb();
+}
+TABS.forEach(t => $('t-' + t).addEventListener('click', () => showTab(t)));
+
+/* ---------- 設定 ---------- */
+const depIdOf = url => { const m = String(url || '').match(/^https:\/\/script\.google\.com\/(?:a\/macros\/[^/]+|macros)\/s\/([A-Za-z0-9_-]{20,140})\/exec/); return m ? m[1] : null; };
+const defaultApp = () => { try { return location.protocol.startsWith('http') ? new URL('./', location.href).href : ''; } catch (e) { return ''; } };
+function loadCfg() {
+  $('cfgUrl').value = ls.get(LS.url, '');
+  $('cfgKey').value = ls.get(LS.key, '');
+  $('cfgApp').value = ls.get(LS.app, '') || defaultApp();
+  $('range').value = String(ls.get(LS.range, 30));
+}
+$('saveCfg').addEventListener('click', () => {
+  const url = $('cfgUrl').value.trim(), key = $('cfgKey').value, app = $('cfgApp').value.trim();
+  const m = $('cfgMsg');
+  if (!depIdOf(url)) { m.className = 'msg err'; m.textContent = '受け取りURLは「https://script.google.com/macros/s/……/exec」の形で入れてください。'; return; }
+  if (app && !/^https?:\/\//.test(app)) { m.className = 'msg err'; m.textContent = 'アプリのURLは https:// から入れてください。'; return; }
+  ls.set(LS.url, url); ls.set(LS.key, key); ls.set(LS.app, app);
+  m.className = 'msg ok'; m.textContent = '保存しました。';
+  showTab('data'); load();
+});
+$('clearCfg').addEventListener('click', () => {
+  if ($('clearCfg').dataset.armed !== '1') { $('clearCfg').dataset.armed = '1'; $('clearCfg').textContent = 'もう一度押すと消えます'; setTimeout(() => { $('clearCfg').dataset.armed = ''; $('clearCfg').textContent = 'この端末の設定を消す'; }, 4000); return; }
+  [LS.url, LS.key, LS.app].forEach(ls.del); loadCfg(); rows = []; selected = null; renderUsers(); renderDetail();
+  $('clearCfg').dataset.armed = ''; $('clearCfg').textContent = 'この端末の設定を消す';
+  $('cfgMsg').className = 'msg ok'; $('cfgMsg').textContent = '消しました。';
+});
+$('copyGas').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('gasCode').textContent); $('gasMsg').className = 'msg ok'; $('gasMsg').textContent = 'コピーしました。Apps Script に貼り付けてください。'; }
+  catch (e) { const r = document.createRange(); r.selectNodeContents($('gasCode')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $('gasMsg').className = 'msg'; $('gasMsg').textContent = '選んだ状態にしました。コピーしてください。'; }
+});
+
+/* ---------- 成績を読みこむ ---------- */
+async function load() {
+  const url = ls.get(LS.url, ''), key = ls.get(LS.key, '');
+  const m = $('loadMsg');
+  if (!depIdOf(url) || !key) { m.className = 'msg err'; m.textContent = '先に「設定・はじめての準備」で受け取りURLとパスワードを入れてください。'; renderUsers(); return; }
+  m.className = 'msg'; m.textContent = '読みこみ中…';
+  try {
+    const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'key=' + encodeURIComponent(key), { cache: 'no-store' });
+    const j = await res.json();
+    if (!j.ok) { m.className = 'msg err'; m.textContent = j.error === 'password' ? 'パスワードがちがいます（スクリプトの STAFF_PASSWORD と同じにしてください）。' : '読みこめませんでした：' + (j.error || ''); return; }
+    menus = j.menus && typeof j.menus === 'object' ? j.menus : null;
+    audioFolder = String(j.audioFolder || '');
+    audios = (Array.isArray(j.audio) ? j.audio : []).map(r => ({ at: new Date(r[1]), user: String(r[2]), app: String(r[3] || ''), label: String(r[4] || ''), dur: Number(r[5]) || 0, name: String(r[6] || ''), id: String(r[7] || '') }))
+      .filter(a => a.user && a.id && !isNaN(a.at.getTime()));
+    rows = (j.rows || []).map(r => ({ recv:new Date(r[0]), at:new Date(r[1]), user:String(r[2]), app:String(r[3]), type:String(r[4] || ''), level:String(r[5] || ''),
+      score:Number(r[6]) || 0, max:Number(r[7]) || 0, marks:String(r[8] || ''), items:String(r[9] || ''), sec:Number(r[10]) || 0, uid:String(r[11] || ''), appId:String(r[12] || '') }))
+      .filter(r => r.user && !isNaN(r.at.getTime()));
+    m.className = 'msg ok'; m.textContent = `${fmtDT(new Date())} に読みこみました（全 ${rows.length} 回分）`;
+    renderUsers(); renderDetail(); renderMenuTab();
+    if (!$('p-fb').hidden) renderFb();
+  } catch (e) {
+    m.className = 'msg err'; m.textContent = '読みこめませんでした。インターネットのつながりと受け取りURLを確かめてください。';
+  }
+}
+$('reload').addEventListener('click', load);
+$('range').addEventListener('change', () => { ls.set(LS.range, Number($('range').value)); renderUsers(); renderDetail(); });
+const inRange = r => { const d = Number($('range').value); return !d || Date.now() - r.at.getTime() <= d * DAY; };
+const names = () => ls.get(LS.names, {}) || {};
+
+/* ---------- 利用者の一覧 ---------- */
+function renderUsers() {
+  const box = $('users');
+  if (!rows.length) { box.innerHTML = `<p class="empty">まだ成績がありません。設定がすんでいれば、利用者さんが個人用リンクから1回（10問）終えると、ここに出ます。</p>`; return; }
+  const by = {};
+  rows.forEach(r => { (by[r.user] = by[r.user] || []).push(r); });
+  const nm = names();
+  const list = Object.keys(by).map(u => {
+    const all = by[u], last = all.reduce((a, b) => (b.at > a.at ? b : a));
+    return { u, all, last, n: all.filter(inRange).length, week: all.filter(r => Date.now() - r.at.getTime() <= 7 * DAY).length };
+  }).sort((a, b) => b.last.at - a.last.at);
+  box.innerHTML = `<div class="users">${list.map(x => {
+    const idle = Date.now() - x.last.at.getTime() > 7 * DAY;
+    return `<button class="user" type="button" data-u="${esc(x.u)}" aria-pressed="${x.u === selected}">
+      <span class="id">${esc(x.u)}</span>${nm[x.u] ? `<span class="nm">${esc(nm[x.u])}</span>` : ''}
+      <span class="meta">さいごの練習　${fmtDT(x.last.at)}</span>
+      <span class="meta">この期間 ${x.n} 回・この7日 ${x.week} 回 ${idle ? '<span class="pill idle">7日以上 練習なし</span>' : '<span class="pill">練習中</span>'}${(() => { const h = hwSummary(x.u); if (h) return ` <span class="pill ${h.total && h.done === h.total ? 'fix' : h.late ? 'idle' : 'hw'}">宿題 ${h.total ? h.done + '/' + h.total : ''}${h.total && h.done === h.total ? ' ✓' : ''}${h.late ? '・期限すぎ' : ''}</span>`;
+        return menus && menus[x.u] && menus[x.u].items.length ? ' <span class="pill fix">メニュー決定</span>' : ''; })()}${menus && menus[x.u] && menus[x.u].voice ? ' <span class="pill voice">🎙 声も送る</span>' : ''}</span>
+    </button>`; }).join('')}</div>`;
+  box.querySelectorAll('.user').forEach(b => b.addEventListener('click', () => { selected = b.dataset.u; renderUsers(); renderDetail(); $('detail').scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
+}
+
+/* ---------- 1人の詳しい記録 ---------- */
+function chartSVG(list) {
+  const W = 340, H = 150, L = 46, R = 8, T = 10, B = 22, w = W - L - R, h = H - T - B;
+  const pts = list.slice().sort((a, b) => a.at - b.at);
+  const x = i => L + (pts.length === 1 ? w / 2 : (i * w) / (pts.length - 1));
+  const y = v => T + h - (v / 100) * h;
+  let g = '';
+  [0, 50, 100].forEach(v => { g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}%</text>`; });
+  g += `<text class="axis" x="${L}" y="${H - 6}">${fmtD(pts[0].at)}</text>`;
+  if (pts.length > 1) g += `<text class="axis" x="${W - R}" y="${H - 6}" text-anchor="end">${fmtD(pts[pts.length - 1].at)}</text>`;
+  LV.forEach(l => {
+    const mine = pts.map((p, i) => ({ p, i })).filter(o => lvOf(o.p.level) === l);
+    if (mine.length > 1) g += `<polyline class="ln" style="stroke:${l.color}" points="${mine.map(o => `${x(o.i)},${y(o.p.max ? (o.p.score / o.p.max) * 100 : 0)}`).join(' ')}"/>`;
+  });
+  pts.forEach((p, i) => {
+    const l = lvOf(p.level), pct = p.max ? (p.score / p.max) * 100 : 0;
+    g += marker(l.shape, x(i), y(pct), 5.5, l.color, `${fmtDT(p.at)}　${p.type ? p.type + '・' : ''}${p.level}　${fmtN(p.score)} / ${p.max}点`);
+  });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="点数の移りかわり">${g}</svg>`;
+}
+function marksHTML(s) { return [...s].map(c => `<span class="${c === '〇' ? 'o' : c === '△' ? 't' : 'x'}">${esc(c)}</span>`).join(''); }
+function renderDetail() {
+  const box = $('detail');
+  if (!selected) { box.innerHTML = rows.length ? '<p class="msg">利用者を選ぶと、練習ごとの点数の移りかわりと記録が出ます。</p>' : ''; return; }
+  const mineAll = rows.filter(r => r.user === selected);
+  const mine = mineAll.filter(inRange).sort((a, b) => b.at - a.at);
+  const nm = names()[selected] || '';
+  const total = mine.reduce((a, r) => a + r.sec, 0);
+  const days = new Set(mine.map(r => r.at.toDateString())).size;
+  const byApp = {};
+  mine.forEach(r => { (byApp[r.app] = byApp[r.app] || []).push(r); });
+  const usedLv = LV.filter(l => mine.some(r => lvOf(r.level) === l));
+  const legend = `<div class="legend">${usedLv.map(l => `<span><svg viewBox="0 0 14 14">${marker(l.shape, 7, 7, 4.5, l.color)}</svg>${l.name}</span>`).join('')}</div>`;
+  box.innerHTML = `<div class="box" style="display:grid;gap:14px">
+    <div class="detail-head"><span class="id">${esc(selected)}</span>${nm ? `<span class="nm">${esc(nm)}</span>` : ''}
+      <span class="nm-edit no-print">${nameEditorHTML(selected, 'dName')}</span></div>
+    <div class="m-now no-print">練習メニュー：${menus && menus[selected] && menus[selected].items.length ? '<b>' + esc(planText(menus[selected].items)) + '</b>' : (menus ? '決めていません（全部の練習が出ます）' : '—')}　<button class="btn small" id="toMenu" type="button">練習メニュー・宿題を決める・変える</button>${hwHTML(selected)}</div>
+    <div class="kpis"><span><b>${mine.length}</b>回</span><span><b>${days}</b>日 練習</span><span>合計 <b>${Math.round(total / 60)}</b>分</span><span>（${$('range').selectedOptions[0].textContent}）</span></div>
+    ${calendarHTML(mineAll, audios.filter(a => a.user === selected))}
+    ${mine.length ? '' : '<p class="empty">この期間の記録はありません。期間を「すべての期間」にすると前の記録も出ます。</p>'}
+    <div class="practices">${Object.keys(byApp).sort().map(a => {
+      const list = byApp[a], pct = r => (r.max ? (r.score / r.max) * 100 : 0);
+      if (list.every(r => !r.max)) {   // 録音の練習：点数はないので、練習した日と回数
+        return `<div class="prac"><h3>${esc(a)}</h3><p class="sub">${list.length}回 練習（録音の練習なので点数はありません）</p>
+          ${miniCal(mineAll.filter(r => r.app === a))}</div>`;
+      }
+      const last = list[0], best = list.reduce((m, r) => Math.max(m, pct(r)), 0);
+      return `<div class="prac"><h3>${esc(a)}</h3>
+        <p class="sub">${list.length}回　さいご ${fmtN(last.score)}/${last.max}点（${esc(last.level)}）　いちばん良い ${Math.round(best)}%</p>
+        ${chartSVG(list)}${legend}</div>`; }).join('')}</div>
+    ${seqHTML(mine)}
+    ${qaHTML(mine)}
+    ${recsHTML()}
+    ${mine.length ? `<h3 class="sec-h">すべての記録（行を押すと、問題ごとに「どう まちがえたか・何秒かかったか」が 出ます）</h3>${recTable(mine)}` : ''}
+  </div>`;
+  bindRecRows(box);
+  box.querySelectorAll('[data-cal]').forEach(b => b.addEventListener('click', () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + Number(b.dataset.cal), 1); calDay = null; renderDetail(); }));
+  box.querySelectorAll('.cal-d[data-day]').forEach(b => b.addEventListener('click', () => { calDay = calDay === b.dataset.day ? null : b.dataset.day; renderDetail(); const d = box.querySelector('.cal-day'); if (d) d.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }));
+  const tm = $('toMenu');
+  if (tm) tm.addEventListener('click', () => { showTab('menu'); startEdit(selected); window.scrollTo(0, 0); });
+  box.querySelectorAll('[data-aud]').forEach(b => b.addEventListener('click', () => playAudio(b)));
+  const qs = $('qaSel'); if (qs) qs.addEventListener('change', () => { qaApp = qs.value; renderDetail(); const q = $('qaBox'); if (q) q.scrollIntoView({ block: 'nearest' }); });
+  const qm = $('qaMiss'); if (qm) qm.addEventListener('change', () => { qaMiss = qm.checked; renderDetail(); const q = $('qaBox'); if (q) q.scrollIntoView({ block: 'nearest' }); });
+}
+
+/* ---------- 回数ごと（練習の しゅるいに 関係なく、練習した順の点数） ---------- */
+function seqHTML(list) {
+  const pts = list.filter(r => r.max).sort((a, b) => a.at - b.at);
+  if (pts.length < 2) return '';
+  const W = 680, H = 200, L = 46, R = 12, T = 12, B = 28, w = W - L - R, h = H - T - B;
+  const x = i => L + (i * w) / (pts.length - 1);
+  const y = v => T + h - (v / 100) * h;
+  const pct = r => (r.score / r.max) * 100;
+  let g = '';
+  [0, 50, 100].forEach(v => { g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}%</text>`; });
+  g += `<text class="axis" x="${L}" y="${H - 8}">1回目</text><text class="axis" x="${W - R}" y="${H - 8}" text-anchor="end">${pts.length}回目</text>`;
+  /* 5回ごとの 平均（ならした線） */
+  const avg = pts.map((p, i) => { const s = pts.slice(Math.max(0, i - 4), i + 1); return s.reduce((a, r) => a + pct(r), 0) / s.length; });
+  g += `<polyline class="seq-ln" points="${pts.map((p, i) => `${x(i)},${y(pct(p))}`).join(' ')}"/>`;
+  g += `<polyline class="seq-avg" points="${avg.map((v, i) => `${x(i)},${y(v)}`).join(' ')}"/>`;
+  pts.forEach((p, i) => { g += `<circle cx="${x(i)}" cy="${y(pct(p))}" r="${pts.length > 60 ? 3.5 : 5}" style="fill:var(--st${stageOf(p.app)})"><title>${i + 1}回目　${fmtDT(p.at)}　${esc(p.app)}（${esc([p.type, p.level].filter(Boolean).join('・'))}）　${fmtN(p.score)} / ${p.max}点（${Math.round(pct(p))}%）</title></circle>`; });
+  const legend = STAGE.map((st, i) => pts.some(p => stageOf(p.app) === i + 1) ? `<span><i style="background:var(--st${i + 1})"></i>${esc(st[0])}</span>` : '').join('');
+  const rowsH = pts.map((p, i) => ({ p, i })).reverse().map(({ p, i }) => `<tr><td class="num">${i + 1}</td><td>${fmtDT(p.at)}</td><td>${esc(p.app)}</td><td>${esc([p.type, p.level].filter(Boolean).join('・'))}</td><td class="num">${fmtN(p.score)} / ${p.max}</td><td class="num"><b>${Math.round(pct(p))}%</b></td><td class="marks">${marksHTML(p.marks)}</td></tr>`).join('');
+  return `<div class="seq cal">
+    <h3 class="sec-h" style="margin:0">回数ごとの 点数（練習の しゅるいに 関係なく、練習した順）</h3>
+    <p class="note">点の色は 練習の まとまり、太い線は 5回ごとの 平均です。点に 指を あてると くわしく 出ます。</p>
+    <svg class="chart seq-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="回数ごとの点数">${g}</svg>
+    <div class="legend seq-legend">${legend}<span><i class="avg"></i>5回ごとの 平均</span></div>
+    <details><summary>表で見る（${pts.length}回分・新しい順）</summary>
+      <div class="tblwrap"><table><thead><tr><th class="num">回</th><th>練習した日時</th><th>練習</th><th>しゅるい・難しさ</th><th class="num">点数</th><th class="num">正答率</th><th>〇△×</th></tr></thead><tbody>${rowsH}</tbody></table></div>
+    </details></div>`;
+}
+
+/* ---------- 問題ごとの 変わり方（同じ問題の 〇△× が 日付の順に 並ぶ） ---------- */
+let qaApp = null, qaMiss = false;
+function qaHTML(list) {
+  const withQ = list.filter(r => r.items && /[〇△×]/.test(r.items)).sort((a, b) => b.at - a.at);
+  const apps = [...new Set(withQ.map(r => r.app))];
+  if (!apps.length) return '';
+  if (!apps.includes(qaApp)) qaApp = apps[0];
+  const ses = withQ.filter(r => r.app === qaApp).sort((a, b) => a.at - b.at).slice(-20);
+  const map = new Map();
+  ses.forEach((r, si) => String(r.items).split('／').filter(Boolean).map(parseItem).forEach(q => {
+    if (!q.mk) return;
+    if (!map.has(q.label)) map.set(q.label, []);
+    map.get(q.label)[si] = q;
+  }));
+  const pt = q => q.mk === '〇' ? 1 : q.mk === '△' ? 0.5 : 0;
+  let lines = [...map.entries()].map(([label, arr]) => {
+    const got = arr.filter(Boolean);
+    return { label, arr, n: got.length, rate: got.reduce((a, q) => a + pt(q), 0) / got.length, miss: got.some(q => q.mk !== '〇'), last: got[got.length - 1] };
+  });
+  if (qaMiss) lines = lines.filter(l => l.miss);
+  lines.sort((a, b) => b.n - a.n || a.rate - b.rate || a.label.localeCompare(b.label, 'ja'));
+  const head = ses.map(r => `<th class="qa-d" title="${fmtDT(r.at)}　${esc([r.type, r.level].filter(Boolean).join('・'))}">${r.at.getMonth() + 1}/${r.at.getDate()}<small>${esc(String(r.level || '').slice(0, 3))}</small></th>`).join('');
+  const cell = q => {
+    if (!q) return '<td class="qa-c none" aria-label="出ていない">·</td>';
+    const tip = [q.late ? '時間切れ' : q.sec != null ? q.sec + '秒' : '', q.wrong ? 'えらんだ：' + q.wrong : ''].filter(Boolean).join('　');
+    return `<td class="qa-c mk ${q.mk === '〇' ? 'o' : q.mk === '△' ? 't' : 'x'}"${tip ? ` title="${esc(tip)}"` : ''}>${q.mk}${q.wrong ? '<i class="qa-w" aria-hidden="true"></i>' : ''}</td>`;
+  };
+  return `<div class="cal qa" id="qaBox">
+    <h3 class="sec-h" style="margin:0">問題ごとの 変わり方（同じ問題の 〇△× を 日付の順に）</h3>
+    <div class="row qa-ctl"><label for="qaSel">練習</label><select id="qaSel">${apps.map(a => `<option${a === qaApp ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select>
+      <label class="m-on"><input type="checkbox" id="qaMiss"${qaMiss ? ' checked' : ''}><span>まちがえたことの ある問題だけ</span></label></div>
+    <p class="note">新しい20回分まで。〇△× に 指を あてると、かかった秒数と まちがえて えらんだものが 出ます（赤い点は まちがえて えらんだものが ある問題）。この期間に ${ses.length}回、${map.size}問 出ています。</p>
+    ${lines.length ? `<div class="tblwrap qa-wrap"><table class="qa-t"><thead><tr><th class="qa-q">問題</th>${head}<th class="num">正答率</th></tr></thead><tbody>
+      ${lines.map(l => `<tr><th class="qa-q" scope="row">${esc(l.label)}</th>${ses.map((r, si) => cell(l.arr[si])).join('')}<td class="num"><b>${Math.round(l.rate * 100)}%</b><small>（${l.n}回）</small></td></tr>`).join('')}
+    </tbody></table></div>` : '<p class="empty">まちがえたことの ある問題は ありません。</p>'}
+  </div>`;
+}
+
+/* ---------- 問題ごと（どう まちがえたか・何秒かかったか） ---------- */
+function parseItem(t) {
+  const m = String(t).match(/^(.*?)([〇△×])(?:（(.*)）)?$/);
+  if (!m) return { label: String(t), mk: '', sec: null, late: false, wrong: '' };
+  const ex = m[3] || '', sec = ex.match(/([\d.]+)秒/), w = ex.match(/えらんだ：(.+)$/);
+  return { label: m[1], mk: m[2], sec: sec ? Number(sec[1]) : null, late: /時間切れ/.test(ex), wrong: w ? w[1] : '' };
+}
+function itemsTable(items) {
+  const list = String(items || '').split('／').filter(Boolean).map(parseItem);
+  if (!list.some(x => x.mk)) return `<p class="note">${list.map(x => esc(x.label)).join('　')}</p>`;
+  const anyDetail = list.some(x => x.sec != null || x.wrong || x.late);
+  return `<table class="qtbl"><thead><tr><th>#</th><th>問題</th><th>結果</th><th class="num">かかった秒数</th><th>まちがえて えらんだもの</th></tr></thead><tbody>
+    ${list.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.label)}</td><td class="mk ${x.mk === '〇' ? 'o' : x.mk === '△' ? 't' : 'x'}">${x.mk}</td>
+      <td class="num">${x.late ? '時間切れ' : x.sec != null ? x.sec + '秒' : '—'}</td><td class="wrong">${x.wrong ? esc(x.wrong) : x.mk === '〇' ? '' : (anyDetail ? '' : '—')}</td></tr>`).join('')}
+  </tbody></table>${anyDetail ? '' : '<p class="note">この記録は、秒数と まちがえた答えを送る前の版で練習したものです。</p>'}`;
+}
+function recRows(list) {
+  return list.map((r, k) => {
+    const hasQ = !!r.items;
+    return `<tr class="rec-row${hasQ ? ' has-q' : ''}" ${hasQ ? `data-q="${k}" title="押すと 問題ごとの くわしい結果が 出ます"` : ''}>
+      <td>${fmtDT(r.at)}</td><td>${esc(r.app)}</td><td>${esc([r.type, r.level].filter(Boolean).join('・'))}</td>
+      <td class="num">${r.max ? `${fmtN(r.score)} / ${r.max}` : '—'}</td>
+      <td class="marks">${marksHTML(r.marks)}${hasQ ? `<br><button class="q-open" type="button" aria-expanded="false">▼ 問題ごと</button>` : ''}</td>
+      <td class="num">${fmtSec(r.sec)}</td></tr>
+      ${hasQ ? `<tr class="q-row" hidden><td colspan="6">${itemsTable(r.items)}</td></tr>` : ''}`;
+  }).join('');
+}
+function recTable(list) {
+  return `<div class="tblwrap"><table>
+    <thead><tr><th>練習した日時</th><th>練習</th><th>しゅるい・難しさ</th><th class="num">点数</th><th>〇△×</th><th class="num">かかった時間</th></tr></thead>
+    <tbody>${recRows(list)}</tbody></table></div>`;
+}
+function bindRecRows(root) {
+  root.querySelectorAll('.rec-row.has-q').forEach(tr => tr.addEventListener('click', () => {
+    const q = tr.nextElementSibling, b = tr.querySelector('.q-open');
+    if (!q || !q.classList.contains('q-row')) return;
+    q.hidden = !q.hidden;
+    if (b) { b.textContent = q.hidden ? '▼ 問題ごと' : '▲ とじる'; b.setAttribute('aria-expanded', String(!q.hidden)); }
+  }));
+}
+
+/* ---------- 練習カレンダー ---------- */
+const STAGE = [['絵と形', ['絵合わせ']], ['音と文字', ['音を選ぶ練習', '音を選ぶ練習（上級）', '50音ならべ', '五十音れんしゅう（録音）', 'ことば並べ替え（初級）', 'ことば並べ替え（上級）']],
+  ['ことば', ['仲間えらび', '風船ことば', '説明ことば', '語想起タイムアタック']], ['文', ['名詞の練習', '助詞の練習', '動詞の練習', '動詞の練習（上級）', '文をつくろう']],
+  ['会話', ['セリフをえらびましょう', 'セリフをいいましょう', '挨拶語のトレーニング']]];
+const SHORT = { '音を選ぶ練習（上級）':'音（上級）', '五十音れんしゅう（録音）':'五十音 録音', 'ことば並べ替え（初級）':'並べ替え 初', 'ことば並べ替え（上級）':'並べ替え 上',
+  '語想起タイムアタック':'語想起', 'セリフをえらびましょう':'セリフ えらぶ', 'セリフをいいましょう':'セリフ いう', '挨拶語のトレーニング':'挨拶語', '音を選ぶ練習':'音を選ぶ', '動詞の練習（上級）':'動詞（上級）' };
+const stageOf = app => { const i = STAGE.findIndex(s => s[1].includes(app)); return i < 0 ? 0 : i + 1; };
+const shortOf = app => SHORT[app] || app.replace(/の練習$/, '');
+const dayKey = d => d.getFullYear() + '-' + z2(d.getMonth() + 1) + '-' + z2(d.getDate());
+let calFor = null, calMonth = null, calDay = null;
+function calendarHTML(all, auds) {
+  if (calFor !== selected) {
+    calFor = selected; calDay = null;
+    const last = all.reduce((m, r) => (r.at > m ? r.at : m), new Date(0));
+    const base = all.length ? last : new Date();
+    calMonth = new Date(base.getFullYear(), base.getMonth(), 1);
+  }
+  const y = calMonth.getFullYear(), mo = calMonth.getMonth(), first = new Date(y, mo, 1), nDays = new Date(y, mo + 1, 0).getDate();
+  const byDay = {}, audDay = {};
+  all.forEach(r => { if (r.at.getFullYear() === y && r.at.getMonth() === mo) (byDay[dayKey(r.at)] = byDay[dayKey(r.at)] || []).push(r); });
+  auds.forEach(a => { if (a.at.getFullYear() === y && a.at.getMonth() === mo) audDay[dayKey(a.at)] = (audDay[dayKey(a.at)] || 0) + 1; });
+  const monthN = Object.values(byDay).reduce((n, l) => n + l.length, 0), monthD = Object.keys(byDay).length;
+  const todayK = dayKey(new Date());
+  let cells = '日月火水木金土'.split('').map((w, i) => `<span class="cal-w${i === 0 ? ' sun' : i === 6 ? ' sat' : ''}">${w}</span>`).join('');
+  for (let i = 0; i < first.getDay(); i++) cells += '<span class="cal-d blank"></span>';
+  for (let d = 1; d <= nDays; d++) {
+    const dt = new Date(y, mo, d), k = dayKey(dt), list = (byDay[k] || []).slice().sort((a, b) => a.at - b.at), nv = audDay[k] || 0;
+    const wd = dt.getDay(), c = list.length >= 4 ? 3 : list.length >= 2 ? 2 : list.length ? 1 : 0;
+    const apps = []; list.forEach(r => { if (!apps.includes(r.app)) apps.push(r.app); });
+    const scored = list.filter(r => r.max);
+    const avg = scored.length ? Math.round(scored.reduce((a, r) => a + r.score / r.max, 0) / scored.length * 100) : null;
+    const label = `${mo + 1}月${d}日　${list.length ? list.length + '回 練習' + (avg != null ? '・平均 ' + avg + '%' : '') : '練習なし'}${nv ? '・録音 ' + nv + 'こ' : ''}`;
+    cells += `<button class="cal-d${c ? ' c' + c : ''}${k === todayK ? ' today' : ''}${calDay === k ? ' sel' : ''}" type="button" data-day="${k}" ${list.length || nv ? '' : 'disabled'} aria-label="${label}" title="${label}">
+      <span class="cal-n${wd === 0 ? ' sun' : wd === 6 ? ' sat' : ''}">${d}</span>${list.length ? `<span class="cal-c">${list.length}回</span>` : ''}
+      <span class="cal-chips">${apps.slice(0, 3).map(a => `<i class="chip-p"><b style="background:var(--st${stageOf(a)})"></b>${esc(shortOf(a))}</i>`).join('')}${apps.length > 3 ? `<span class="chip-more">ほか${apps.length - 3}</span>` : ''}</span>
+      ${avg != null ? `<span class="cal-s">平均 ${avg}%</span>` : ''}${nv ? `<span class="cal-v">🎙${nv}</span>` : ''}
+    </button>`;
+  }
+  let day = '';
+  if (calDay && (byDay[calDay] || audDay[calDay])) {
+    const [yy, mm, dd] = calDay.split('-').map(Number);
+    const list = (byDay[calDay] || []).slice().sort((a, b) => b.at - a.at);
+    const al = auds.filter(a => dayKey(a.at) === calDay).sort((a, b) => b.at - a.at);
+    day = `<div class="cal-day"><h4>${mm}月${dd}日の 練習（${list.length}回${al.length ? '・録音 ' + al.length + 'こ' : ''}）</h4>
+      ${list.length ? recTable(list) : ''}
+      ${al.length ? `<div class="tblwrap"><table><thead><tr><th>録音した時刻</th><th>練習</th><th>内容</th><th class="num">長さ</th><th></th></tr></thead><tbody>
+        ${al.map(a => `<tr><td>${z2(a.at.getHours())}:${z2(a.at.getMinutes())}</td><td>${esc(a.app)}</td><td>${esc(a.label)}</td><td class="num">${fmtSec(Math.round(a.dur))}</td>
+          <td><button class="btn small play" type="button" data-aud="${esc(a.id)}">▶ 聞く</button></td></tr>`).join('')}</tbody></table></div>` : ''}</div>`;
+  }
+  const usedSt = [...new Set(Object.values(byDay).flat().map(r => stageOf(r.app)))].sort();
+  return `<section class="cal" aria-label="練習カレンダー">
+    <div class="cal-top"><button class="cal-nav" type="button" data-cal="-1">◀ 前の月</button><h3>${y}年${mo + 1}月</h3><button class="cal-nav" type="button" data-cal="1">次の月 ▶</button>
+      <span class="sum">この月　<b>${monthD}</b>日・<b>${monthN}</b>回</span></div>
+    <div class="cal-grid">${cells}</div>
+    <div class="cal-leg">${usedSt.map(i => `<span><b style="background:var(--st${i})"></b>${i ? STAGE[i - 1][0] : 'そのほか'}</span>`).join('')}
+      <span><i style="background:#f0f7ea"></i>1回</span><span><i style="background:#dcefcc"></i>2〜3回</span><span><i style="background:#c3e3a6"></i>4回〜</span><span>🎙＝録音（声）</span>
+      <span>日付を押すと、その日の くわしい結果が 出ます</span></div>
+    ${day}
+  </section>`;
+}
+function miniCal(list) {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const cnt = {}; list.forEach(r => { const k = dayKey(r.at); cnt[k] = (cnt[k] || 0) + 1; });
+  let h = '';
+  for (let i = 27; i >= 0; i--) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const n = cnt[dayKey(d)] || 0, c = n >= 3 ? 3 : n;
+    h += `<i class="${c ? 'c' + c : ''}${i === 0 ? ' today' : ''}" title="${fmtD(d)}　${n ? n + '回' : '練習なし'}"></i>`;
+  }
+  return `<div><p class="sub">さいきん4週間（右下が きょう）</p><div class="mini" role="img" aria-label="さいきん4週間で ${Object.keys(cnt).length}日 練習">${h}</div></div>`;
+}
+
+/* ---------- 録音（声）を聞く ---------- */
+function recsHTML() {
+  const list = audios.filter(a => a.user === selected && inRange(a)).sort((a, b) => b.at - a.at);
+  const on = menus && menus[selected] && menus[selected].voice;
+  if (!list.length && !on) return '';
+  return `<div class="box recs" style="padding:12px">
+    <h2 style="font-size:18px">🎙 録音（声） <span class="pill">${list.length}こ</span>${audioFolder ? ` <a class="btn small" href="${esc(audioFolder)}" target="_blank" rel="noopener">ドライブのフォルダを開く</a>` : ''}</h2>
+    ${list.length ? `<div class="tblwrap"><table><thead><tr><th>録音した日時</th><th>練習</th><th>内容</th><th class="num">長さ</th><th></th></tr></thead><tbody>
+      ${list.slice(0, 100).map(a => `<tr><td>${fmtDT(a.at)}</td><td>${esc(a.app)}</td><td class="lbl">${esc(a.label)}</td><td class="num">${fmtSec(Math.round(a.dur))}</td>
+        <td><button class="btn small play" type="button" data-aud="${esc(a.id)}">▶ 聞く</button></td></tr>`).join('')}</tbody></table></div>
+      ${list.length > 100 ? '<p class="note">新しい100こを出しています。前の録音はドライブのフォルダで聞けます。</p>' : ''}`
+      : '<p class="note">この期間の録音は まだありません（「声も送る」がオンの人が録音の練習をすると届きます）。</p>'}
+  </div>`;
+}
+const audCache = new Map();
+let audNow = null, audBtn = null;
+function stopAudio() { if (audNow) { try { audNow.pause(); } catch (e) {} audNow = null; } if (audBtn) { audBtn.textContent = '▶ 聞く'; audBtn = null; } }
+async function playAudio(b) {
+  const id = b.dataset.aud, same = audBtn === b;
+  stopAudio();
+  if (same) return;
+  audBtn = b; b.textContent = '読みこみ中…';
+  try {
+    let url = audCache.get(id);
+    if (!url) {
+      const u = ls.get(LS.url, ''), key = ls.get(LS.key, '');
+      const res = await fetch(u + (u.includes('?') ? '&' : '?') + 'key=' + encodeURIComponent(key) + '&audio=' + encodeURIComponent(id), { cache: 'no-store' });
+      const j = await res.json();
+      if (!j.ok) throw new Error(j.error || 'ng');
+      const bin = atob(j.data), arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      url = URL.createObjectURL(new Blob([arr], { type: j.mime || 'audio/webm' }));
+      audCache.set(id, url);
+    }
+    if (audBtn !== b) return;
+    audNow = new Audio(url);
+    audNow.onended = stopAudio;
+    audNow.onerror = () => { stopAudio(); b.textContent = 'このブラウザでは再生できません'; };
+    b.textContent = '■ とめる';
+    await audNow.play();
+  } catch (e) { if (audBtn === b) { audBtn = null; b.textContent = '読みこめませんでした'; setTimeout(() => { b.textContent = '▶ 聞く'; }, 2500); } }
+}
+
+/* ---------- 練習メニュー（個人別） ---------- */
+let mUser = null, draft = [], draftDue = '';
+function knownUsers() {
+  const set = new Set();
+  rows.forEach(r => set.add(r.user));
+  Object.keys(names()).forEach(u => set.add(u));
+  if (menus) Object.keys(menus).forEach(u => set.add(u));
+  return [...set].filter(okUser).sort((a, b) => a.localeCompare(b, 'ja', { numeric: true }));
+}
+function renderMenuTab() {
+  const m = $('mMsg'), sel = $('mUser');
+  const users = knownUsers(), nm = names();
+  sel.innerHTML = '<option value="">（えらんで ください）</option>' + users.map(u => {
+    const n = menus && menus[u] && menus[u].items.length ? '　★決めてある' : '';
+    return `<option value="${esc(u)}">${esc(u)}${nm[u] ? '　' + esc(nm[u]) : ''}${n}</option>`; }).join('');
+  if (mUser) sel.value = users.includes(mUser) ? mUser : '';
+  if (!depIdOf(ls.get(LS.url, '')) || !ls.get(LS.key, '')) { m.className = 'msg err'; m.textContent = '先に「設定・はじめての準備」で受け取りURLとパスワードを入れてください。'; }
+  else if (!rows.length && menus === null && !$('loadMsg').textContent) { m.className = 'msg'; m.textContent = '「成績」タブで［最新の成績を読みこむ］を押すと、いまの設定が出ます。'; }
+  else if (menus === null) { m.className = 'msg err'; m.innerHTML = '受け取りスクリプトが前のままです。「設定・はじめての準備」の下にある新しいスクリプトを Apps Script に貼り直し、「デプロイ」→「デプロイを管理」→ 鉛筆 → バージョン「新バージョン」→「デプロイ」をしてから、成績を読みこみ直してください。'; }
+  else { m.className = 'msg'; m.textContent = ''; }
+  renderEditor();
+}
+function startEdit(u) {
+  mUser = u;
+  const m = menus && menus[u], cur = (m && m.items) || [];
+  draft = [];
+  draftDue = (m && m.due) || '';
+  const extraOf = it => ({ topics: (it.topics || []).slice(), times: it.times || 0, n: it.n != null ? String(it.n) : '', opts: it.opts != null ? String(it.opts) : '', open: false });
+  CATALOG.forEach(g => g.apps.forEach(a => {
+    const mine = cur.filter(it => it.app === a.id);
+    if (mine.length) mine.forEach((it, i) => draft.push(Object.assign({ app: a.id, on: true, lv: a.nolv ? '' : (it.lv || ''), type: a.types ? (it.type || '') : '', extra: i > 0 }, extraOf(it))));
+    else draft.push(Object.assign({ app: a.id, on: false, lv: a.nolv ? '' : 'normal', type: a.types ? a.types[0][0] : '', extra: false }, extraOf({})));
+  }));
+  $('mSaveMsg').textContent = ''; $('mVoiceMsg').textContent = ''; $('mBulkMsg').textContent = '';
+  renderMenuTab();
+}
+/* ---------- 宿題の進み具合（受け取りスクリプトと同じ数え方：メニューを決めた日時から、その練習を何回やったか） ---------- */
+const LVJ = { easy:'簡単', normal:'普通', hard:'難しい' };
+const hasHW = m => !!m && (!!m.due || (m.items || []).some(it => it.times));
+function hwCounts(u) {
+  const m = menus && menus[u]; if (!m || !m.items.length) return [];
+  const since = new Date(m.at || 0).getTime() || 0, dup = {};
+  m.items.forEach(it => { dup[it.app] = (dup[it.app] || 0) + 1; });
+  return m.items.map(it => rows.filter(r => r.user === u && r.at.getTime() >= since
+    && (r.appId ? r.appId === it.app : r.app === (APPDEF[it.app] || {}).title)
+    && !(dup[it.app] > 1 && it.lv && r.level.indexOf(LVJ[it.lv]) < 0)).length);
+}
+function fmtDue(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); if (!m) return '';
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  return (d.getMonth() + 1) + '月' + d.getDate() + '日（' + '日月火水木金土'[d.getDay()] + '）';
+}
+const overdue = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return !!m && Date.now() > new Date(+m[1], +m[2] - 1, +m[3] + 1).getTime(); };
+function hwSummary(u) {
+  const m = menus && menus[u]; if (!hasHW(m)) return null;
+  const c = hwCounts(u), goal = m.items.map((it, i) => it.times ? [c[i], it.times] : null).filter(Boolean);
+  return { done: goal.filter(g => g[0] >= g[1]).length, total: goal.length, late: overdue(m.due) && goal.some(g => g[0] < g[1]) };
+}
+function hwHTML(u) {
+  const m = menus && menus[u]; if (!hasHW(m)) return '';
+  const c = hwCounts(u), sum = hwSummary(u);
+  const due = m.due ? `期限 <b>${fmtDue(m.due)}</b>${sum.late ? ' <span class="pill idle">期限すぎ</span>' : ''}` : '期限なし';
+  return `<div class="hw-box"><p class="hw-top"><b>宿題</b>　${due}　<span class="note">（${m.at ? fmtDT(new Date(m.at)) + ' に出してから' : ''}の回数）</span>${rows.length ? '' : '　<span class="note">「成績」タブで成績を読みこむと、やった回数が出ます。</span>'}</p>
+    <ul class="hw-list">${m.items.map((it, i) => {
+      const name = esc(planText([Object.assign({}, it, { times: 0 })]));
+      if (!it.times) return `<li><span class="hw-nm">${name}</span><span class="note">回数は決めていません（${c[i]}回 やりました）</span></li>`;
+      const ok = c[i] >= it.times;
+      return `<li class="${ok ? 'ok' : ''}"><span class="hw-nm">${name}</span><span class="hw-bar" aria-hidden="true"><i style="width:${Math.min(100, (c[i] / it.times) * 100)}%"></i></span><b>${c[i]} / ${it.times}回</b>${ok ? '<span class="hw-ok">✓ できた</span>' : ''}</li>`;
+    }).join('')}</ul></div>`;
+}
+function renderEditor() {
+  const box = $('mEdit');
+  if (!mUser) { box.hidden = true; return; }
+  box.hidden = false;
+  $('mId').textContent = mUser;
+  $('mName').textContent = names()[mUser] || '';
+  $('mNameEdit').innerHTML = nameEditorHTML(mUser, 'mNameIn');
+  const cur = menus && menus[mUser];
+  $('mVoice').checked = !!(cur && cur.voice);
+  $('mVoice').disabled = menus === null;
+  $('mDue').value = draftDue || '';
+  $('mNow').innerHTML = cur && cur.items.length
+    ? `いまの メニュー：<b>${esc(planText(cur.items))}</b>${cur.at ? `<br>（${fmtDT(new Date(cur.at))} に保存）` : ''}${hwHTML(mUser)}`
+    : 'いまは 決めていません（全部の練習が出ます）。';
+  let h = '';
+  CATALOG.forEach(g => {
+    h += `<p class="m-stage">${esc(g.stage)}</p>`;
+    draft.forEach((d, i) => {
+      const a = APPDEF[d.app]; if (!g.apps.includes(a)) return;
+      const typeSel = a.types ? `<select data-i="${i}" data-f="type" aria-label="${esc(a.name)}のしゅるい" ${d.on ? '' : 'disabled'}>
+          <option value="">しゅるいは本人がえらぶ</option>${a.types.map(t => `<option value="${t[0]}"${d.type === t[0] ? ' selected' : ''}>${esc(t[1])}</option>`).join('')}</select>` : '';
+      const lvSel = a.nolv ? '<span class="m-none">難しさの えらびは ありません</span>'
+        : `<select data-i="${i}" data-f="lv" aria-label="${esc(a.name)}の難しさ" ${d.on ? '' : 'disabled'}>
+          <option value="">本人がえらぶ</option>${LVS.map(l => `<option value="${l[0]}"${d.lv === l[0] ? ' selected' : ''}>${l[1]}</option>`).join('')}</select>`;
+      const btn = d.extra ? `<button class="m-del" type="button" data-del="${i}" aria-label="この行を消す">×</button>`
+        : (a.nolv ? '<span></span>' : `<button class="m-dup" type="button" data-dup="${i}" aria-label="${esc(a.name)}を もう1つ" title="同じ練習を もう1つ（ちがう難しさで）">＋</button>`);
+      h += `<div class="m-row${d.on ? ' on' : ''}"><label class="m-on"><input type="checkbox" data-i="${i}" data-f="on"${d.on ? ' checked' : ''}><span>${esc(a.name)}${d.extra ? '（2つめ）' : ''}</span></label>
+        <span class="m-sel">${typeSel}${lvSel}</span>${btn}${d.on ? moreHTML(d, i, a) : ''}</div>`;
+    });
+  });
+  $('mList').innerHTML = h;
+}
+/* ✓ を入れた練習の 2行目：問題数・選択肢の数・宿題の回数・お題 */
+function moreHTML(d, i, a) {
+  const qDef = a.id === 'goso' ? '3つ' : a.id === 'bun' ? '難しさで 3〜5問' : '10問';
+  const o = a.opt, oDef = o ? (d.lv && o.def[d.lv] != null ? optText(a, o.def[d.lv]) : '難しさで 決まる数') : '';
+  const sel = (f, cur, opts) => `<select data-i="${i}" data-f="${f}">${opts.map(([v, t]) => `<option value="${v}"${String(cur) === String(v) ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  const parts = [];
+  if (a.qn) parts.push(`<label class="m-k">${esc(a.qlabel || '問題数')} ${sel('n', d.n, [['', 'いつもの数（' + qDef + '）']].concat(a.qn.map(v => [v, v + (a.qunit || '問')])))}</label>`);
+  if (o) parts.push(`<label class="m-k">${esc(o.label || '選択肢')} ${sel('opts', d.opts, [['', 'いつもの数（' + oDef + '）']].concat(o.vals.map(v => [v, o.label ? v + (o.unit || '') : v + '択'])))}</label>`);
+  parts.push(`<label class="m-k">宿題の回数 ${sel('times', d.times, [[0, '決めない']].concat(TIMES.map(v => [v, v + '回'])))}</label>`);
+  if (a.topics && TOPICDEF[a.id]) parts.push(`<button class="btn small m-tbtn${d.topics.length ? ' set' : ''}" type="button" data-topen="${i}" aria-expanded="${d.open}">お題：${d.topics.length ? d.topics.length + (d.topics.length < 10 ? 'つ' : 'こ') + ' えらんだ' : 'ぜんぶの中から'} ${d.open ? '▲' : '▼'}</button>`);
+  const notes = [];
+  if (o && o.note && d.opts !== '') notes.push(o.note);
+  if (o && o.needLv && d.opts !== '' && !d.lv) notes.push('選択肢の数は、難しさを決めたときに使われます');
+  if (a.timesNote && Number(d.times)) notes.push(a.timesNote);
+  return `<div class="m-more">${parts.join('')}${notes.length ? `<span class="note">${esc(notes.join('。'))}</span>` : ''}</div>${d.open ? topicPanel(d, i) : ''}`;
+}
+function topicPanel(d, i) {
+  const def = TOPICDEF[d.app]; if (!def) return '';
+  const sel = new Set(d.topics);
+  const groups = def.groups.map((g, gi) => ({ g, gi })).filter(x => !(d.app === 'goso' && d.type && x.g.type && x.g.type !== d.type));
+  return `<div class="m-topics">
+    <p class="note">えらんだ お題だけが出ます。えらばないときは、いつもどおり 全部の中から出ます。${d.app === 'goso' ? '1回に出る お題の数は「お題の数」で決めます（決めないときは えらんだ数・5つまで）。' : d.app === 'nakama' ? 'お題が少ないときは、くり返して問題数をうめます。' : ''}</p>
+    ${groups.map(({ g, gi }) => `<fieldset class="m-tg"><legend>${esc(g.name)}</legend>
+      <div class="m-tg-btns"><button type="button" class="btn small" data-tg="${i}:${gi}:all">この まとまりを 全部</button><button type="button" class="btn small" data-tg="${i}:${gi}:none">はずす</button></div>
+      <div class="m-tps">${g.items.map(([k, label]) => `<label class="m-tp"><input type="checkbox" data-i="${i}" data-tk="${esc(k)}"${sel.has(k) ? ' checked' : ''}><span>${esc(label)}</span></label>`).join('')}</div></fieldset>`).join('')}
+    <div class="row"><button type="button" class="btn small" data-tclear="${i}">お題を 全部 はずす</button><button type="button" class="btn small" data-topen="${i}">とじる</button></div>
+  </div>`;
+}
+/* 語想起：カテゴリと語頭音の お題は まぜない（えらんだ お題に しゅるいを合わせる） */
+function gosoType(d) {
+  if (d.app !== 'goso' || !d.topics.length) return false;
+  const t = d.topics[d.topics.length - 1].split(':')[0];
+  const before = d.type;
+  d.topics = d.topics.filter(k => k.split(':')[0] === t);
+  d.type = t;
+  return before !== t;
+}
+$('mUser').addEventListener('change', () => { const u = $('mUser').value; if (u) startEdit(u); else { mUser = null; renderEditor(); } });
+$('mPick').addEventListener('click', () => {
+  const u = $('mNew').value.trim();
+  if (!okUser(u)) { $('mMsg').className = 'msg err'; $('mMsg').textContent = '利用者番号は英数字（20文字まで）で入れてください。'; return; }
+  $('mNew').value = ''; startEdit(u);
+});
+$('mList').addEventListener('change', e => {
+  const el = e.target;
+  const d = draft[Number(el.dataset.i)]; if (!d) return;
+  $('mSaveMsg').textContent = '';
+  if (el.dataset.tk != null) {
+    const k = el.dataset.tk;
+    d.topics = d.topics.filter(x => x !== k);
+    if (el.checked) d.topics.push(k);
+    if (gosoType(d)) { renderEditor(); return; }
+    const b = $('mList').querySelector(`.m-tbtn[data-topen="${el.dataset.i}"]`);
+    if (b) { b.classList.toggle('set', !!d.topics.length); b.textContent = 'お題：' + (d.topics.length ? d.topics.length + (d.topics.length < 10 ? 'つ' : 'こ') + ' えらんだ' : 'ぜんぶの中から') + ' ▲'; }
+    return;
+  }
+  const f = el.dataset.f; if (!f) return;
+  if (f === 'on') d.on = el.checked;
+  else if (f === 'times') d.times = Number(el.value) || 0;
+  else d[f] = el.value;
+  if (f === 'type' && d.app === 'goso') d.topics = d.topics.filter(k => !d.type || k.split(':')[0] === d.type);
+  renderEditor();
+});
+$('mList').addEventListener('click', e => {
+  const dup = e.target.closest('[data-dup]'), del = e.target.closest('[data-del]'), op = e.target.closest('[data-topen]'), tg = e.target.closest('[data-tg]'), tc = e.target.closest('[data-tclear]');
+  if (dup) { const i = Number(dup.dataset.dup), d = draft[i]; let j = i + 1; while (draft[j] && draft[j].app === d.app) j++;
+    draft.splice(j, 0, { app: d.app, on: true, lv: d.lv === 'hard' ? 'normal' : 'hard', type: d.type, extra: true, topics: [], times: d.times, n: '', opts: '', open: false }); d.on = true; renderEditor(); }
+  if (del) { draft.splice(Number(del.dataset.del), 1); renderEditor(); }
+  if (op) { const d = draft[Number(op.dataset.topen)]; if (d) { d.open = !d.open; renderEditor(); } }
+  if (tg) {
+    const [i, gi, how] = tg.dataset.tg.split(':'), d = draft[Number(i)], g = TOPICDEF[d.app].groups[Number(gi)];
+    const keys = g.items.map(x => x[0]);
+    d.topics = d.topics.filter(k => !keys.includes(k));
+    if (how === 'all') d.topics = d.topics.concat(keys);
+    gosoType(d); $('mSaveMsg').textContent = ''; renderEditor();
+  }
+  if (tc) { const d = draft[Number(tc.dataset.tclear)]; d.topics = []; $('mSaveMsg').textContent = ''; renderEditor(); }
+});
+/* まとめて決める（✓ を入れた練習 ぜんぶに） */
+$('mBulkN').insertAdjacentHTML('beforeend', QN_OPTS_HTML());
+$('mBulkTimes').insertAdjacentHTML('beforeend', TIMES.map(v => `<option value="${v}">${v}回</option>`).join(''));
+function bulk(fn, what) {
+  const on = draft.filter(d => d.on);
+  const m = $('mBulkMsg');
+  if (!on.length) { m.className = 'msg err'; m.textContent = '先に、出す練習に ✓ を入れてください。'; return; }
+  let n = 0; on.forEach(d => { if (fn(d, APPDEF[d.app]) !== false) n++; });
+  m.className = 'msg ok'; m.textContent = `${n}つの 練習の ${what}を変えました（まだ保存していません）。`;
+  $('mSaveMsg').textContent = '';
+  renderEditor();
+}
+document.querySelectorAll('[data-blv]').forEach(b => b.addEventListener('click', () => {
+  const lv = b.dataset.blv;
+  bulk((d, a) => { if (a.nolv) return false; d.lv = lv; }, '難しさ');
+}));
+$('mBulkN').addEventListener('change', () => {
+  const v = $('mBulkN').value; if (!v) return;
+  bulk((d, a) => { if (!a.qn) return false; if (v === '-') { d.n = ''; return; } const n = Number(v);
+    d.n = String(a.qn.includes(n) ? n : a.qn.reduce((m, x) => (Math.abs(x - n) < Math.abs(m - n) ? x : m), a.qn[0])); }, '問題数');
+  $('mBulkN').value = '';
+});
+$('mBulkTimes').addEventListener('change', () => {
+  const v = $('mBulkTimes').value; if (v === '') return;
+  bulk(d => { d.times = Number(v) || 0; }, '宿題の回数');
+  $('mBulkTimes').value = '';
+});
+$('mDue').addEventListener('change', () => { draftDue = $('mDue').value || ''; $('mSaveMsg').textContent = ''; });
+$('mDueClear').addEventListener('click', () => { draftDue = ''; $('mDue').value = ''; $('mSaveMsg').textContent = ''; });
+$('mVoice').addEventListener('change', async () => {
+  const on = $('mVoice').checked, m = $('mVoiceMsg'), url = ls.get(LS.url, ''), key = ls.get(LS.key, '');
+  if (!mUser) return;
+  m.className = 'msg'; m.textContent = '保存中…';
+  try {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'setvoice', key, user: mUser, voice: on }) });
+    const j = await res.json();
+    if (j && j.ok && typeof j.voice === 'boolean') {
+      menus = menus || {};
+      menus[mUser] = Object.assign({ items: [], at: '', due: '' }, menus[mUser] || {}, { voice: j.voice });
+      m.className = 'msg ok'; m.textContent = j.voice ? '声も送る に しました。次にアプリを開いたときから届きます。' : '声を送るのを やめました。';
+      renderUsers(); renderDetail();
+      const sel = $('mUser'); const keep = sel.value; renderMenuTab(); sel.value = keep;
+    } else {
+      $('mVoice').checked = !on;
+      m.className = 'msg err'; m.textContent = j && j.error === 'password' ? 'パスワードがちがいます。' : '受け取りスクリプトが前のままなので変えられません。新しいスクリプトを貼り直し、「新バージョン」でデプロイしてください。';
+    }
+  } catch (e) { $('mVoice').checked = !on; m.className = 'msg err'; m.textContent = '保存できませんでした。インターネットのつながりを確かめてください。'; }
+});
+const OLD_GAS = '受け取りスクリプトが前のままなので、お題・問題数・選択肢・宿題の回数・期限は保存されませんでした（練習と難しさだけ保存しました）。「設定・はじめての準備」の下にある新しいスクリプトを Apps Script に貼り直し、「デプロイ」→「デプロイを管理」→ 鉛筆 → バージョン「新バージョン」→「デプロイ」をしてから、もう一度保存してください。';
+async function saveMenu(items, due) {
+  const url = ls.get(LS.url, ''), key = ls.get(LS.key, ''), m = $('mSaveMsg');
+  if (!depIdOf(url) || !key) { m.className = 'msg err'; m.textContent = '先に「設定・はじめての準備」で受け取りURLとパスワードを入れてください。'; return; }
+  m.className = 'msg'; m.textContent = '保存中…';
+  const usesNew = !!due || items.some(it => it.topics || it.times || it.n != null || it.opts != null);
+  try {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'setmenu', key, user: mUser, items, due: due || '' }) });
+    const j = await res.json();
+    if (j && j.ok && Array.isArray(j.items)) {
+      menus = menus || {};
+      menus[mUser] = { items: j.items, at: new Date().toISOString(), voice: !!(menus[mUser] && menus[mUser].voice), due: j.due || '' };
+      startEdit(mUser);
+      if (usesNew && !j.homework) { $('mSaveMsg').className = 'msg err'; $('mSaveMsg').textContent = OLD_GAS; }
+      else {
+        $('mSaveMsg').className = 'msg ok';
+        $('mSaveMsg').textContent = !j.items.length ? '決めた練習を はずしました。全部の練習が出ます。'
+          : hasHW(menus[mUser]) ? '保存しました。次にアプリを開いたときから、この宿題が出ます。やった回数は、いまから数えます。'
+          : '保存しました。次にアプリを開いたときから、この練習だけが出ます。';
+      }
+      renderUsers(); renderDetail();
+    } else if (j && j.error === 'password') { m.className = 'msg err'; m.textContent = 'パスワードがちがいます（スクリプトの STAFF_PASSWORD と同じにしてください）。'; }
+    else if (j && j.ok) { m.className = 'msg err'; m.textContent = '受け取りスクリプトが前のままなので保存できません。新しいスクリプトを貼り直し、「新バージョン」でデプロイしてください。'; }
+    else { m.className = 'msg err'; m.textContent = '保存できませんでした：' + ((j && j.error) || ''); }
+  } catch (e) { m.className = 'msg err'; m.textContent = '保存できませんでした。インターネットのつながりを確かめてください。'; }
+}
+$('mSave').addEventListener('click', () => {
+  if (!mUser) return;
+  const items = draft.filter(d => d.on).map(d => {
+    const it = { app: d.app, lv: d.lv || '', type: d.type || '' };
+    if (d.topics.length) it.topics = d.topics.slice();
+    if (Number(d.times)) it.times = Number(d.times);
+    if (d.n !== '') it.n = Number(d.n);
+    if (d.opts !== '') it.opts = Number(d.opts);
+    return it;
+  });
+  if (!items.length) { $('mSaveMsg').className = 'msg err'; $('mSaveMsg').textContent = '出す練習に ✓ を入れてください（全部の練習を出すときは［決めた練習を全部はずす］）。'; return; }
+  saveMenu(items, draftDue);
+});
+$('mClear').addEventListener('click', () => {
+  if (!mUser) return;
+  const b = $('mClear');
+  if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = 'もう一度押すと はずします'; setTimeout(() => { b.dataset.armed = ''; b.textContent = '決めた練習を全部はずす'; }, 4000); return; }
+  b.dataset.armed = ''; b.textContent = '決めた練習を全部はずす';
+  saveMenu([], '');
+});
+
+
+/* ---------- ふりかえり（利用者さんへ渡す 週ごと・月ごとの まとめ） ----------
+   表記は 表記妥当性に したがう（ふだん漢字で書く語は漢字、カタカナ語はカタカナ）。漢字には読みがなを付ける */
+const RB = s => esc(String(s)).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
+const FBNAME = {
+  '絵合わせ':'絵[え]合[あ]わせ', '音を選ぶ練習':'音[おと]を 選[えら]ぶ 練習[れんしゅう]', '音を選ぶ練習（上級）':'音[おと]を 選[えら]ぶ 練習[れんしゅう]（上級[じょうきゅう]）',
+  '50音ならべ':'50音[おん]ならべ', '五十音れんしゅう（録音）':'五十音[ごじゅうおん]の 練習[れんしゅう]（録音[ろくおん]）',
+  'ことば並べ替え（初級）':'ことば 並[なら]べ替[か]え（初級[しょきゅう]）', 'ことば並べ替え（上級）':'ことば 並[なら]べ替[か]え（上級[じょうきゅう]）',
+  '仲間えらび':'仲間[なかま]えらび', '風船ことば':'風船[ふうせん]ことば', '説明ことば':'説明[せつめい]ことば', '語想起タイムアタック':'語想起[ごそうき] タイムアタック',
+  '名詞の練習':'名詞[めいし]の 練習[れんしゅう]', '助詞の練習':'助詞[じょし]の 練習[れんしゅう]', '動詞の練習':'動詞[どうし]の 練習[れんしゅう]', '動詞の練習（上級）':'動詞[どうし]の 練習[れんしゅう]（上級[じょうきゅう]）', '文をつくろう':'文[ぶん]を つくろう',
+  'セリフをえらびましょう':'セリフを えらびましょう', 'セリフをいいましょう':'セリフを 言[い]いましょう', '挨拶語のトレーニング':'挨拶語[あいさつご]の トレーニング',
+};
+const fbName = app => RB(FBNAME[app] || app);
+const WK = '日月火水木金土';
+const mdW = d => `${d.getMonth() + 1}月${d.getDate()}日（${WK[d.getDay()]}）`;
+function weekStart(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
+function fbPeriods(kind) {
+  const now = new Date(), out = [];
+  if (kind === 'week') {
+    const s0 = weekStart(now);
+    for (let i = 0; i < 12; i++) {
+      const s = new Date(s0.getFullYear(), s0.getMonth(), s0.getDate() - 7 * i), e = new Date(s.getFullYear(), s.getMonth(), s.getDate() + 7);
+      out.push({ s, e, label: `${mdW(s)}〜${mdW(new Date(e.getFullYear(), e.getMonth(), e.getDate() - 1))}${i === 0 ? '（今週）' : i === 1 ? '（先週）' : ''}` });
+    }
+  } else {
+    for (let i = 0; i < 12; i++) {
+      const s = new Date(now.getFullYear(), now.getMonth() - i, 1), e = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      out.push({ s, e, label: `${s.getFullYear()}年${s.getMonth() + 1}月${i === 0 ? '（今月）' : i === 1 ? '（先月）' : ''}` });
+    }
+  }
+  return out;
+}
+const fbKind = () => (document.querySelector('input[name=fbKind]:checked') || {}).value || 'week';
+function fbData() {
+  const u = $('fbUser').value, kind = fbKind(), ps = fbPeriods(kind), P = ps[Number($('fbWhen').value) || 0];
+  if (!u || !P) return null;
+  const prev = kind === 'week' ? { s: new Date(P.s.getFullYear(), P.s.getMonth(), P.s.getDate() - 7), e: P.s } : { s: new Date(P.s.getFullYear(), P.s.getMonth() - 1, 1), e: P.s };
+  const pick = (a, b) => rows.filter(r => r.user === u && r.at >= a && r.at < b);
+  const list = pick(P.s, P.e), before = pick(prev.s, prev.e);
+  const apps = {};
+  list.forEach(r => { const a = apps[r.app] = apps[r.app] || { n: 0, sc: 0, mx: 0 }; a.n++; a.sc += r.score; a.mx += r.max; });
+  const papps = {};
+  before.forEach(r => { const a = papps[r.app] = papps[r.app] || { n: 0, sc: 0, mx: 0 }; a.n++; a.sc += r.score; a.mx += r.max; });
+  const order = Object.keys(apps).sort((a, b) => stageOf(a) - stageOf(b) || a.localeCompare(b, 'ja'));
+  return { u, kind, P, list, before, apps, papps, order,
+    days: new Set(list.map(r => dayKey(r.at))), pdays: new Set(before.map(r => dayKey(r.at))),
+    min: Math.round(list.reduce((a, r) => a + r.sec, 0) / 60), pmin: Math.round(before.reduce((a, r) => a + r.sec, 0) / 60) };
+}
+function renderFb() {
+  const sel = $('fbUser'), users = knownUsers(), nm = names();
+  const keep = sel.value || selected || '';
+  sel.innerHTML = '<option value="">（えらんで ください）</option>' + users.map(u => `<option value="${esc(u)}">${esc(u)}${nm[u] ? '　' + esc(nm[u]) : ''}</option>`).join('');
+  sel.value = users.includes(keep) ? keep : '';
+  const kind = fbKind(), ws = $('fbWhen'), keepW = ws.dataset.kind === kind ? ws.value : '0';
+  ws.innerHTML = fbPeriods(kind).map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('');
+  ws.dataset.kind = kind; ws.value = keepW || '0';
+  const box = $('fbSheet');
+  if (!rows.length) { box.innerHTML = '<p class="msg no-print" style="margin-top:12px">先に「成績」タブで［最新の成績を読みこむ］を押してください。</p>'; return; }
+  const D = fbData();
+  $('fbNameBox').hidden = !D;
+  if (D) {
+    $('fbNameRow').innerHTML = nameEditorHTML(D.u, 'fbName') + (nm[D.u] ? '' : '<span class="msg err">名前が まだ ありません。入れて［名前を保存］を押すと、資料に出ます（入れないときは 手書き用の空欄に なります）。</span>');
+  }
+  if (!D) { box.innerHTML = '<p class="msg no-print" style="margin-top:12px">利用者を えらんで ください。</p>'; return; }
+  const who = nm[D.u] ? (/(さん|様|さま|くん|君|ちゃん)$/.test(nm[D.u]) ? nm[D.u] : nm[D.u] + ' さん') : '　　　　　　　　 さん';
+  const unit = D.kind === 'week' ? '週[しゅう]' : '月[つき]';
+  const cmp = (now, before, u) => {
+    if (!D.before.length) return '';
+    const d = now - before;
+    return d > 0 ? RB(`前[まえ]の ${unit}より ${d}${u} ふえました`) : d < 0 ? RB(`前[まえ]の ${unit}より ${-d}${u} へりました`) : RB(`前[まえ]の ${unit}と 同[おな]じです`);
+  };
+  /* 練習した日 */
+  let daysH = '';
+  if (D.kind === 'week') {
+    for (let k = 0; k < 7; k++) { const d = new Date(D.P.s.getFullYear(), D.P.s.getMonth(), D.P.s.getDate() + k), on = D.days.has(dayKey(d));
+      daysH += `<span class="fb-day${on ? ' on' : ''}">${WK[d.getDay()]}<br>${d.getDate()}日<i aria-label="${on ? '練習した' : ''}"></i></span>`; }
+  } else {
+    const n = new Date(D.P.s.getFullYear(), D.P.s.getMonth() + 1, 0).getDate();
+    for (let k = 1; k <= n; k++) { const d = new Date(D.P.s.getFullYear(), D.P.s.getMonth(), k), on = D.days.has(dayKey(d));
+      daysH += `<span class="fb-day${on ? ' on' : ''}">${k}<i aria-label="${on ? '練習した' : ''}"></i></span>`; }
+  }
+  const pct = a => a.mx ? Math.round((a.sc / a.mx) * 100) : null;
+  const tbl = D.order.map(app => {
+    const a = D.apps[app], p = pct(a), pa = D.papps[app], pp = pa ? pct(pa) : null;
+    const trend = p == null || pp == null ? '' : p - pp >= 5 ? `<span class="fb-up">${RB('上[あ]がりました')} ↑</span>` : pp - p >= 5 ? `<span class="fb-down">${RB('下[さ]がりました')} ↓</span>` : RB('同[おな]じくらい');
+    return `<tr><td>${fbName(app)}</td><td class="n">${a.n}回</td>
+      <td>${p == null ? RB('録音[ろくおん]の 練習[れんしゅう]') : `<span class="fb-bar"><span><i style="width:${p}%"></i></span><b>${p}%</b></span>`}</td>${D.before.length ? `<td>${trend}</td>` : ''}</tr>`;
+  }).join('');
+  /* いまの 宿題 */
+  const m = menus && menus[D.u];
+  let hwH = '';
+  if (hasHW(m)) {
+    const c = hwCounts(D.u);
+    hwH = `<h2 class="fb-h">${RB('宿題[しゅくだい]')}${m.due ? `（${RB(fmtDue(m.due))}まで）` : ''}</h2><ul class="fb-hw">${m.items.map((it, i) => {
+      const a = APPDEF[it.app]; const t = a ? a.title : it.app;
+      return `<li>${fbName(t)}　${it.times ? `${c[i]} / ${it.times}回 ${c[i] >= it.times ? '<b class="fb-up">✓ できました</b>' : ''}` : `${c[i]}回`}</li>`; }).join('')}</ul>`;
+  }
+  const note = $('fbNote').value.trim();
+  const logo = (document.querySelector('.head img') || {}).src || '';
+  box.innerHTML = `<article class="fb-sheet">
+    <div class="fb-top">${logo ? `<img src="${logo}" alt="">` : ''}<div class="t"><span class="org">ことばのリハビリデイサービス　グリーン・グリーン</span>
+      <h1>${RB('ことばの 練習[れんしゅう] ふりかえり')}</h1></div></div>
+    <p class="fb-who${nm[D.u] ? '' : ' blank'}">${esc(who)}<small>${esc(D.P.label.replace(/（(今週|先週|今月|先月)）$/, ''))}</small></p>
+    <div class="fb-kpis">
+      <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 日[ひ]')}</div><div class="v">${D.days.size}<small>日</small></div><div class="c">${cmp(D.days.size, D.pdays.size, '日')}</div></div>
+      <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 回数[かいすう]')}</div><div class="v">${D.list.length}<small>回</small></div><div class="c">${cmp(D.list.length, D.before.length, '回')}</div></div>
+      <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 時間[じかん]')}</div><div class="v">${D.min}<small>分</small></div><div class="c">${cmp(D.min, D.pmin, '分')}</div></div>
+    </div>
+    <div><h2 class="fb-h">${RB('練習[れんしゅう]した 日[ひ]')}</h2><div class="fb-days${D.kind === 'month' ? ' fb-month' : ''}">${daysH}</div></div>
+    ${D.order.length ? `<div><h2 class="fb-h">${RB('練習[れんしゅう]ごとの ようす')}</h2>
+      <table class="fb-tbl"><thead><tr><th>${RB('練習[れんしゅう]')}</th><th style="text-align:right">${RB('回数[かいすう]')}</th><th>${RB('できた 割合[わりあい]')}</th>${D.before.length ? `<th>${RB('前[まえ]と くらべて')}</th>` : ''}</tr></thead><tbody>${tbl}</tbody></table></div>`
+      : `<p>${RB('この 期間[きかん]は 練習[れんしゅう]の 記録[きろく]が ありません。')}</p>`}
+    ${hwH}
+    <div><h2 class="fb-h">${RB('職員[しょくいん]から ひとこと')}</h2><div class="fb-note" id="fbNoteOut">${esc(note)}</div></div>
+    <p class="fb-foot">${new Date().getFullYear()}年${new Date().getMonth() + 1}月${new Date().getDate()}日 作成</p>
+  </article>`;
+}
+function fbSuggest() {
+  const D = fbData(); if (!D) return '';
+  if (!D.list.length) return 'この期間は練習の記録がありませんでした。無理のない範囲で、また一緒に練習しましょう。';
+  const unit = D.kind === 'week' ? '週' : '月', out = [];
+  out.push(D.kind === 'week' && D.days.size >= 5 ? `この${unit}は ${D.days.size}日も 練習できました。` : `この${unit}は ${D.days.size}日、${D.list.length}回 練習できました。`);
+  const scored = D.order.filter(a => D.apps[a].mx).map(a => ({ a, p: Math.round((D.apps[a].sc / D.apps[a].mx) * 100), pp: D.papps[a] && D.papps[a].mx ? Math.round((D.papps[a].sc / D.papps[a].mx) * 100) : null }));
+  const up = scored.filter(x => x.pp != null && x.p - x.pp >= 5).sort((x, y) => (y.p - y.pp) - (x.p - x.pp))[0];
+  if (up) out.push(`「${up.a}」は、前の${unit}より よく できるように なりました（${up.pp}% → ${up.p}%）。`);
+  else { const best = scored.sort((x, y) => y.p - x.p)[0]; if (best && best.p >= 70) out.push(`「${best.a}」は ${best.p}% できました。`); }
+  if (D.before.length && D.list.length > D.before.length) out.push(`前の${unit}より 練習の回数が ふえましたね。`);
+  out.push('この調子で 続けていきましょう。');
+  return out.join('\n');
+}
+$('fbUser').addEventListener('change', renderFb);
+$('fbWhen').addEventListener('change', renderFb);
+document.querySelectorAll('input[name=fbKind]').forEach(r => r.addEventListener('change', () => { $('fbWhen').dataset.kind = ''; renderFb(); }));
+$('fbNote').addEventListener('input', () => { const o = $('fbNoteOut'); if (o) o.textContent = $('fbNote').value.trim(); });
+$('fbAuto').addEventListener('click', () => { const t = fbSuggest(); if (!t) { $('fbMsg').className = 'msg err'; $('fbMsg').textContent = '利用者を えらんで ください。'; return; } $('fbNote').value = t; $('fbMsg').textContent = ''; renderFb(); });
+$('fbPrint').addEventListener('click', () => {
+  if (!$('fbSheet').querySelector('.fb-sheet')) { $('fbMsg').className = 'msg err'; $('fbMsg').textContent = '先に 利用者を えらんで ください。'; return; }
+  document.body.classList.add('print-fb');
+  window.print();
+});
+window.addEventListener('afterprint', () => document.body.classList.remove('print-fb'));
+
+/* ---------- 名前のメモ（この端末だけに保存。スプレッドシートには送らない） ---------- */
+function nameEditorHTML(u, idp) {
+  const nm = names()[u] || '';
+  return `<input id="${idp}" class="nm-in" maxlength="30" autocomplete="off" value="${esc(nm)}" placeholder="例：山田 花子" aria-label="${esc(u)} の名前">`
+    + `<button class="btn small" type="button" data-savename="${esc(u)}" data-for="${idp}">${nm ? '名前を変える' : '名前を保存'}</button>`;
+}
+function saveName(u, v) {
+  const n = names();
+  v = String(v || '').trim().slice(0, 30);
+  if (v) n[u] = v; else delete n[u];
+  ls.set(LS.names, n);
+  renderUsers(); renderDetail();
+  if (!$('p-fb').hidden) renderFb();
+  if (!$('p-links').hidden) renderCards();
+  if (!$('p-menu').hidden && mUser === u) renderEditor();
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-savename]'); if (!b) return;
+  const inp = $(b.dataset.for); if (!inp) return;
+  saveName(b.dataset.savename, inp.value);
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || !e.target.classList || !e.target.classList.contains('nm-in')) return;
+  const b = e.target.parentElement.querySelector('[data-savename]'); if (b) b.click();
+});
+
+/* ---------- CSV ---------- */
+$('csv').addEventListener('click', () => {
+  const list = (selected ? rows.filter(r => r.user === selected) : rows).filter(inRange).sort((a, b) => a.at - b.at);
+  const head = ['練習した日時', '利用者番号', '練習', 'しゅるい', '難しさ', '点数', '満点', '〇△×', '問題ごと', 'かかった秒数'];
+  const q = v => '"' + String(v).replace(/"/g, '""') + '"';
+  const csv = '﻿' + [head].concat(list.map(r => [fmtDT(r.at), r.user, r.app, r.type, r.level, r.score, r.max, r.marks, r.items, r.sec])).map(a => a.map(q).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = `ことばの練習_成績_${selected || '全員'}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+/* ---------- 利用者のリンク・QR ---------- */
+function linkFor(id) {
+  const dep = depIdOf(ls.get(LS.url, '')), app = ls.get(LS.app, '') || defaultApp();
+  if (!dep || !app) return null;
+  const u = new URL(app);
+  if (id === null) u.searchParams.set('t', '1');      // 施設のタブレット用
+  else u.searchParams.set('u', id);
+  u.searchParams.set('s', dep);
+  return u.href;
+}
+function qrSVG(text) {
+  const qr = qrcode(0, 'M'); qr.addData(text); qr.make();
+  return qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+}
+function renderCards() {
+  const nm = names();
+  const ids = [...new Set(Object.keys(nm).concat(rows.map(r => r.user)))].sort();
+  const m = $('linkMsg');
+  if (!linkFor('A01')) { m.className = 'msg err'; m.textContent = '先に「設定・はじめての準備」で受け取りURLとアプリのURLを入れてください。'; }
+  else if (m.classList.contains('err')) { m.className = 'msg'; m.textContent = ''; }
+  const tab = linkFor(null);
+  const tabCard = tab ? `<div class="qcard">
+      <span class="ttl">グリーン・グリーン ことばの練習</span>
+      <span class="id small">施設のタブレット用</span>
+      <span class="nm">練習する人を選んでから始めます</span>
+      <div class="qr">${qrSVG(tab)}</div>
+      <span class="lnk">${esc(tab)}</span>
+      <div class="acts"><button class="btn small" type="button" data-copy="${esc(tab)}">リンクをコピー</button></div>
+    </div>` : '';
+  $('cards').innerHTML = tabCard + (ids.length ? ids.map(id => {
+    const link = linkFor(id);
+    return `<div class="qcard">
+      <span class="ttl">グリーン・グリーン ことばの練習</span>
+      <span class="id">${esc(id)}</span>${nm[id] ? `<span class="nm">${esc(nm[id])} 用</span>` : ''}
+      <div class="qr">${link ? qrSVG(link) : ''}</div>
+      ${link ? `<span class="lnk">${esc(link)}</span>` : ''}
+      <div class="acts">${link ? `<button class="btn small" type="button" data-copy="${esc(link)}">リンクをコピー</button>` : ''}
+        <button class="btn small danger" type="button" data-del="${esc(id)}">名前のメモを消す</button></div>
+    </div>`; }).join('') : '<p class="empty">まだ利用者がいません。上で利用者番号を入れてください。</p>');
+  $('cards').querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'コピーしました'; } catch (e) { b.textContent = 'コピーできませんでした'; }
+    setTimeout(() => { b.textContent = 'リンクをコピー'; }, 2000);
+  }));
+  $('cards').querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = 'もう一度押すと消えます'; return; }
+    const n = names(); delete n[b.dataset.del]; ls.set(LS.names, n); renderCards(); renderUsers();
+  }));
+}
+$('addUser').addEventListener('click', () => {
+  const id = $('newId').value.trim(), nm = $('newName').value.trim(), m = $('linkMsg');
+  if (!/^[A-Za-z0-9_-]{1,20}$/.test(id)) { m.className = 'msg err'; m.textContent = '利用者番号は英数字（20文字まで）で入れてください。名前は入れないでください。'; return; }
+  const n = names(); n[id] = nm; ls.set(LS.names, n);
+  $('newId').value = ''; $('newName').value = '';
+  m.className = 'msg ok'; m.textContent = `${id} のリンクとQRを作りました。`;
+  renderCards(); renderUsers();
+});
+$('printCards').addEventListener('click', () => window.print());
+
+/* ---------- はじめ ---------- */
+loadCfg();
+renderUsers();
+if (ls.get(LS.url, '') && ls.get(LS.key, '')) load();
+else { showTab('setup'); }
+</script>
+</body>
+</html>

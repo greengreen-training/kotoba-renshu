@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2d5b45">
+<title>@@TITLE_PLAIN@@｜グリーン・グリーン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700;900&display=swap">
+<style>
+@@COMMON_CSS@@
+/* ===== この練習だけの見た目 ===== */
+@@APP_CSS@@
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- はじめの画面 -->
+  <section id="title">
+    <header class="t-head">
+      <span class="t-leaf" aria-hidden="true">@@GLYPH@@</span>
+      <h1 class="t-name">@@TITLE_RUBY@@</h1>
+    </header>
+    <p class="t-lead">@@LEAD@@</p>
+    <div id="typeBox" hidden>
+      <p class="sec" id="typeLabel"></p>
+      <div class="types" id="types"></div>
+    </div>
+    <p class="sec" id="lvLabel"></p>
+    <div class="levels" id="levels"></div>
+  </section>
+
+  <!-- 問題の画面 -->
+  <section id="quiz" hidden>
+    <div class="q-top">
+      <button class="quit" id="quit" type="button">← やめる</button>
+      <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+      <span class="qno" id="qno">1 / 10</span>
+    </div>
+    <p class="instr" id="instr"></p>
+    <div class="stage" id="stage"></div>
+    <div class="choices" id="choices"></div>
+    <p class="fb" id="fb" aria-live="polite"></p>
+    <div class="next-wrap"><button class="next" id="next" type="button" hidden></button></div>
+  </section>
+
+  <!-- 結果の画面 -->
+  <section id="result" hidden>
+    <div class="result">
+      <div class="r-stamp" id="rStamp" aria-hidden="true">💮</div>
+      <h2 class="r-title">おわりました</h2>
+      <p class="r-meta" id="rMeta"></p>
+      <p class="r-score" id="rScore"></p>
+      <p class="r-marks" id="rMarks"></p>
+      <p class="r-legend" id="rLegend">〇 = 1点　△ = 0.5点（2回目で正解）　× = 0点</p>
+      <p class="r-praise" id="rPraise"></p>
+      <div class="r-btns">
+        <button class="btn primary" id="again" type="button">もう<ruby>一度<rt>いちど</rt></ruby>（べつの <span class="setn">10</span><ruby>問<rt>もん</rt></ruby>）</button>
+        <button class="btn" id="home" type="button"><ruby>難<rt>むずか</rt></ruby>しさを えらぶ</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="mark" id="mark" aria-hidden="true"><span></span></div>
+
+<div class="scrim" id="quitScrim" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="quitTitle">
+    <h2 id="quitTitle"><ruby>練習<rt>れんしゅう</rt></ruby>を やめますか？</h2>
+    <p>いまの <span class="setn">10</span><ruby>問<rt>もん</rt></ruby>は ここで おわります。</p>
+    <div class="r-btns">
+      <button class="btn primary" id="leave" type="button">やめる</button>
+      <button class="btn" id="stay" type="button">つづける</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ===== この練習の中身（問題と画面） ===== */
+@@APP_JS@@
+/* ===== 共通のしくみ ===== */
+@@COMMON_JS@@
+</script>
+</body>
+</html>

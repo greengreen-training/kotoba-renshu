@@ -1,0 +1,1404 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>風船ことば</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700;900&display=swap">
+<style>
+/* Layout: one calm column of plain, large controls; the sky stage with the balloon is the only showpiece */
+:root{
+  --bg:#ECF1F5; --surface:#FFFFFF; --surface-2:#F4F7FA; --ink:#1A2430; --muted:#556372; --line:#D2DBE3;
+  --primary:#1D4F8F; --primary-ink:#FFFFFF; --primary-soft:#E2ECF8; --focus:#E8962B;
+  --ok:#1C7F51; --ok-bg:#DFF2E7; --ng:#BD3828; --ng-bg:#FBE5E1; --late:#A9630A; --late-bg:#FCEED6;
+  --sky-top:#B7D8F0; --sky-bot:#EEF6FB; --cloud:rgba(255,255,255,.92); --ground:#C9DCC1; --ground-edge:#ADC6A2;
+  --tank:#6E8295; --tank-hi:#AFC0CE; --tank-lo:#475869; --gauge:#FBFCFD; --brass:#C49A43; --string:#7B8997;
+  --scrim:rgba(18,28,38,.58);
+  --primary-deep:#123764; --primary-glow:rgba(29,79,143,.32); --primary-fill:rgba(255,255,255,.2);
+  --font-display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic",sans-serif;
+  --font-body:"BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;
+  --font-emoji:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F151C; --surface:#18212B; --surface-2:#1D2833; --ink:#E6EDF3; --muted:#9AA9B7; --line:#2B3846;
+    --primary:#80B1EE; --primary-ink:#0C1826; --primary-soft:#1C3150; --focus:#F2B85B;
+    --ok:#52C58E; --ok-bg:#15352A; --ng:#F07D6B; --ng-bg:#3B201C; --late:#E7A84A; --late-bg:#3A2C15;
+    --sky-top:#16253E; --sky-bot:#2C3E58; --cloud:rgba(214,226,242,.16); --ground:#203226; --ground-edge:#2E4636;
+    --tank:#5B6D80; --tank-hi:#8C9DAD; --tank-lo:#38475A; --gauge:#E9EEF2; --brass:#B8954A; --string:#8E9CAA;
+    --scrim:rgba(4,8,12,.7);
+    --primary-deep:#4A78B4; --primary-glow:rgba(128,177,238,.35); --primary-fill:rgba(12,24,38,.16);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --surface:#18212B; --surface-2:#1D2833; --ink:#E6EDF3; --muted:#9AA9B7; --line:#2B3846;
+  --primary:#80B1EE; --primary-ink:#0C1826; --primary-soft:#1C3150; --focus:#F2B85B;
+  --ok:#52C58E; --ok-bg:#15352A; --ng:#F07D6B; --ng-bg:#3B201C; --late:#E7A84A; --late-bg:#3A2C15;
+  --sky-top:#16253E; --sky-bot:#2C3E58; --cloud:rgba(214,226,242,.16); --ground:#203226; --ground-edge:#2E4636;
+  --tank:#5B6D80; --tank-hi:#8C9DAD; --tank-lo:#38475A; --gauge:#E9EEF2; --brass:#B8954A; --string:#8E9CAA;
+  --scrim:rgba(4,8,12,.7);
+  --primary-deep:#4A78B4; --primary-glow:rgba(128,177,238,.35); --primary-fill:rgba(12,24,38,.16);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,label,summary,select,input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,p{margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.h2{font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:.02em;text-wrap:balance}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.btn{appearance:none;font:inherit;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:border-color .15s,filter .15s,transform .1s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+/* ホバー表示はマウスのある端末だけ（タッチ端末で色が残らないように） */
+@media (hover:hover){
+  .btn:hover,.level:hover,.seg label:hover,.iconbtn:hover,.choice:hover:not(:disabled){border-color:var(--primary)}
+  .btn-primary:hover{filter:brightness(1.08)}
+}
+.btn-quiet{min-height:40px;padding:0 14px;font-size:14px;background:transparent}
+
+/* ---------- start ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center;gap:8px 28px;margin-bottom:18px}
+.hero canvas{display:block;width:100%;height:210px}
+.hero h1{font-family:var(--font-display);font-weight:900;font-size:clamp(42px,7.5vw,66px);line-height:1.08;letter-spacing:.04em;text-wrap:balance}
+.lead{margin-top:12px;color:var(--muted);font-size:17px;max-width:30em}
+@media (max-width:640px){
+  .hero{grid-template-columns:112px minmax(0,1fr);gap:6px 14px;margin-bottom:14px}
+  .hero > div{display:contents}
+  .hero canvas{height:124px}
+  .hero h1{font-size:clamp(34px,10.5vw,46px)}
+  .hero .lead{grid-column:1/-1;margin-top:0;font-size:15.5px}
+}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;gap:18px}
+@media (max-width:480px){.panel{padding:16px}}
+.levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.level{appearance:none;font:inherit;text-align:left;display:grid;gap:3px;align-content:start;padding:14px 14px 13px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;min-width:0;transition:border-color .15s,background .15s}
+.level[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft)}
+.lv-name{font-family:var(--font-display);font-weight:900;font-size:24px;line-height:1.25}
+.lv-meta{font-size:14px;color:var(--muted);font-weight:700}
+.lv-pips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.lv-pips i{width:16px;height:11px;border-radius:3px;background:var(--line)}
+.level[aria-pressed="true"] .lv-pips i{background:var(--primary)}
+@media (max-width:560px){
+  .levels{grid-template-columns:1fr;gap:8px}
+  .level{grid-template-columns:minmax(4.6em,auto) minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px 14px}
+  .lv-name{font-size:22px}
+  .lv-meta{font-size:15px}
+  .lv-pips{margin-top:0;flex-wrap:nowrap}
+  .lv-pips i{width:12px;height:10px}
+}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.btn-gear{gap:6px;color:var(--primary)}
+.btn-gear svg{width:20px;height:20px}
+.fields{display:grid;gap:18px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{font-weight:700;font-size:15px;color:var(--muted);padding:0;margin-bottom:8px}
+.seg{display:flex;flex-wrap:wrap;gap:6px;position:relative}
+.seg input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.seg label{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1.5px solid var(--line);border-radius:999px;cursor:pointer;font-weight:700;background:var(--surface);transition:background .15s,border-color .15s}
+.seg input:checked + label{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.seg input:focus-visible + label{outline:3px solid var(--focus);outline-offset:2px}
+.cur{color:var(--muted);font-size:15px;font-weight:700}
+.switch{display:inline-flex;align-items:center;gap:10px;font-weight:700;cursor:pointer;position:relative}
+.switch input{position:absolute;opacity:0;width:1px;height:1px}
+.track{width:48px;height:28px;border-radius:999px;background:var(--line);position:relative;transition:background .2s;flex:none}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.28);transition:transform .2s}
+.switch input:checked + .track{background:var(--primary)}
+.switch input:checked + .track::after{transform:translateX(20px)}
+.switch input:focus-visible + .track{outline:3px solid var(--focus);outline-offset:2px}
+.btn-start{width:100%;min-height:66px;border-radius:16px;font-family:var(--font-display);font-size:26px;font-weight:900;letter-spacing:.12em}
+.err{color:var(--ng);font-weight:700}
+.sect{margin-top:36px}
+.sect-head{display:flex;align-items:baseline;justify-content:space-between;gap:6px 12px;flex-wrap:wrap;margin-bottom:12px}
+.hint{font-size:13px;color:var(--muted)}
+.empty{color:var(--muted);padding:18px;border:1.5px dashed var(--line);border-radius:14px}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tbl th{font-size:13px;color:var(--muted);font-weight:700;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface-2);position:sticky;top:0;z-index:1}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .num{text-align:right}
+.tbl .word{font-weight:700;font-size:18px}
+.emo-cell{font-family:var(--font-emoji);font-size:28px;line-height:1;text-align:center}
+.hist-foot{display:flex;justify-content:flex-end;margin-top:8px}
+/* 設定画面 */
+.set-wrap{max-width:760px;display:grid;gap:16px}
+.set-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.set-title{font-family:var(--font-display);font-weight:900;font-size:32px;letter-spacing:.06em}
+.set-sect{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;gap:14px;min-width:0}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
+.set-row .note{margin-top:2px}
+.set-done{width:100%;min-height:58px;font-size:18px}
+@media (max-width:480px){.set-sect{padding:16px}.set-title{font-size:28px}}
+.note{color:var(--muted);font-size:14px;max-width:46em}
+.words-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.counts{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:2px 16px}
+.counts span{white-space:nowrap}
+@media (max-width:480px){.words-bar .seg label{padding:0 12px}}
+.words-scroll{max-height:440px;overflow:auto}
+.w-text{font:inherit;font-weight:700;font-size:17px;width:9.5em;max-width:100%;padding:6px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.w-text:focus{border-color:var(--primary);outline:none}
+.w-band{font:inherit;padding:6px 8px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.w-on{width:22px;height:22px;accent-color:var(--primary)}
+tr.off td{opacity:.45}
+tr.off td:last-child{opacity:1}
+/* スマホでは表を横スクロールさせず、1件ずつのカード状に並べる */
+@media (max-width:600px){
+  .stack thead{display:none}
+  .stack,.stack tbody{display:block}
+  .stack tr{display:grid;align-items:center;gap:3px 12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .stack tr:last-child{border-bottom:0}
+  .stack td{padding:0;border:0;white-space:normal;min-width:0}
+  .stack td[data-label]::before{content:attr(data-label) "　";font-weight:400;font-size:13px;color:var(--muted)}
+  .hist tr{grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-areas:"date date date ok" "set set set ok" "avg ng late late"}
+  .hist .c-date{grid-area:date;font-size:13px;color:var(--muted)}
+  .hist .c-set{grid-area:set;font-weight:700}
+  .hist .c-ok{grid-area:ok;text-align:right;color:var(--muted)}
+  .hist .c-ok b{font-family:var(--font-display);font-weight:900;font-size:30px;color:var(--ink)}
+  .hist .c-avg{grid-area:avg}.hist .c-ng{grid-area:ng}.hist .c-late{grid-area:late}
+  .hist .c-avg,.hist .c-ng,.hist .c-late{text-align:left;font-size:14px}
+  .res tr{grid-template-columns:20px 44px minmax(0,1fr) auto;grid-template-areas:"n e w r" "n e a t";padding:10px 14px}
+  .res .c-n{grid-area:n;text-align:left;color:var(--muted)}
+  .res .c-e{grid-area:e;font-size:34px}
+  .res .c-w{grid-area:w;font-size:20px}
+  .res .c-a{grid-area:a;font-size:14px}
+  .res .c-r{grid-area:r;justify-self:end}
+  .res .c-t{grid-area:t;text-align:right;font-size:14px;color:var(--muted)}
+  .words-tbl tr{grid-template-columns:36px minmax(0,1fr) auto auto;gap:8px;padding:8px 10px}
+  .words-tbl .w-text{width:100%}
+  .words-scroll{max-height:60vh}
+}
+
+/* ---------- play ---------- */
+/* 上から詰めて並べる。絵と風船の枠は高さに上限を付け、選択肢を画面の中ほどに置く。「次の問題へ」は選択肢のすぐ下に大きく */
+#play{height:100%}
+.play{height:100%;display:flex;flex-direction:column;justify-content:flex-start;gap:12px;padding-block:12px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.playbar{flex:none;display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:8px 16px}
+.prog{display:flex;align-items:center;gap:12px;min-width:0}
+.qno{font-family:var(--font-display);font-weight:900;font-size:26px;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.qno small{font-size:15px;color:var(--muted);margin-left:2px}
+.dots{display:flex;gap:5px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--line);transition:background .2s}
+.dot.cur{background:transparent;box-shadow:inset 0 0 0 2.5px var(--primary)}
+.dot.ok{background:var(--ok)}.dot.ng{background:var(--ng)}.dot.late{background:var(--late)}
+.tools{display:flex;align-items:center;gap:8px;flex:none}
+.chip{font-size:13px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
+.score{font-family:var(--font-display);font-weight:900;font-size:22px;font-variant-numeric:tabular-nums;white-space:nowrap;margin-right:4px}
+.score small{font-size:13px;color:var(--muted);margin-left:2px}
+.iconbtn{appearance:none;width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.iconbtn svg{width:22px;height:22px}
+@media (max-width:520px){.chip{display:none}.tools{gap:6px}.dots{gap:4px}.dot{width:9px;height:9px}.qno{font-size:22px}.score{font-size:19px;margin-right:2px}}
+@media (max-width:360px){.dots{display:none}}
+.arena{flex:1 1 0;min-height:200px;max-height:min(44vh,500px);display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px}
+.pic{min-height:0;background:var(--surface);border:1px solid var(--line);border-radius:20px;display:grid;place-items:center;overflow:hidden;container-type:size}
+.emo{font-family:var(--font-emoji);font-size:clamp(72px,20vw,200px);line-height:1;user-select:none}
+@supports (font-size:1cqh){.emo{font-size:clamp(56px,min(62cqh,60cqw),240px)}}
+.emo.in{animation:picIn .38s cubic-bezier(.2,.9,.3,1.25)}
+@keyframes picIn{from{transform:scale(.55);opacity:0}to{transform:none;opacity:1}}
+.stagewrap{position:relative;min-height:0;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--sky-bot)}
+.stagewrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stagewrap.shake{animation:shake .38s ease-out}
+@keyframes shake{0%,100%{transform:none}15%{transform:translate(-6px,3px)}30%{transform:translate(5px,-4px)}45%{transform:translate(-4px,-2px)}60%{transform:translate(3px,3px)}80%{transform:translate(-1px,1px)}}
+.answer{flex:none;display:flex;flex-direction:column;gap:12px}
+.fb{display:flex;align-items:center;justify-content:center;min-height:46px}
+.fb-msg{display:inline-flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:0 12px;padding:4px 20px;border-radius:999px;font-weight:700;font-size:clamp(16px,2.2vh,19px);line-height:1.4;text-align:center;min-width:0}
+.fb-msg strong{font-family:var(--font-display);font-weight:900;font-size:clamp(20px,2.8vh,26px)}
+.fb[data-state="ask"] .fb-msg{color:var(--muted)}
+.fb[data-state="ok"] .fb-msg{background:var(--ok-bg)}.fb[data-state="ok"] strong{color:var(--ok)}
+.fb[data-state="ng"] .fb-msg{background:var(--ng-bg)}.fb[data-state="ng"] strong{color:var(--ng)}
+.fb[data-state="late"] .fb-msg{background:var(--late-bg)}.fb[data-state="late"] strong{color:var(--late)}
+/* 次の問題へ：選択肢の下に場所を取っておき、答えたら現れる */
+.next{appearance:none;position:relative;display:flex;align-items:center;justify-content:center;gap:14px;width:100%;min-height:clamp(60px,8.5vh,84px);margin-top:4px;padding:0 24px 4px;border:0;border-radius:18px;background:var(--primary);color:var(--primary-ink);font-family:var(--font-display);font-weight:900;font-size:clamp(23px,3.3vh,30px);letter-spacing:.1em;cursor:pointer;box-shadow:0 5px 0 var(--primary-deep);transition:transform .1s,box-shadow .1s}
+.next[data-show="false"]{visibility:hidden}
+.next:active{transform:translateY(4px);box-shadow:0 1px 0 var(--primary-deep)}
+.next-label,.next svg{position:relative}
+.next svg{width:1.15em;height:1.15em;flex:none}
+.next-fill{position:absolute;inset:0;border-radius:inherit;background:var(--primary-fill);clip-path:inset(0 100% 0 0)}
+.next.auto .next-fill{animation:nextFill var(--auto,1.8s) linear forwards}
+@keyframes nextFill{to{clip-path:inset(0 0 0 0)}}
+.next.show{animation:nextIn .3s ease-out}
+@keyframes nextIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.next::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
+.next.attn::after{animation:nextRing 1.5s ease-out .3s 3}
+@keyframes nextRing{0%{box-shadow:0 0 0 0 var(--primary-glow)}70%{box-shadow:0 0 0 12px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+.is-paused .next-fill{animation-play-state:paused}
+@media (hover:hover){.next:hover{filter:brightness(1.08)}}
+@media (prefers-reduced-motion: reduce){.next.show,.next.attn::after{animation:none}}
+.choices{display:grid;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));gap:10px}
+.choices[data-n="2"]{--cols:2}.choices[data-n="3"]{--cols:3}.choices[data-n="4"]{--cols:4}.choices[data-n="6"]{--cols:3}
+@media (max-width:900px){.choices[data-n="4"]{--cols:2}}
+.choice{appearance:none;position:relative;display:flex;align-items:center;justify-content:center;min-height:clamp(56px,9vh,96px);padding:6px 14px;border-radius:16px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font-family:var(--font-body);font-weight:700;font-size:clamp(22px,min(5.6vw,4.4vh),38px);line-height:1.2;cursor:pointer;transition:border-color .15s,background .2s,opacity .25s,transform .1s;min-width:0}
+.ct{display:inline-block;white-space:nowrap}
+.choice:active:not(:disabled){transform:scale(.98)}
+.choice:disabled{cursor:default}
+.choices.wait .choice{opacity:.35}
+.choice.is-correct{border-color:var(--ok);background:var(--ok-bg)}
+.choice.is-wrong{border-color:var(--ng);background:var(--ng-bg)}
+.choice.is-dim{opacity:.4}
+.mark{position:absolute;top:-10px;right:-8px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:700;line-height:1;color:var(--surface);box-shadow:0 0 0 3px var(--bg)}
+.is-correct .mark{background:var(--ok)}.is-wrong .mark{background:var(--ng)}
+/* スマホ縦：絵と風船を上下に並べる */
+@media (max-width:600px){
+  .play{gap:10px;padding-block:8px 10px}
+  .arena{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,2fr) minmax(0,3fr);gap:10px;min-height:240px}
+  .pic,.stagewrap{border-radius:16px}
+  .answer{gap:8px}
+  .fb{min-height:42px}
+  .fb-msg{padding:3px 16px}
+  .next{min-height:60px;border-radius:16px}
+  .choices{gap:8px}
+  .choices[data-n="3"]{--cols:1}.choices[data-n="6"]{--cols:2}
+  .choice{border-radius:14px}
+}
+/* スマホ横：左に絵と風船、右に選択肢 */
+@media (orientation:landscape) and (max-height:520px){
+  .play{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"bar bar" "arena answer";gap:8px 14px;padding-block:8px}
+  .playbar{grid-area:bar}
+  .arena{grid-area:arena;min-height:0;max-height:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:none;gap:8px}
+  .pic,.stagewrap{border-radius:14px}
+  .answer{grid-area:answer;min-height:0;gap:8px}
+  .fb{min-height:36px}
+  .fb-msg{font-size:15px;line-height:1.3;padding:3px 14px}
+  .fb-msg strong{font-size:19px}
+  .next{min-height:50px;margin-top:0;font-size:21px;border-radius:14px;box-shadow:0 4px 0 var(--primary-deep)}
+  .choices{flex:1 1 auto;grid-auto-rows:minmax(44px,1fr);gap:8px}
+  .choices[data-n="2"],.choices[data-n="3"]{--cols:1}
+  .choices[data-n="4"],.choices[data-n="6"]{--cols:2}
+  .choice{min-height:44px;font-size:clamp(18px,5.6vh,26px);border-radius:12px}
+  .qno{font-size:20px}
+  .iconbtn{width:42px;height:42px}
+}
+.scrim{position:fixed;inset:0;z-index:50;background:var(--scrim);display:grid;place-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
+.dialog{background:var(--surface);border-radius:20px;padding:28px 24px;width:100%;max-width:420px;display:grid;gap:12px;text-align:center}
+.dialog h2{font-family:var(--font-display);font-weight:900;font-size:26px}
+.dialog p{color:var(--muted)}
+.dialog .btns{display:grid;gap:10px;margin-top:8px}
+
+/* ---------- result ---------- */
+.res-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:8px 28px}
+.res-hero.solo{grid-template-columns:1fr}
+.res-canvas{display:block;width:100%;height:250px}
+@media (max-width:640px){.res-hero{grid-template-columns:1fr}.res-canvas{height:170px}}
+.eyebrow{font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.big{font-family:var(--font-display);font-weight:900;font-size:clamp(68px,13vw,108px);line-height:1;margin-top:8px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.big small{font-size:clamp(18px,3.4vw,26px);font-weight:700;color:var(--muted);margin-left:8px;letter-spacing:0}
+.res-msg{font-size:20px;font-weight:700;margin-top:12px}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:26px 0 0}
+.stat{background:var(--surface);padding:14px 16px;min-width:0}
+.stat dt{font-size:13px;color:var(--muted);font-weight:700}
+.stat dd{margin:2px 0 0;font-family:var(--font-display);font-weight:900;font-size:28px;font-variant-numeric:tabular-nums}
+.stat dd small{font-size:14px;color:var(--muted);margin-left:3px}
+@media (max-width:720px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat:last-child{grid-column:1/-1}}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.copy-note{margin-top:10px;font-size:14px;color:var(--muted)}
+.copy-area{width:100%;min-height:180px;margin-top:8px;padding:12px;font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)}
+.chip-r{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap}
+.chip-r.ok{background:var(--ok-bg);color:var(--ok)}.chip-r.ng{background:var(--ng-bg);color:var(--ng)}.chip-r.late{background:var(--late-bg);color:var(--late)}
+.muted{color:var(--muted)}
+@media (max-width:600px){
+  .actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .actions .btn{padding:0 10px}
+  .actions .btn-primary{grid-column:1/-1;min-height:58px;font-size:18px}
+  .stat{padding:12px 14px}
+}
+@media (prefers-reduced-motion: reduce){.emo.in,.stagewrap.shake{animation:none}}
+</style>
+
+<!-- ======================= START ======================= -->
+<section id="start">
+  <div class="wrap">
+    <header class="hero">
+      <canvas id="heroCanvas" aria-hidden="true"></canvas>
+      <div>
+        <h1>風船ことば</h1>
+        <p class="lead">絵に合う言葉を、風船が割れる前に選ぶ練習です。1セット10問、1問の制限時間は15秒です。</p>
+      </div>
+    </header>
+
+    <section class="panel" aria-labelledby="levelTitle">
+      <div class="panel-head">
+        <h2 id="levelTitle" class="h2">難易度</h2>
+        <button class="btn btn-quiet btn-gear" id="openSettings" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.14 12.94a7.07 7.07 0 0 0 .05-.94 7.07 7.07 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.03 7.03 0 0 0-1.63-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.65 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.07 7.07 0 0 0 0 1.88l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.12.22.38.3.6.22l2.39-.96c.5.38 1.04.7 1.63.94l.36 2.54c.04.24.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54c.59-.24 1.13-.56 1.63-.94l2.39.96c.22.08.48 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/></svg>設定</button>
+      </div>
+      <div class="levels" id="levels"></div>
+      <p class="cur" id="curSet"></p>
+      <button class="btn btn-primary btn-start" id="startBtn" type="button">始める</button>
+      <p class="err" id="startErr" role="alert" hidden></p>
+    </section>
+
+    <section class="sect" aria-labelledby="histTitle">
+      <div class="sect-head">
+        <h2 id="histTitle" class="h2">これまでの記録</h2>
+        <span class="hint">この端末のブラウザに保存されます</span>
+      </div>
+      <div id="hist"></div>
+    </section>
+
+  </div>
+</section>
+
+<!-- ======================= SETTINGS ======================= -->
+<section id="settings" hidden>
+  <div class="wrap set-wrap">
+    <header class="set-head">
+      <h1 class="set-title">設定</h1>
+      <button class="btn" id="closeSettings" type="button">完了</button>
+    </header>
+
+    <section class="set-sect" aria-labelledby="qTitle">
+      <h2 id="qTitle" class="h2">出題</h2>
+      <p class="note">難易度のボタンを選ぶと、ここも同じ組み合わせに変わります。ここで頻度と選択肢の数を別々に選ぶこともできます。</p>
+      <div class="fields">
+        <fieldset>
+          <legend>課題語の頻度</legend>
+          <div class="seg">
+            <input type="radio" name="band" id="band-1" value="1"><label for="band-1">高頻度語</label>
+            <input type="radio" name="band" id="band-2" value="2"><label for="band-2">中頻度語</label>
+            <input type="radio" name="band" id="band-3" value="3"><label for="band-3">低頻度語</label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>選択肢の数</legend>
+          <div class="seg">
+            <input type="radio" name="nopt" id="nopt-2" value="2"><label for="nopt-2">2択</label>
+            <input type="radio" name="nopt" id="nopt-3" value="3"><label for="nopt-3">3択</label>
+            <input type="radio" name="nopt" id="nopt-4" value="4"><label for="nopt-4">4択</label>
+            <input type="radio" name="nopt" id="nopt-6" value="6"><label for="nopt-6">6択</label>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="set-sect" aria-labelledby="sTitle">
+      <div class="set-row">
+        <div>
+          <h2 id="sTitle" class="h2">効果音</h2>
+          <p class="note">風船がふくらむ音、割れる音、正解の音</p>
+        </div>
+        <label class="switch"><input type="checkbox" id="sndToggle" checked aria-label="効果音"><span class="track" aria-hidden="true"></span><span id="sndState">オン</span></label>
+      </div>
+    </section>
+
+    <section class="set-sect" aria-labelledby="wTitle">
+      <h2 id="wTitle" class="h2">使う言葉と表記</h2>
+      <p class="note">表記は、その語がふだんどの文字種で書かれることが多いか（表記妥当性）を目安に決めています。頻度の区分も目安です。研究や臨床で使うときは語彙特性のデータで確かめ、必要に応じてここで書き換えてください。変更はこの端末に保存されます。</p>
+      <div class="words-bar">
+        <div class="seg" role="radiogroup" aria-label="表示する頻度">
+          <input type="radio" name="wf" id="wf-all" value="all" checked><label for="wf-all">すべて</label>
+          <input type="radio" name="wf" id="wf-1" value="1"><label for="wf-1">高頻度</label>
+          <input type="radio" name="wf" id="wf-2" value="2"><label for="wf-2">中頻度</label>
+          <input type="radio" name="wf" id="wf-3" value="3"><label for="wf-3">低頻度</label>
+        </div>
+        <button class="btn btn-quiet" id="resetWords" type="button">初期設定に戻す</button>
+      </div>
+      <p class="counts" id="wordCounts"></p>
+      <div class="tblwrap words-scroll">
+        <table class="tbl stack words-tbl">
+          <thead><tr><th>絵</th><th>表記</th><th>頻度</th><th>使う</th></tr></thead>
+          <tbody id="wordRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <button class="btn btn-primary set-done" id="doneSettings" type="button">設定を閉じる</button>
+  </div>
+</section>
+
+<!-- ======================= PLAY ======================= -->
+<section id="play" hidden>
+  <div class="wrap play">
+    <header class="playbar">
+      <div class="prog">
+        <span class="qno" id="qno">1<small>/10</small></span>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+      </div>
+      <div class="tools">
+        <span class="chip" id="playSet"></span>
+        <span class="score" id="score">0<small>点</small></span>
+        <button class="iconbtn" id="pauseBtn" type="button" aria-label="一時停止">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </header>
+    <div class="arena">
+      <div class="pic"><span class="emo" id="emo" role="img" aria-label="問題の絵"></span></div>
+      <div class="stagewrap" id="stagewrap"><canvas id="stage" aria-hidden="true"></canvas></div>
+    </div>
+    <div class="answer">
+      <div class="fb" id="fb" data-state="ask" aria-live="polite">
+        <p class="fb-msg" id="fbMsg">絵に合う言葉を選んでください</p>
+      </div>
+      <div class="choices" id="choices"></div>
+      <button class="next" id="nextBtn" type="button" data-show="false"><span class="next-fill" aria-hidden="true"></span><span class="next-label" id="nextLabel">次の問題へ</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-6-7 7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </div>
+  <div class="scrim" id="pauseScrim" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+      <h2 id="pauseTitle">一時停止中</h2>
+      <p>風船は止まっています。</p>
+      <div class="btns">
+        <button class="btn btn-primary" id="resumeBtn" type="button">再開する</button>
+        <button class="btn" id="quitBtn" type="button">中断して設定に戻る</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= RESULT ======================= -->
+<section id="result" hidden>
+  <div class="wrap">
+    <div class="res-hero" id="resHero">
+      <canvas id="resCanvas" class="res-canvas" aria-hidden="true"></canvas>
+      <div>
+        <p class="eyebrow" id="resMeta"></p>
+        <p class="big"><span id="resCorrect">0</span><small>/ 10 問正解</small></p>
+        <p class="res-msg" id="resMsg"></p>
+      </div>
+    </div>
+    <dl class="stats" id="stats"></dl>
+    <div class="actions">
+      <button class="btn btn-primary" id="againBtn" type="button">同じ設定でもう一度</button>
+      <button class="btn" id="backBtn" type="button">設定を変える</button>
+      <button class="btn" id="copyBtn" type="button">結果をコピー</button>
+    </div>
+    <p class="copy-note" id="copyNote" hidden></p>
+    <textarea class="copy-area" id="copyArea" readonly hidden aria-label="結果のテキスト"></textarea>
+    <section class="sect" aria-labelledby="itemsTitle">
+      <div class="sect-head"><h2 id="itemsTitle" class="h2">問題ごとの結果</h2><span class="hint">時間は選択肢が押せるようになってから答えるまで</span></div>
+      <div class="tblwrap">
+        <table class="tbl stack res">
+          <thead><tr><th>問</th><th>絵</th><th>正答</th><th>回答</th><th>結果</th><th class="num">時間</th></tr></thead>
+          <tbody id="resRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</section>
+
+<script>
+(() => {
+'use strict';
+
+/* ================= 設定 ================= */
+const TIME_LIMIT = 15;          // 1問の制限時間（秒）
+const SET_SIZE = 10;            // 1セットの問題数
+const KEY_SET = 'fk.settings.v1', KEY_HIST = 'fk.history.v1', KEY_WORDS = 'fk.words.v1';
+const RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const BALLOON_COLORS = ['#E5484D','#F08A24','#2E9C8E','#3B78DA','#8B5CD6','#E5539A','#E3B027','#46A157'];
+const BAND_NAME = {1:'高頻度', 2:'中頻度', 3:'低頻度'};
+const PRESETS = [
+  {key:'easy',   name:'簡単',   band:1, n:3},
+  {key:'normal', name:'普通',   band:2, n:4},
+  {key:'hard',   name:'難しい', band:3, n:6},
+];
+
+/* 語彙：[絵, 表記, 頻度帯(1高 2中 3低)]  表記は表記妥当性（ふだん書かれる文字種）を目安にしています */
+const WORD_DATA = [
+  ['🐕','犬',1],['🐈','猫',1],['🐄','牛',1],['🐟','魚',1],['🐦','鳥',1],['🚗','車',1],['🚃','電車',1],['🚌','バス',1],
+  ['🚲','自転車',1],['🚢','船',1],['✈️','飛行機',1],['🏠','家',1],['📖','本',1],['📰','新聞',1],['☂️','傘',1],['👞','靴',1],
+  ['👒','帽子',1],['🪑','椅子',1],['🕰️','時計',1],['☎️','電話',1],['📺','テレビ',1],['🔑','鍵',1],['💊','薬',1],['🥚','卵',1],
+  ['🥛','牛乳',1],['🍞','パン',1],['🍎','りんご',1],['🍌','バナナ',1],['✋','手',1],['🦶','足',1],['👁️','目',1],['👂','耳',1],
+  ['👃','鼻',1],['👄','口',1],['🦷','歯',1],['☀️','太陽',1],['🌙','月',1],['⭐','星',1],['🔥','火',1],['⛰️','山',1],
+  ['🌳','木',1],['❄️','雪',1],
+
+  ['✏️','鉛筆',2],['✂️','はさみ',2],['🥢','箸',2],['🔪','包丁',2],['🔨','ハンマー',2],['👓','眼鏡',2],['🧤','手袋',2],['🧦','靴下',2],
+  ['💍','指輪',2],['🔋','電池',2],['💡','電球',2],['✉️','封筒',2],['💉','注射',2],['🧼','石けん',2],['🚒','消防車',2],['🚑','救急車',2],
+  ['🚓','パトカー',2],['🚥','信号',2],['📮','ポスト',2],['⛺','テント',2],['🌈','虹',2],['⚡','雷',2],['🌍','地球',2],['⛄','雪だるま',2],
+  ['🎸','ギター',2],['🦴','骨',2],['🍇','ぶどう',2],['🍓','いちご',2],['🍊','みかん',2],['🍅','トマト',2],['🥕','にんじん',2],['🧅','玉ねぎ',2],
+  ['🥒','きゅうり',2],['🍉','スイカ',2],['🍋','レモン',2],['🍍','パイナップル',2],['🍰','ケーキ',2],['🐎','馬',2],['🐖','豚',2],['🐓','ニワトリ',2],
+  ['🐁','ネズミ',2],['🐇','うさぎ',2],['🐢','亀',2],['🦋','蝶',2],['🐘','ゾウ',2],['🦒','キリン',2],['🐻','クマ',2],['🐒','サル',2],
+  ['🐅','トラ',2],['🐧','ペンギン',2],['🐍','ヘビ',2],['🐸','カエル',2],['🦀','カニ',2],['🦐','エビ',2],['🐙','タコ',2],
+
+  ['🔬','顕微鏡',3],['🔭','望遠鏡',3],['🧲','磁石',3],['👑','王冠',3],['⚓','いかり',3],['🕯️','ろうそく',3],['🌡️','温度計',3],['⏳','砂時計',3],
+  ['⚖️','天秤',3],['⚙️','歯車',3],['⛓️','鎖',3],['🛡️','盾',3],['🏹','弓矢',3],['🧯','消火器',3],['🧶','毛糸',3],['🎡','観覧車',3],
+  ['⛲','噴水',3],['🌋','火山',3],['🌵','サボテン',3],['🌴','ヤシの木',3],['🌽','とうもろこし',3],['🌰','栗',3],['🍄','きのこ',3],['🥦','ブロッコリー',3],
+  ['🥑','アボカド',3],['🌶️','唐辛子',3],['🥜','ピーナッツ',3],['🐌','カタツムリ',3],['🦉','フクロウ',3],['🦚','クジャク',3],['🦜','オウム',3],['🦇','コウモリ',3],
+  ['🦢','白鳥',3],['🦅','ワシ',3],['🦂','サソリ',3],['🦎','トカゲ',3],['🐊','ワニ',3],['🐪','ラクダ',3],['🦛','カバ',3],['🦏','サイ',3],
+  ['🦊','キツネ',3],['🐋','クジラ',3],['🐬','イルカ',3],['🦈','サメ',3],['🐡','フグ',3],['🐚','貝',3],['🐝','ハチ',3],['🐜','アリ',3],
+  ['🕷️','クモ',3],
+];
+const BASE = WORD_DATA.map(([emoji, text, band], idx) => ({idx, id: emoji, emoji, text, band}));
+
+/* ================= 小道具 ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+const easeOutBack = t => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+const easeInOut = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtSec = v => (Math.round(v * 10) / 10).toFixed(1);
+const z2 = n => String(n).padStart(2, '0');
+const fmtDate = t => { const d = new Date(t); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${z2(d.getHours())}:${z2(d.getMinutes())}`; };
+const setLabel = (band, n) => `${BAND_NAME[band]}語・${n}択`;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+};
+
+const rgbCache = {};
+function rgb(h) {
+  if (rgbCache[h]) return rgbCache[h];
+  let x = String(h).trim().replace('#', '');
+  if (x.length === 3) x = x.split('').map(c => c + c).join('');
+  const v = [parseInt(x.slice(0,2),16) || 0, parseInt(x.slice(2,4),16) || 0, parseInt(x.slice(4,6),16) || 0];
+  rgbCache[h] = v; return v;
+}
+function mix(a, b, t, al = 1) {
+  const A = rgb(a), B = rgb(b);
+  const r = Math.round(A[0] + (B[0]-A[0]) * t), g = Math.round(A[1] + (B[1]-A[1]) * t), bl = Math.round(A[2] + (B[2]-A[2]) * t);
+  return al >= 1 ? `rgb(${r},${g},${bl})` : `rgba(${r},${g},${bl},${Math.max(0, al)})`;
+}
+function rr(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+
+/* テーマの色をキャンバスへ */
+let TK = {};
+function readTokens() {
+  const cs = getComputedStyle(document.documentElement);
+  const g = n => cs.getPropertyValue(n).trim();
+  TK = { skyTop:g('--sky-top'), skyBot:g('--sky-bot'), cloud:g('--cloud'), ground:g('--ground'), groundEdge:g('--ground-edge'),
+         tank:g('--tank'), tankHi:g('--tank-hi'), tankLo:g('--tank-lo'), gauge:g('--gauge'), brass:g('--brass'), string:g('--string'), ink:g('--ink') };
+}
+readTokens();
+if (window.matchMedia) { const mq = matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', readTokens); else if (mq.addListener) mq.addListener(readTokens); }
+new MutationObserver(readTokens).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme', 'class', 'style']});
+
+function fitCanvas(cv) {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  return {W: r.width, H: r.height, dpr};
+}
+
+/* ================= 風船の描画 ================= */
+const tipOf = p => 1.20 - 0.08 * p;   // 風船の下端（結び目側）までの距離 ÷ R
+function balloonPath(ctx, R, p) {
+  const cx = 1.30 + 0.05 * p, b = tipOf(p), c1 = 0.62 - 0.06 * p, t = 1.05;
+  ctx.beginPath();
+  ctx.moveTo(0, b * R);
+  ctx.bezierCurveTo(-cx * R, c1 * R, -cx * R, -t * R, 0, -t * R);
+  ctx.bezierCurveTo(cx * R, -t * R, cx * R, c1 * R, 0, b * R);
+  ctx.closePath();
+}
+function drawBalloon(ctx, R, color, p) {
+  if (R < 1) return;
+  ctx.save();
+  balloonPath(ctx, R, p);
+  let g = ctx.createRadialGradient(-0.32 * R, -0.42 * R, R * 0.04, -0.05 * R, -0.05 * R, R * 1.5);
+  g.addColorStop(0, mix(color, '#ffffff', 0.42 + 0.22 * p));
+  g.addColorStop(0.45, mix(color, '#ffffff', 0.07 * p));
+  g.addColorStop(1, mix(color, '#000000', 0.46 - 0.12 * p));
+  ctx.fillStyle = g; ctx.fill();
+  ctx.clip();
+  // ふちの陰
+  balloonPath(ctx, R, p);
+  ctx.lineWidth = R * 0.16; ctx.strokeStyle = mix(color, '#000000', 0.5, 0.17); ctx.stroke();
+  // ゴムを透ける光
+  g = ctx.createRadialGradient(0.35 * R, 0.55 * R, 0, 0.35 * R, 0.55 * R, R * 0.8);
+  g.addColorStop(0, mix(color, '#ffffff', 0.35, 0.3 + 0.22 * p)); g.addColorStop(1, mix(color, '#ffffff', 0.35, 0));
+  ctx.fillStyle = g; ctx.fillRect(-2 * R, -2 * R, 4 * R, 4 * R);
+  // 膨らむほど口元のゴムが薄くなる
+  if (p > 0.55) {
+    const k = (p - 0.55) / 0.45, b = tipOf(p);
+    g = ctx.createRadialGradient(0, b * R, 0, 0, b * R, R * 0.8);
+    g.addColorStop(0, mix(color, '#ffffff', 0.6, 0.5 * k)); g.addColorStop(1, mix(color, '#ffffff', 0.6, 0));
+    ctx.fillStyle = g; ctx.fillRect(-2 * R, -2 * R, 4 * R, 4 * R);
+  }
+  // ハイライト
+  ctx.save();
+  ctx.translate(-0.42 * R, -0.5 * R); ctx.rotate(-0.6); ctx.scale(0.6, 1);
+  g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 0.4);
+  g.addColorStop(0, 'rgba(255,255,255,0.88)'); g.addColorStop(0.45, 'rgba(255,255,255,0.32)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R * 0.4, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.beginPath(); ctx.ellipse(-0.5 * R, -0.63 * R, R * 0.07, R * 0.115, -0.6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  ctx.beginPath(); ctx.ellipse(0.56 * R, -0.22 * R, R * 0.055, R * 0.22, 0.35, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+function drawKnot(ctx, R, color, p) {
+  const b = tipOf(p) * R, k = Math.max(4, R * 0.085);
+  ctx.fillStyle = mix(color, '#000000', 0.25);
+  ctx.beginPath();
+  ctx.moveTo(-k * 0.32, b - 1); ctx.lineTo(k * 0.32, b - 1);
+  ctx.lineTo(k * 0.62, b + k * 0.9);
+  ctx.quadraticCurveTo(0, b + k * 0.55, -k * 0.62, b + k * 0.9);
+  ctx.closePath(); ctx.fill();
+  return b + k * 0.72;
+}
+function drawCloud(ctx, x, y, s) {
+  ctx.beginPath();
+  const parts = [[0,0,.32],[.3,-.15,.36],[.62,-.03,.3],[.86,.06,.22],[-.26,.07,.22],[.4,.1,.26]];
+  for (const [dx, dy, r] of parts) { ctx.moveTo(x + dx * s + r * s, y + dy * s); ctx.arc(x + dx * s, y + dy * s, r * s, 0, Math.PI * 2); }
+  ctx.fill();
+}
+function star4(ctx, x, y, s) {
+  ctx.beginPath(); ctx.moveTo(x, y - s);
+  ctx.quadraticCurveTo(x, y, x + s, y); ctx.quadraticCurveTo(x, y, x, y + s);
+  ctx.quadraticCurveTo(x, y, x - s, y); ctx.quadraticCurveTo(x, y, x, y - s);
+  ctx.fill();
+}
+
+/* ================= 舞台（ボンベと風船） ================= */
+class Stage {
+  constructor(cv) {
+    this.cv = cv; this.ctx = cv.getContext('2d'); this.t = 0;
+    this.att = null; this.flyers = []; this.shards = []; this.fx = []; this.sparks = []; this.remnant = null;
+    this.gp = 0; this.gTarget = 0; this.clouds = []; this.W = 0; this.H = 0;
+    for (let i = 0; i < 4; i++) this.clouds.push({x: Math.random() * 1.3 - 0.2, y: 0.08 + Math.random() * 0.4, s: 0.2 + Math.random() * 0.16, v: 0.004 + Math.random() * 0.006});
+    if (window.ResizeObserver) new ResizeObserver(() => this.resize()).observe(cv);
+  }
+  resize() {
+    const {W, H, dpr} = fitCanvas(this.cv); this.W = W; this.H = H; this.dpr = dpr;
+    if (!W || !H) return;
+    const gH = Math.max(16, H * 0.075), gt = H - gH;
+    const tw = clamp(Math.min(W * 0.2, H * 0.17), 44, 84);
+    const tankH = tw, tankTop = gt - tankH;
+    const valveH = Math.max(8, tw * 0.2), nozzleW = Math.max(5, tw * 0.1);
+    const nozzleTip = tankTop - valveH - Math.max(8, tw * 0.22);
+    const neck = Math.max(7, tw * 0.12);
+    const Rmax = Math.max(20, Math.min(W * 0.4, (nozzleTip - neck - 10) / 2.3));
+    this.L = {cx: W / 2, gt, tw, tankH, tankTop, valveH, nozzleW, nozzleTip, neck, Rmax, Rmin: Rmax * 0.3};
+  }
+  reset() { this.att = null; this.flyers = []; this.shards = []; this.fx = []; this.sparks = []; this.remnant = null; this.gp = 0; this.gTarget = 0; }
+  newBalloon(color) { this.att = {color, state: 'enter', t: 0, R: 0, p: 0, tilt: 0, sx: 1}; this.remnant = null; this.gTarget = 0; }
+  setInflation(p) {
+    const a = this.att; if (!a || !this.L) return;
+    a.p = p; this.gTarget = p;
+    if (a.state === 'inflate') a.R = lerp(this.L.Rmin, this.L.Rmax, p * 0.72 + p * p * 0.28);
+  }
+  center(a) { const L = this.L; return {x: L.cx, y: L.nozzleTip - L.neck - tipOf(a.p) * a.R}; }
+  release() {
+    const a = this.att; if (!a || !this.L) return null;
+    const c = this.center(a), R = a.R;
+    const kb = tipOf(a.p) * R + Math.max(4, R * 0.085) * 0.72;
+    const len = clamp(R * 1.7, 50, 170), n = 14, seg = len / (n - 1);
+    const rope = []; for (let i = 0; i < n; i++) { const y = c.y + kb + i * seg; rope.push({x: c.x, y, px: c.x, py: y}); }
+    this.flyers.push({x0: c.x, x: c.x, y: c.y, vy: -30, R, p: a.p, color: a.color, t: 0, rope, seg, kb, tilt: 0});
+    for (let i = 0; i < 7; i++) {
+      const ang = -Math.PI / 2 + (Math.random() - .5) * 2.8, d = R * (0.95 + Math.random() * 0.5);
+      this.sparks.push({x: c.x + Math.cos(ang) * d, y: c.y + Math.sin(ang) * d, vx: Math.cos(ang) * 40, vy: Math.sin(ang) * 40 - 20, life: 0.7 + Math.random() * 0.3, max: 1, s: Math.max(4, R * 0.08) * (0.7 + Math.random() * 0.6)});
+    }
+    this.att = null; this.gTarget = 0;
+    return c;
+  }
+  deflate() {
+    const a = this.att; if (!a) return;
+    a.state = 'deflate'; a.t = 0; a.R0 = a.R; a.p0 = a.p; a.side = Math.random() < .5 ? -1 : 1; this.gTarget = 0;
+  }
+  pop() {
+    const a = this.att; if (!a || !this.L) return;
+    const c = this.center(a), R = a.R, n = RM ? 12 : 28;
+    for (let i = 0; i < n; i++) {
+      const ang = Math.random() * Math.PI * 2, rr0 = R * (0.55 + Math.random() * 0.45);
+      const sp = (320 + Math.random() * 560) * Math.sqrt(R / 90), sz = R * (0.1 + Math.random() * 0.2);
+      const k = 5 + Math.floor(Math.random() * 3), pts = [];
+      for (let j = 0; j < k; j++) { const aa = j / k * Math.PI * 2 + (Math.random() - .5) * 0.6, r = sz * (0.4 + Math.random() * 0.6); pts.push([Math.cos(aa) * r * 1.5, Math.sin(aa) * r * 0.7]); }
+      this.shards.push({x: c.x + Math.cos(ang) * rr0, y: c.y + Math.sin(ang) * rr0 * 1.05, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 140,
+        rot: Math.random() * 6.28, vr: (Math.random() - .5) * 16, pts, col: mix(a.color, Math.random() < .5 ? '#000000' : '#ffffff', Math.random() * 0.28), life: 0.9 + Math.random() * 0.5});
+    }
+    this.fx.push({x: c.x, y: c.y, R, t: 0});
+    this.remnant = {color: a.color}; this.att = null; this.gTarget = 0;
+  }
+  update(dt) {
+    if (!this.L) return;
+    this.t += dt; const L = this.L;
+    if (!RM) for (const c of this.clouds) { c.x += c.v * dt; if (c.x > 1.3) c.x = -0.35; }
+    this.gp += (this.gTarget - this.gp) * Math.min(1, dt * (this.gTarget < this.gp ? 3.5 : 14));
+    const a = this.att;
+    if (a) {
+      a.t += dt;
+      if (a.state === 'enter') {
+        const k = Math.min(1, a.t / 0.45); a.R = L.Rmin * (0.12 + 0.88 * easeOutBack(k));
+        if (k >= 1) { a.state = 'inflate'; a.R = lerp(L.Rmin, L.Rmax, a.p * 0.72 + a.p * a.p * 0.28); }
+      } else if (a.state === 'deflate') {
+        const k = Math.min(1, a.t / 0.9);
+        a.R = lerp(a.R0, L.Rmin * 0.62, easeOutCubic(k)); a.p = lerp(a.p0, 0, k);
+        a.tilt = a.side * 0.55 * easeInOut(k) + Math.sin(a.t * 22) * 0.22 * (1 - k);
+        a.sx = 1 - 0.14 * k + Math.sin(a.t * 31) * 0.05 * (1 - k);
+        if (k >= 1) a.state = 'limp';
+      }
+    }
+    // 空へ飛んでいく風船（ひもは簡易な物理）
+    for (const f of this.flyers) {
+      f.t += dt; f.vy = Math.max(-760, f.vy - 640 * dt); f.y += f.vy * dt;
+      const sw = Math.min(1, f.t * 1.4); f.x = f.x0 + Math.sin(f.t * 2.3) * 12 * sw; f.tilt = Math.sin(f.t * 2.3 + 0.9) * 0.08 * sw;
+      const r = f.rope; r[0].x = f.x - Math.sin(f.tilt) * f.kb; r[0].y = f.y + Math.cos(f.tilt) * f.kb; r[0].px = r[0].x; r[0].py = r[0].y;
+      for (let i = 1; i < r.length; i++) {
+        const q = r[i], vx = (q.x - q.px) * 0.985, vy = (q.y - q.py) * 0.985;
+        q.px = q.x; q.py = q.y; q.x += vx; q.y += vy + 900 * dt * dt;
+      }
+      for (let it = 0; it < 10; it++) for (let i = 0; i < r.length - 1; i++) {
+        const A = r[i], B = r[i + 1], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || 0.001, diff = (d - f.seg) / d;
+        if (i === 0) { B.x -= dx * diff; B.y -= dy * diff; }
+        else { A.x += dx * diff * 0.5; A.y += dy * diff * 0.5; B.x -= dx * diff * 0.5; B.y -= dy * diff * 0.5; }
+      }
+    }
+    this.flyers = this.flyers.filter(f => f.rope[f.rope.length - 1].y > -20);
+    for (const s of this.shards) { s.life -= dt; s.vx *= Math.pow(0.35, dt); s.vy += 1150 * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.rot += s.vr * dt; }
+    this.shards = this.shards.filter(s => s.life > 0);
+    for (const e of this.fx) e.t += dt;
+    this.fx = this.fx.filter(e => e.t < 0.45);
+    for (const s of this.sparks) { s.life -= dt; s.x += s.vx * dt; s.y += s.vy * dt; }
+    this.sparks = this.sparks.filter(s => s.life > 0);
+  }
+  draw() {
+    if (!this.L || !this.W) return;
+    const ctx = this.ctx, {W, H, dpr} = this, L = this.L;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    const sg = ctx.createLinearGradient(0, 0, 0, H); sg.addColorStop(0, TK.skyTop); sg.addColorStop(1, TK.skyBot);
+    ctx.fillStyle = sg; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = TK.cloud;
+    for (const c of this.clouds) drawCloud(ctx, c.x * W, c.y * H, c.s * Math.min(W, H * 1.2));
+    ctx.fillStyle = TK.ground; ctx.fillRect(0, L.gt, W, H - L.gt);
+    ctx.fillStyle = TK.groundEdge; ctx.fillRect(0, L.gt, W, 2);
+    this.drawTank(ctx);
+    if (this.remnant) this.drawRemnant(ctx);
+    if (this.att) this.drawAttached(ctx, this.att);
+    for (const f of this.flyers) this.drawFlyer(ctx, f);
+    for (const s of this.shards) {
+      ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.rot); ctx.globalAlpha = Math.min(1, s.life / 0.35);
+      ctx.fillStyle = s.col; ctx.beginPath(); s.pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+    for (const e of this.fx) this.drawBurst(ctx, e);
+    ctx.fillStyle = '#F5C542';
+    for (const s of this.sparks) { ctx.globalAlpha = Math.min(1, s.life / 0.3); star4(ctx, s.x, s.y, s.s * (0.6 + 0.4 * Math.sin(s.life * 14))); }
+    ctx.globalAlpha = 1;
+  }
+  drawTank(ctx) {
+    const {cx, gt, tw, tankH, tankTop, valveH, nozzleW, nozzleTip} = this.L;
+    const left = cx - tw / 2, right = cx + tw / 2, shY = tankTop + tw * 0.28;
+    ctx.fillStyle = 'rgba(0,0,0,0.14)';
+    ctx.beginPath(); ctx.ellipse(cx, gt + 1, tw * 0.66, Math.max(3, tw * 0.07), 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(left, gt); ctx.lineTo(left, shY);
+    ctx.ellipse(cx, shY, tw / 2, tw * 0.28, 0, Math.PI, Math.PI * 2); ctx.lineTo(right, gt); ctx.closePath();
+    let g = ctx.createLinearGradient(left, 0, right, 0);
+    g.addColorStop(0, TK.tankLo); g.addColorStop(0.22, TK.tankHi); g.addColorStop(0.5, TK.tank); g.addColorStop(1, TK.tankLo);
+    ctx.fillStyle = g; ctx.fill();
+    const foot = Math.max(3, tw * 0.07);
+    ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.fillRect(left, gt - foot, tw, foot);
+    // バルブとハンドル
+    const vW = tw * 0.32, vTop = tankTop - valveH + 1;
+    g = ctx.createLinearGradient(cx - vW / 2, 0, cx + vW / 2, 0);
+    g.addColorStop(0, mix(TK.brass, '#000000', 0.3)); g.addColorStop(0.35, mix(TK.brass, '#ffffff', 0.35)); g.addColorStop(1, mix(TK.brass, '#000000', 0.35));
+    ctx.fillStyle = g; rr(ctx, cx - vW / 2, vTop, vW, valveH + 2, 2); ctx.fill();
+    const wr = valveH * 0.6, wx = cx + vW / 2 + wr * 0.7, wy = vTop + valveH * 0.45;
+    ctx.strokeStyle = mix(TK.brass, '#000000', 0.25); ctx.lineWidth = Math.max(1.5, wr * 0.28);
+    ctx.beginPath(); ctx.moveTo(cx + vW / 2, wy); ctx.lineTo(wx, wy); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(wx, wy, wr * 0.38, wr, 0, 0, Math.PI * 2); ctx.stroke();
+    // ノズル
+    g = ctx.createLinearGradient(cx - nozzleW / 2, 0, cx + nozzleW / 2, 0);
+    g.addColorStop(0, TK.tankLo); g.addColorStop(0.4, TK.tankHi); g.addColorStop(1, TK.tankLo);
+    ctx.fillStyle = g; ctx.fillRect(cx - nozzleW / 2, nozzleTip, nozzleW, vTop - nozzleTip + 1);
+    // 圧力計（残り時間）
+    const gr = tw * 0.26, gx = cx, gy = tankTop + tankH * 0.56;
+    ctx.fillStyle = mix(TK.brass, '#000000', 0.12); ctx.beginPath(); ctx.arc(gx, gy, gr + Math.max(1.5, gr * 0.14), 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = TK.gauge; ctx.beginPath(); ctx.arc(gx, gy, gr, 0, Math.PI * 2); ctx.fill();
+    const a0 = Math.PI * 0.75, sw = Math.PI * 1.5;
+    ctx.lineWidth = Math.max(2, gr * 0.2); ctx.lineCap = 'butt';
+    [[0, .6, '#3FA34D'], [.6, .82, '#E3B027'], [.82, 1, '#E5484D']].forEach(([s, e, c]) => {
+      ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(gx, gy, gr * 0.68, a0 + sw * s, a0 + sw * e); ctx.stroke();
+    });
+    ctx.strokeStyle = '#2A3540'; ctx.lineWidth = Math.max(1, gr * 0.06);
+    for (let i = 0; i <= 6; i++) { const a = a0 + sw * i / 6; ctx.beginPath(); ctx.moveTo(gx + Math.cos(a) * gr * .86, gy + Math.sin(a) * gr * .86); ctx.lineTo(gx + Math.cos(a) * gr * .98, gy + Math.sin(a) * gr * .98); ctx.stroke(); }
+    let gp = this.gp;
+    if (gp > 0.8 && this.att && this.att.state === 'inflate') gp += Math.sin(this.t * 43) * 0.014 * ((gp - 0.8) / 0.2);
+    const an = a0 + sw * clamp(gp, 0, 1.02);
+    ctx.strokeStyle = '#1A2430'; ctx.lineWidth = Math.max(1.5, gr * 0.09); ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(gx - Math.cos(an) * gr * .15, gy - Math.sin(an) * gr * .15); ctx.lineTo(gx + Math.cos(an) * gr * .8, gy + Math.sin(an) * gr * .8); ctx.stroke();
+    ctx.lineCap = 'butt';
+    ctx.fillStyle = '#2A3540'; ctx.beginPath(); ctx.arc(gx, gy, Math.max(2, gr * 0.13), 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.ellipse(gx - gr * .3, gy - gr * .38, gr * .34, gr * .16, -0.6, 0, Math.PI * 2); ctx.fill();
+  }
+  drawAttached(ctx, a) {
+    const L = this.L, R = a.R, p = a.p; if (R < 1) return;
+    let jx = 0, sy = 1;
+    if (a.state === 'inflate' && p > 0.78) {   // 割れそうになると震える
+      const k = (p - 0.78) / 0.22, amp = k * Math.max(1, R / 60);
+      jx = (Math.sin(this.t * 47) * 1.3 + Math.sin(this.t * 29) * 0.8) * amp;
+      sy = 1 + Math.sin(this.t * 21) * 0.01 * k;
+    }
+    const sway = Math.sin(this.t * 1.4) * (a.state === 'limp' ? 0.015 : 0.022);
+    ctx.save(); ctx.translate(L.cx + jx, L.nozzleTip); ctx.rotate(a.tilt + sway);
+    const neck = L.neck * (a.state === 'limp' ? 0.75 : 1), wTop = Math.max(4, R * 0.16), wBot = L.nozzleW + 2;
+    ctx.fillStyle = mix(a.color, '#000000', 0.18);
+    ctx.beginPath(); ctx.moveTo(-wBot / 2, 3); ctx.lineTo(-wTop / 2, -neck - 2); ctx.lineTo(wTop / 2, -neck - 2); ctx.lineTo(wBot / 2, 3); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = mix(a.color, '#000000', 0.32); rr(ctx, -wBot / 2 - 2, -1, wBot + 4, Math.max(4, L.nozzleW * 0.6), 2); ctx.fill();
+    ctx.translate(0, -neck - tipOf(p) * R * sy); ctx.scale(a.sx || 1, sy);
+    drawBalloon(ctx, R, a.color, p);
+    ctx.restore();
+  }
+  drawRemnant(ctx) {
+    const L = this.L, c = this.remnant.color, w = L.nozzleW + 4, n = L.neck;
+    ctx.save(); ctx.translate(L.cx, L.nozzleTip);
+    ctx.fillStyle = mix(c, '#000000', 0.22);
+    ctx.beginPath(); ctx.moveTo(-w / 2, 3); ctx.lineTo(-w / 2 - 3, -n * 0.95); ctx.lineTo(-w / 5, -n * 0.55); ctx.lineTo(0, -n * 1.25);
+    ctx.lineTo(w / 4, -n * 0.6); ctx.lineTo(w / 2 + 4, -n * 1.05); ctx.lineTo(w / 2, 3); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = mix(c, '#000000', 0.32); rr(ctx, -w / 2, -1, w, Math.max(4, L.nozzleW * 0.6), 2); ctx.fill();
+    ctx.restore();
+  }
+  drawFlyer(ctx, f) {
+    const r = f.rope;
+    ctx.strokeStyle = TK.string; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(r[0].x, r[0].y);
+    for (let i = 1; i < r.length - 1; i++) ctx.quadraticCurveTo(r[i].x, r[i].y, (r[i].x + r[i + 1].x) / 2, (r[i].y + r[i + 1].y) / 2);
+    ctx.lineTo(r[r.length - 1].x, r[r.length - 1].y); ctx.stroke();
+    ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.tilt);
+    drawBalloon(ctx, f.R, f.color, f.p); drawKnot(ctx, f.R, f.color, f.p);
+    ctx.restore();
+  }
+  drawBurst(ctx, e) {
+    const k = e.t / 0.45;
+    if (k < 0.45) {
+      const a = 1 - k / 0.45, sp = 14;
+      ctx.beginPath();
+      for (let i = 0; i < sp * 2; i++) { const ang = i / (sp * 2) * Math.PI * 2, r = i % 2 ? e.R * 0.74 : e.R * (1.15 + 0.4 * k); const x = e.x + Math.cos(ang) * r, y = e.y + Math.sin(ang) * r; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.closePath(); ctx.fillStyle = `rgba(255,232,140,${0.72 * a})`; ctx.fill();
+    }
+    ctx.strokeStyle = `rgba(255,255,255,${0.85 * (1 - k)})`; ctx.lineWidth = 2 + 3 * (1 - k);
+    ctx.beginPath(); ctx.arc(e.x, e.y, e.R * (0.9 + 1.3 * k), 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = (1 - k) * 0.55; ctx.strokeStyle = TK.ink; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+    for (let i = 0; i < 12; i++) { const ang = i / 12 * Math.PI * 2 + 0.13, r1 = e.R * (1.15 + 0.9 * k), r2 = r1 + e.R * 0.28 * (1 - k); ctx.beginPath(); ctx.moveTo(e.x + Math.cos(ang) * r1, e.y + Math.sin(ang) * r1); ctx.lineTo(e.x + Math.cos(ang) * r2, e.y + Math.sin(ang) * r2); ctx.stroke(); }
+    ctx.globalAlpha = 1; ctx.lineCap = 'butt';
+  }
+}
+
+/* ================= 風船の束（表紙と結果） ================= */
+class Bouquet {
+  constructor(cv, colors) {
+    this.cv = cv; this.ctx = cv.getContext('2d'); this.colors = colors || []; this.t = Math.random() * 10; this.items = []; this.W = 0;
+    if (window.ResizeObserver) new ResizeObserver(() => this.resize()).observe(cv);
+  }
+  setColors(c) { this.colors = c; this.layout(); }
+  resize() { const {W, H, dpr} = fitCanvas(this.cv); this.W = W; this.H = H; this.dpr = dpr; this.layout(); }
+  layout() {
+    const N = this.colors.length, W = this.W, H = this.H; this.items = [];
+    if (!N || !W || !H) return;
+    const tx = W / 2, ty = H - 12; this.tie = {x: tx, y: ty};
+    const R = clamp(Math.min(H * 0.17, W / (N * 0.85 + 1.8)), 14, 46);
+    const D = ty - (8 + R * 1.1);
+    const spread = N === 1 ? 0 : Math.min(0.95, 0.28 + N * 0.08);
+    const sx = spread ? Math.min(1.25, (W / 2 - R - 6) / (Math.sin(spread) * D)) : 1;
+    for (let i = 0; i < N; i++) {
+      const f = N === 1 ? 0.5 : i / (N - 1);
+      const ang = -spread + 2 * spread * f + (((i * 37) % 7) - 3) * 0.012;
+      const depth = 1 - 0.2 * (i % 2) - (i % 3 === 2 ? 0.08 : 0);
+      this.items.push({x: tx + Math.sin(ang) * D * depth * sx, y: ty - Math.cos(ang) * D * depth, ang, R, color: this.colors[i], ph: i * 1.7});
+    }
+    this.items.sort((a, b) => a.y - b.y);
+  }
+  frame(dt) {
+    if (!this.W) return;
+    this.t += dt;
+    const ctx = this.ctx; ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); ctx.clearRect(0, 0, this.W, this.H);
+    if (!this.items.length) return;
+    const pos = this.items.map(it => {
+      const by = it.y + Math.sin(this.t * 1.25 + it.ph) * 3.5, tilt = it.ang * 0.3 + Math.sin(this.t * 0.9 + it.ph) * 0.035;
+      const kb = tipOf(0.55) * it.R + Math.max(4, it.R * 0.085) * 0.72;
+      return {it, by, tilt, kx: it.x - Math.sin(tilt) * kb, ky: by + Math.cos(tilt) * kb};
+    });
+    ctx.strokeStyle = TK.string; ctx.lineWidth = 1.3;
+    for (const q of pos) {
+      ctx.beginPath(); ctx.moveTo(q.kx, q.ky);
+      ctx.quadraticCurveTo(lerp(q.kx, this.tie.x, 0.45) + Math.sin(q.it.ang) * 10, lerp(q.ky, this.tie.y, 0.55), this.tie.x, this.tie.y);
+      ctx.stroke();
+    }
+    for (const q of pos) { ctx.save(); ctx.translate(q.it.x, q.by); ctx.rotate(q.tilt); drawBalloon(ctx, q.it.R, q.it.color, 0.55); drawKnot(ctx, q.it.R, q.it.color, 0.55); ctx.restore(); }
+    const {x, y} = this.tie; ctx.fillStyle = TK.string;
+    ctx.beginPath(); ctx.ellipse(x - 5, y, 5, 3, 0.3, 0, Math.PI * 2); ctx.ellipse(x + 5, y, 5, 3, -0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 5, y + 9); ctx.moveTo(x, y); ctx.lineTo(x + 4, y + 10); ctx.stroke();
+  }
+}
+
+/* ================= 効果音（Web Audioで合成） ================= */
+const Snd = {
+  ctx: null, on: true, buf: null, master: null, hiss: null, lastSet: 0,
+  init() {
+    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {}); return; }
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    try {
+      this.ctx = new AC();
+      const sr = this.ctx.sampleRate, b = this.ctx.createBuffer(1, sr * 2, sr), d = b.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      this.buf = b; this.master = this.ctx.createGain(); this.master.gain.value = 0.8; this.master.connect(this.ctx.destination);
+    } catch (e) { this.ctx = null; }
+  },
+  ok() { return this.on && this.ctx && this.buf; },
+  startHiss() {
+    if (!this.ok()) return; this.stopHiss();
+    try {
+      const c = this.ctx, s = c.createBufferSource(); s.buffer = this.buf; s.loop = true;
+      const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1900; f.Q.value = 0.7;
+      const g = c.createGain(); g.gain.value = 0.0001;
+      s.connect(f); f.connect(g); g.connect(this.master); s.start();
+      g.gain.setTargetAtTime(0.016, c.currentTime, 0.12);
+      this.hiss = {s, g, f};
+    } catch (e) {}
+  },
+  setHiss(p) {
+    if (!this.hiss || !this.ctx) return; const c = this.ctx;
+    if (c.currentTime - this.lastSet < 0.25) return; this.lastSet = c.currentTime;
+    try { this.hiss.g.gain.setTargetAtTime(0.014 + 0.032 * p, c.currentTime, 0.2); this.hiss.f.frequency.setTargetAtTime(1700 + 1900 * p, c.currentTime, 0.2); } catch (e) {}
+  },
+  stopHiss() {
+    if (!this.hiss || !this.ctx) { this.hiss = null; return; }
+    const {s, g} = this.hiss, c = this.ctx;
+    try { g.gain.setTargetAtTime(0.0001, c.currentTime, 0.04); s.stop(c.currentTime + 0.25); } catch (e) {}
+    this.hiss = null;
+  },
+  env(g, t, peak, a, d) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + d); },
+  pop() {
+    if (!this.ok()) return;
+    try {
+      const c = this.ctx, t = c.currentTime;
+      const s = c.createBufferSource(); s.buffer = this.buf;
+      const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(7000, t); f.frequency.exponentialRampToValueAtTime(500, t + 0.15);
+      const g = c.createGain(); this.env(g, t, 0.9, 0.004, 0.22);
+      s.connect(f); f.connect(g); g.connect(this.master); s.start(t); s.stop(t + 0.3);
+      const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.18);
+      const og = c.createGain(); this.env(og, t, 0.6, 0.005, 0.2);
+      o.connect(og); og.connect(this.master); o.start(t); o.stop(t + 0.25);
+    } catch (e) {}
+  },
+  chime() {
+    if (!this.ok()) return;
+    try {
+      const c = this.ctx, t = c.currentTime;
+      [[784, 0], [1175, 0.09], [1568, 0.18]].forEach(([fr, d]) => {
+        const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = fr;
+        const g = c.createGain(); this.env(g, t + d, 0.16, 0.015, 0.55);
+        o.connect(g); g.connect(this.master); o.start(t + d); o.stop(t + d + 0.6);
+      });
+    } catch (e) {}
+  },
+  deflate() {
+    if (!this.ok()) return;
+    try {
+      const c = this.ctx, t = c.currentTime;
+      const s = c.createBufferSource(); s.buffer = this.buf;
+      const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.4; f.frequency.setValueAtTime(2400, t); f.frequency.exponentialRampToValueAtTime(420, t + 0.8);
+      const g = c.createGain(); this.env(g, t, 0.2, 0.04, 0.85);
+      s.connect(f); f.connect(g); g.connect(this.master); s.start(t); s.stop(t + 0.9);
+      const o = c.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(170, t + 0.7);
+      const lfo = c.createOscillator(); lfo.frequency.value = 13; const lg = c.createGain(); lg.gain.value = 30; lfo.connect(lg); lg.connect(o.frequency);
+      const og = c.createGain(); this.env(og, t, 0.07, 0.03, 0.75);
+      o.connect(og); og.connect(this.master); o.start(t); lfo.start(t); o.stop(t + 0.8); lfo.stop(t + 0.8);
+    } catch (e) {}
+  },
+};
+
+/* ================= 語彙（上書きを反映） ================= */
+let overrides = store.get(KEY_WORDS, {}) || {};
+function words() {
+  return BASE.map(w => {
+    const o = overrides[w.id] || {};
+    return {...w, base: w.text, text: (o.text != null ? o.text : w.text).trim(), band: o.band || w.band, on: o.on !== false};
+  });
+}
+function saveOverride(id, key, value, baseValue) {
+  const o = overrides[id] || {};
+  if (value === baseValue) delete o[key]; else o[key] = value;
+  if (Object.keys(o).length) overrides[id] = o; else delete overrides[id];
+  store.set(KEY_WORDS, overrides);
+}
+
+/* ================= 状態 ================= */
+function loadSettings() {
+  const s = store.get(KEY_SET, null) || {};
+  return { band: [1, 2, 3].includes(s.band) ? s.band : 1, n: [2, 3, 4, 6].includes(s.n) ? s.n : 3, sound: typeof s.sound === 'boolean' ? s.sound : true };
+}
+const G = { set: loadSettings(), items: [], idx: 0, res: [], score: 0, phase: 'off', el: 0, enterT: 0, auto: -1, paused: false, startedAt: 0 };
+Snd.on = G.set.sound;
+
+/* ================= 要素 ================= */
+const scr = {start: $('#start'), settings: $('#settings'), play: $('#play'), result: $('#result')};
+const emo = $('#emo'), choicesEl = $('#choices'), fb = $('#fb'), fbMsg = $('#fbMsg'), nextBtn = $('#nextBtn');
+const stagewrap = $('#stagewrap');
+const stage = new Stage($('#stage'));
+const hero = new Bouquet($('#heroCanvas'), ['#E5484D', '#2E9C8E', '#E3B027', '#3B78DA', '#E5539A']);
+const resB = new Bouquet($('#resCanvas'), []);
+
+function show(name) { for (const k in scr) scr[k].hidden = k !== name; window.scrollTo(0, 0); }
+
+/* ---------- 設定画面 ---------- */
+function renderLevels() {
+  $('#levels').innerHTML = PRESETS.map(p => `
+    <button type="button" class="level" id="lv-${p.key}" data-key="${p.key}" aria-pressed="false">
+      <span class="lv-name">${p.name}</span>
+      <span class="lv-meta">${setLabel(p.band, p.n)}</span>
+      <span class="lv-pips" aria-hidden="true">${'<i></i>'.repeat(p.n)}</span>
+    </button>`).join('');
+  $('#levels').addEventListener('click', e => {
+    const b = e.target.closest('.level'); if (!b) return;
+    const p = PRESETS.find(x => x.key === b.dataset.key); G.set.band = p.band; G.set.n = p.n; saveSettings(); syncSettings();
+  });
+}
+function saveSettings() { store.set(KEY_SET, G.set); }
+function syncSettings() {
+  const {band, n} = G.set;
+  let match = null;
+  PRESETS.forEach(p => { const on = p.band === band && p.n === n; if (on) match = p; $('#lv-' + p.key).setAttribute('aria-pressed', on ? 'true' : 'false'); });
+  $('#band-' + band).checked = true; $('#nopt-' + n).checked = true;
+  $('#curSet').textContent = `${match ? match.name : '個別設定'}：${setLabel(band, n)}で出題します`;
+  $('#sndToggle').checked = G.set.sound;
+  $('#sndState').textContent = G.set.sound ? 'オン' : 'オフ';
+  $('#startErr').hidden = true;
+}
+document.querySelectorAll('input[name="band"]').forEach(r => r.addEventListener('change', () => { G.set.band = +r.value; saveSettings(); syncSettings(); }));
+document.querySelectorAll('input[name="nopt"]').forEach(r => r.addEventListener('change', () => { G.set.n = +r.value; saveSettings(); syncSettings(); }));
+$('#sndToggle').addEventListener('change', e => setSound(e.target.checked));
+
+function setSound(on) {
+  G.set.sound = on; Snd.on = on; saveSettings();
+  if (on) Snd.init(); else Snd.stopHiss();
+  $('#sndToggle').checked = on; $('#sndState').textContent = on ? 'オン' : 'オフ';
+}
+
+/* 設定画面の開け閉め */
+function closeSettings() { syncSettings(); show('start'); renderHistory(); }
+$('#openSettings').addEventListener('click', () => show('settings'));
+$('#closeSettings').addEventListener('click', closeSettings);
+$('#doneSettings').addEventListener('click', closeSettings);
+
+/* ---------- 記録 ---------- */
+let clearArmed = 0;
+function renderHistory() {
+  const h = store.get(KEY_HIST, []) || [];
+  const box = $('#hist');
+  if (!h.length) { box.innerHTML = '<p class="empty">まだ記録はありません。1セット終えると、ここに結果が並びます。</p>'; return; }
+  const rows = h.slice(-12).reverse().map(r => `
+    <tr><td class="c-date">${fmtDate(r.at)}</td><td class="c-set">${setLabel(r.band, r.n)}</td>
+    <td class="num c-ok"><b>${r.ok}</b> / ${SET_SIZE}</td>
+    <td class="num c-avg" data-label="平均">${r.avg == null ? '—' : fmtSec(r.avg) + '秒'}</td>
+    <td class="num c-ng" data-label="誤答">${r.ng}</td><td class="num c-late" data-label="時間切れ">${r.late}</td></tr>`).join('');
+  box.innerHTML = `<div class="tblwrap"><table class="tbl stack hist"><thead><tr><th>日時</th><th>設定</th><th class="num">正答</th><th class="num">平均反応時間</th><th class="num">誤答</th><th class="num">時間切れ</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="hist-foot"><button class="btn btn-quiet" id="clearHist" type="button">記録を消す</button></div>`;
+  $('#clearHist').addEventListener('click', e => {
+    const b = e.currentTarget;
+    if (Date.now() - clearArmed < 4000) { store.del(KEY_HIST); clearArmed = 0; renderHistory(); return; }
+    clearArmed = Date.now(); b.textContent = 'もう一度押すと消えます';
+    setTimeout(() => { if (b.isConnected) b.textContent = '記録を消す'; }, 4000);
+  });
+}
+
+/* ---------- 語の一覧と編集 ---------- */
+let wordFilter = 'all', resetArmed = 0;
+function renderWordCounts() {
+  const ws = words();
+  $('#wordCounts').innerHTML = [1, 2, 3].map(b => {
+    const all = ws.filter(w => w.band === b), on = all.filter(w => w.on && w.text);
+    return `<span>${BAND_NAME[b]} ${all.length}語（使用 ${on.length}）</span>`;
+  }).join('');
+}
+function renderWords() {
+  const ws = words().filter(w => wordFilter === 'all' || w.band === +wordFilter);
+  $('#wordRows').innerHTML = ws.map(w => `
+    <tr class="${w.on && w.text ? '' : 'off'}" data-id="${esc(w.id)}" data-idx="${w.idx}">
+      <td class="emo-cell">${w.emoji}</td>
+      <td><input class="w-text" id="wt-${w.idx}" value="${esc(w.text)}" aria-label="${esc(w.base)}の表記" autocomplete="off"></td>
+      <td><select class="w-band" id="wb-${w.idx}" aria-label="${esc(w.base)}の頻度">${[1, 2, 3].map(b => `<option value="${b}"${b === w.band ? ' selected' : ''}>${BAND_NAME[b]}</option>`).join('')}</select></td>
+      <td><input type="checkbox" class="w-on" id="wo-${w.idx}"${w.on ? ' checked' : ''} aria-label="${esc(w.base)}を使う"></td>
+    </tr>`).join('');
+  renderWordCounts();
+}
+$('#wordRows').addEventListener('input', e => {
+  const tr = e.target.closest('tr'); if (!tr || !e.target.classList.contains('w-text')) return;
+  const b = BASE[+tr.dataset.idx]; saveOverride(b.id, 'text', e.target.value.trim(), b.text);
+  const w = words()[b.idx]; tr.classList.toggle('off', !(w.on && w.text)); renderWordCounts();
+});
+$('#wordRows').addEventListener('change', e => {
+  const tr = e.target.closest('tr'); if (!tr) return;
+  const b = BASE[+tr.dataset.idx];
+  if (e.target.classList.contains('w-band')) { saveOverride(b.id, 'band', +e.target.value, b.band); if (wordFilter !== 'all') renderWords(); else renderWordCounts(); }
+  if (e.target.classList.contains('w-on')) { saveOverride(b.id, 'on', e.target.checked, true); const w = words()[b.idx]; tr.classList.toggle('off', !(w.on && w.text)); renderWordCounts(); }
+});
+document.querySelectorAll('input[name="wf"]').forEach(r => r.addEventListener('change', () => { wordFilter = r.value; renderWords(); }));
+$('#resetWords').addEventListener('click', e => {
+  const b = e.currentTarget;
+  if (Date.now() - resetArmed < 4000) { overrides = {}; store.del(KEY_WORDS); resetArmed = 0; b.textContent = '初期設定に戻す'; renderWords(); return; }
+  resetArmed = Date.now(); b.textContent = 'もう一度押すと戻ります';
+  setTimeout(() => { if (Date.now() - resetArmed >= 3900) b.textContent = '初期設定に戻す'; }, 4000);
+});
+
+/* ================= ゲーム進行 ================= */
+function startSet() {
+  const {band, n} = G.set;
+  const seen = new Set();
+  const pool = words().filter(w => w.on && w.text && w.band === band && !seen.has(w.text) && seen.add(w.text));
+  const need = Math.max(SET_SIZE, n);
+  if (pool.length < need) {
+    const err = $('#startErr');
+    err.textContent = `${BAND_NAME[band]}語で使える語が${pool.length}語しかありません。設定の「使う言葉と表記」で、${need}語以上に「使う」の印を付けてください。`;
+    err.hidden = false; return;
+  }
+  Snd.on = G.set.sound; if (Snd.on) Snd.init();
+  const targets = shuffle(pool).slice(0, SET_SIZE), off = Math.floor(Math.random() * BALLOON_COLORS.length);
+  G.items = targets.map((t, i) => ({ target: t, options: shuffle([t, ...shuffle(pool.filter(w => w.id !== t.id)).slice(0, n - 1)]), color: BALLOON_COLORS[(off + i) % BALLOON_COLORS.length] }));
+  G.idx = 0; G.res = []; G.score = 0; G.paused = false; G.startedAt = Date.now();
+  $('#playSet').textContent = setLabel(band, n);
+  $('#copyNote').hidden = true; $('#copyArea').hidden = true;
+  choicesEl.dataset.n = String(n);
+  show('play'); keepAwake(true); stage.reset(); showQuestion();
+}
+
+function updateHeader() {
+  $('#qno').innerHTML = `${Math.min(G.idx + 1, SET_SIZE)}<small>/${SET_SIZE}</small>`;
+  $('#dots').innerHTML = Array.from({length: SET_SIZE}, (_, i) => {
+    const r = G.res[i]; const cls = r ? r.result : (i === G.idx ? 'cur' : '');
+    return `<span class="dot ${cls}"></span>`;
+  }).join('');
+  $('#score').innerHTML = `${G.score.toLocaleString('ja-JP')}<small>点</small>`;
+}
+function setFb(state, title, sub) {
+  fb.dataset.state = state;
+  fbMsg.innerHTML = title ? `<strong>${esc(title)}</strong><span>${esc(sub || '')}</span>` : esc(sub);
+}
+function showQuestion() {
+  const it = G.items[G.idx];
+  G.phase = 'enter'; G.enterT = 0; G.el = 0; G.auto = -1;
+  emo.textContent = it.target.emoji; emo.classList.remove('in'); void emo.offsetWidth; emo.classList.add('in');
+  choicesEl.innerHTML = '';
+  it.options.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'choice'; b.id = 'choice-' + i; b.disabled = true;
+    const t = document.createElement('span'); t.className = 'ct'; t.textContent = o.text; b.appendChild(t);
+    b.addEventListener('click', () => answer(i));
+    choicesEl.appendChild(b);
+  });
+  choicesEl.classList.add('wait');
+  fitChoices();
+  setFb('ask', '', '絵に合う言葉を選んでください'); hideNext();
+  stage.newBalloon(it.color);
+  updateHeader();
+}
+function beginAsking() {
+  G.phase = 'asking';
+  choicesEl.classList.remove('wait');
+  choicesEl.querySelectorAll('.choice').forEach(b => { b.disabled = false; });
+  Snd.startHiss();
+}
+function markChoices(chosenIdx) {
+  const it = G.items[G.idx];
+  [...choicesEl.children].forEach((b, j) => {
+    b.disabled = true;
+    const isT = it.options[j].id === it.target.id;
+    if (isT) { b.classList.add('is-correct'); b.insertAdjacentHTML('beforeend', '<span class="mark" aria-hidden="true">○</span>'); }
+    else if (j === chosenIdx) { b.classList.add('is-wrong'); b.insertAdjacentHTML('beforeend', '<span class="mark" aria-hidden="true">×</span>'); }
+    else b.classList.add('is-dim');
+  });
+}
+const AUTO_NEXT = 1.8;   // 正解のあと自動で次へ進むまでの秒数（ボタンが左から満ちていく）
+nextBtn.style.setProperty('--auto', AUTO_NEXT + 's');
+function hideNext() { nextBtn.dataset.show = 'false'; nextBtn.classList.remove('show', 'auto', 'attn'); }
+function showNext(auto) {
+  $('#nextLabel').textContent = G.idx === SET_SIZE - 1 ? '結果を見る' : '次の問題へ';
+  nextBtn.classList.remove('show', 'auto', 'attn'); void nextBtn.offsetWidth;
+  nextBtn.classList.add('show', auto ? 'auto' : 'attn');
+  nextBtn.dataset.show = 'true';
+  try { nextBtn.focus({preventScroll: true}); } catch (e) {}
+}
+function answer(i) {
+  if (G.phase !== 'asking' || G.paused) return;
+  const it = G.items[G.idx], opt = it.options[i]; if (!opt) return;
+  const rt = G.el, ok = opt.id === it.target.id;
+  G.phase = 'feedback'; Snd.stopHiss(); markChoices(i);
+  if (ok) {
+    const pts = 100 + Math.round((TIME_LIMIT - rt) * 10);
+    G.score += pts; G.res.push({it, chosen: opt, result: 'ok', rt, pts});
+    stage.release();
+    Snd.chime(); setFb('ok', '正解', `${fmtSec(rt)}秒`); G.auto = AUTO_NEXT;
+  } else {
+    G.res.push({it, chosen: opt, result: 'ng', rt, pts: 0});
+    stage.deflate(); Snd.deflate(); setFb('ng', '不正解', `正解は「${it.target.text}」`);
+  }
+  showNext(ok); updateHeader();
+}
+function timeout() {
+  const it = G.items[G.idx];
+  G.phase = 'feedback'; Snd.stopHiss(); Snd.pop(); stage.pop(); markChoices(-1);
+  if (!RM) { stagewrap.classList.remove('shake'); void stagewrap.offsetWidth; stagewrap.classList.add('shake'); }
+  G.res.push({it, chosen: null, result: 'late', rt: null, pts: 0});
+  setFb('late', '時間切れ', `正解は「${it.target.text}」`);
+  showNext(false); updateHeader();
+}
+function next() {
+  if (G.phase !== 'feedback') return;
+  G.idx++;
+  if (G.idx >= SET_SIZE) finish(); else showQuestion();
+}
+nextBtn.addEventListener('click', next);
+
+/* 選択肢の語は途中で改行させない。はみ出すときは、手がかりにならないよう全ボタンを同じ大きさに縮める */
+function fitChoices() {
+  const btns = [...choicesEl.querySelectorAll('.choice')]; if (!btns.length) return;
+  const spans = btns.map(b => b.querySelector('.ct'));
+  spans.forEach(s => { s.style.fontSize = ''; });
+  let scale = 1;
+  btns.forEach((b, i) => {
+    const cs = getComputedStyle(b);
+    const avail = b.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const w = spans[i].offsetWidth;
+    if (avail > 0 && w > avail) scale = Math.min(scale, avail / w);
+  });
+  if (scale < 1) {
+    const fs = Math.max(13, Math.floor(parseFloat(getComputedStyle(spans[0]).fontSize) * scale * 0.98));
+    spans.forEach(s => { s.style.fontSize = fs + 'px'; });
+  }
+}
+let fitW = -1;
+if (window.ResizeObserver) new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w !== fitW) { fitW = w; requestAnimationFrame(fitChoices); } }).observe(choicesEl);
+else window.addEventListener('resize', fitChoices);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitChoices).catch(() => {});
+
+/* 練習中は画面が暗くならないようにする（対応している端末のみ） */
+let wakeLock = null;
+async function keepAwake(on) {
+  try {
+    if (on) {
+      if (wakeLock || !navigator.wakeLock || document.visibilityState !== 'visible') return;
+      const w = await navigator.wakeLock.request('screen');
+      wakeLock = w; w.addEventListener('release', () => { if (wakeLock === w) wakeLock = null; });
+    } else if (wakeLock) { const w = wakeLock; wakeLock = null; await w.release(); }
+  } catch (e) { wakeLock = null; }
+}
+
+/* 一時停止 */
+function pause() {
+  if (G.paused || !['enter', 'asking', 'feedback'].includes(G.phase)) return;
+  G.paused = true; Snd.stopHiss(); $('#pauseScrim').hidden = false; scr.play.classList.add('is-paused');
+  try { $('#resumeBtn').focus({preventScroll: true}); } catch (e) {}
+}
+function resume() {
+  if (!G.paused) return;
+  G.paused = false; $('#pauseScrim').hidden = true; scr.play.classList.remove('is-paused');
+  if (G.phase === 'asking') Snd.startHiss();
+}
+function quit() {
+  G.paused = false; $('#pauseScrim').hidden = true; scr.play.classList.remove('is-paused'); G.phase = 'off'; Snd.stopHiss(); keepAwake(false);
+  stage.reset(); show('start'); renderHistory();
+}
+$('#pauseBtn').addEventListener('click', pause);
+$('#resumeBtn').addEventListener('click', resume);
+$('#quitBtn').addEventListener('click', quit);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { if (G.phase === 'asking') pause(); }
+  else if (['enter', 'asking', 'feedback'].includes(G.phase)) keepAwake(true);
+});
+
+/* キーボード：数字で選択、Enterで次へ、Escで一時停止 */
+document.addEventListener('keydown', e => {
+  if (!scr.settings.hidden && e.key === 'Escape') { e.preventDefault(); closeSettings(); return; }
+  if (scr.play.hidden) return;
+  if (G.paused) { if (e.key === 'Escape') { e.preventDefault(); resume(); } return; }
+  if (e.key === 'Escape') { e.preventDefault(); pause(); return; }
+  const d = parseInt(e.key, 10);
+  if (d >= 1 && d <= 9 && G.phase === 'asking') { e.preventDefault(); answer(d - 1); return; }
+  if ((e.key === 'Enter' || e.key === ' ') && G.phase === 'feedback') {
+    const ae = document.activeElement;
+    if (ae && ae.tagName === 'BUTTON' && !ae.disabled) return;   // ボタン自身に任せる
+    e.preventDefault(); next();
+  }
+});
+
+/* ---------- 結果 ---------- */
+function finish() {
+  G.phase = 'done'; Snd.stopHiss(); keepAwake(false);
+  const ok = G.res.filter(r => r.result === 'ok'), ng = G.res.filter(r => r.result === 'ng').length, late = G.res.filter(r => r.result === 'late').length;
+  const avg = ok.length ? ok.reduce((s, r) => s + r.rt, 0) / ok.length : null;
+  const pct = Math.round(ok.length / SET_SIZE * 100);
+  const {band, n} = G.set;
+  const hist = store.get(KEY_HIST, []) || [];
+  hist.push({at: G.startedAt, band, n, ok: ok.length, ng, late, avg, score: G.score});
+  store.set(KEY_HIST, hist.slice(-50));
+
+  $('#resMeta').textContent = `${setLabel(band, n)}　${fmtDate(G.startedAt)}`;
+  $('#resCorrect').textContent = ok.length;
+  $('#resMsg').textContent = ok.length === SET_SIZE ? '全問正解です。' : ok.length >= 8 ? 'よくできました。' : ok.length >= 5 ? 'その調子です。' : 'お疲れさまでした。';
+  const stats = [
+    ['正答率', pct, '%'], ['平均反応時間（正答）', avg == null ? '—' : fmtSec(avg), avg == null ? '' : '秒'],
+    ['誤答', ng, '問'], ['時間切れ', late, '問'], ['得点', G.score.toLocaleString('ja-JP'), '点'],
+  ];
+  $('#stats').innerHTML = stats.map(([k, v, u]) => `<div class="stat"><dt>${k}</dt><dd>${v}<small>${u}</small></dd></div>`).join('');
+  const chip = {ok: '<span class="chip-r ok">○ 正答</span>', ng: '<span class="chip-r ng">× 誤答</span>', late: '<span class="chip-r late">時間切れ</span>'};
+  $('#resRows').innerHTML = G.res.map((r, i) => `
+    <tr><td class="num c-n">${i + 1}</td><td class="emo-cell c-e">${r.it.target.emoji}</td><td class="word c-w">${esc(r.it.target.text)}</td>
+    <td class="c-a ${r.result === 'ng' ? '' : 'muted'}" data-label="回答">${r.chosen ? esc(r.chosen.text) : '—'}</td>
+    <td class="c-r">${chip[r.result]}</td><td class="num c-t">${r.rt == null ? '—' : fmtSec(r.rt) + '秒'}</td></tr>`).join('');
+
+  const colors = ok.map(r => r.it.color);
+  $('#resCanvas').hidden = !colors.length;
+  $('#resHero').classList.toggle('solo', !colors.length);
+  resB.setColors(colors);
+  $('#copyNote').hidden = true; $('#copyArea').hidden = true;
+  show('result');
+  requestAnimationFrame(() => resB.resize());
+}
+function resultText() {
+  const ok = G.res.filter(r => r.result === 'ok');
+  const avg = ok.length ? ok.reduce((s, r) => s + r.rt, 0) / ok.length : null;
+  const lines = [
+    '風船ことば　結果',
+    `日時：${fmtDate(G.startedAt)}`,
+    `設定：${setLabel(G.set.band, G.set.n)}（${SET_SIZE}問・各${TIME_LIMIT}秒）`,
+    `正答：${ok.length}/${SET_SIZE}（${Math.round(ok.length / SET_SIZE * 100)}%）　誤答：${G.res.filter(r => r.result === 'ng').length}　時間切れ：${G.res.filter(r => r.result === 'late').length}`,
+    `平均反応時間（正答）：${avg == null ? '—' : fmtSec(avg) + '秒'}　得点：${G.score.toLocaleString('ja-JP')}点`,
+    '',
+  ];
+  G.res.forEach((r, i) => {
+    const mark = r.result === 'ok' ? '○' : r.result === 'ng' ? `×（回答：${r.chosen.text}）` : '時間切れ';
+    lines.push(`${i + 1}　${r.it.target.text}　${mark}${r.rt == null ? '' : '　' + fmtSec(r.rt) + '秒'}`);
+  });
+  return lines.join('\n');
+}
+$('#copyBtn').addEventListener('click', () => {
+  const text = resultText(), note = $('#copyNote'), area = $('#copyArea');
+  const fallback = () => { area.value = text; area.hidden = false; note.textContent = '自動でコピーできませんでした。下の文字を選んでコピーしてください。'; note.hidden = false; area.focus(); area.select(); };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => { note.textContent = '結果をコピーしました。'; note.hidden = false; area.hidden = true; }, fallback);
+    } else fallback();
+  } catch (e) { fallback(); }
+});
+$('#againBtn').addEventListener('click', startSet);
+$('#backBtn').addEventListener('click', () => { G.phase = 'off'; show('start'); renderHistory(); });
+$('#startBtn').addEventListener('click', startSet);
+
+/* ================= ループ ================= */
+let last = performance.now();
+function loop(now) {
+  let dt = (now - last) / 1000; last = now; if (dt > 0.1) dt = 0.1; if (dt < 0) dt = 0;
+  if (!G.paused) {
+    if (G.phase === 'enter') { G.enterT += dt; if (G.enterT >= 0.55) beginAsking(); }
+    else if (G.phase === 'asking') {
+      G.el += dt;
+      const p = Math.min(1, G.el / TIME_LIMIT);
+      stage.setInflation(p); Snd.setHiss(p);
+      if (G.el >= TIME_LIMIT) timeout();
+    } else if (G.phase === 'feedback' && G.auto > 0) { G.auto -= dt; if (G.auto <= 0) next(); }
+  }
+  if (!scr.play.hidden) { if (!G.paused) stage.update(dt); stage.draw(); }
+  if (!scr.start.hidden) hero.frame(RM ? 0 : dt);
+  if (!scr.result.hidden) resB.frame(RM ? 0 : dt);
+  requestAnimationFrame(loop);
+}
+
+/* ================= 初期化 ================= */
+renderLevels(); syncSettings(); renderHistory(); renderWords();
+requestAnimationFrame(() => { hero.resize(); stage.resize(); });
+requestAnimationFrame(loop);
+})();
+</script>
+
+</body></html>

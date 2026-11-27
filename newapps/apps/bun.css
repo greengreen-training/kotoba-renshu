@@ -1,0 +1,77 @@
+/* ===== 文を つくろう：録音・ヒント・〇△×（セリフを いいましょうと同じ部品） ===== */
+.choices.say{display:grid;grid-template-columns:1fr;gap:12px;max-width:680px;margin-left:auto;margin-right:auto}
+.say-row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.rec-btn,.play-btn,.cue-btn,.j-btn{min-height:72px;border-radius:999px;padding:0 26px;font-weight:900;font-size:22px;display:inline-flex;align-items:center;justify-content:center;gap:10px;line-height:1.6}
+.rec-btn{background:var(--ng);color:#fff;border:0;box-shadow:0 5px 0 #8f2416;min-width:220px}
+.rec-btn .ic{font-size:26px}
+.say .lb{white-space:nowrap}
+.say .ic,.say .emo{flex:none}
+.rec-btn rt,.play-btn rt,.j-btn rt{color:#fff}
+.rec-btn.on{background:#8f2416;box-shadow:0 0 0 0 rgba(192,57,43,.5);animation:recPulse 1.2s ease-in-out infinite}
+@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.5)}50%{box-shadow:0 0 0 16px rgba(192,57,43,0)}}
+.play-btn{background:var(--green);color:#fff;border:0;box-shadow:0 5px 0 #1b3d2d}
+.rec-btn:active:not(:disabled),.play-btn:active:not(:disabled),.j-btn:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.rec-state{text-align:center;font-weight:700;color:var(--muted);font-size:17px;min-height:1.6em}
+.rec-state b{font-size:22px;color:var(--ng)}
+.cue-btn{background:var(--card);border:3px solid var(--line);color:var(--green);min-height:62px;font-size:20px}
+.cue-btn:disabled{opacity:.45}
+.judge{background:var(--soft);border-radius:18px;padding:14px;display:grid;gap:10px}
+.j-q{text-align:center;font-family:var(--font-display);font-weight:900;font-size:24px;line-height:1.8}
+.j-q small{display:block;font-family:var(--font-body);font-size:15px;font-weight:700;color:var(--muted);line-height:1.8}
+.j-btn{min-width:200px;border:0;color:#fff;font-size:24px}
+.j-btn b{font-size:34px;line-height:1}
+.j-btn.ok{background:var(--ok);box-shadow:0 5px 0 #1d5a37}
+.j-btn.ng{background:#7d6b66;box-shadow:0 5px 0 #4e403c}
+@media (prefers-reduced-motion:reduce){.rec-btn.on{animation:none;outline:6px solid rgba(192,57,43,.4)}}
+@media (max-width:560px){
+  .say-row{gap:10px}
+  .rec-btn,.play-btn,.j-btn{min-height:64px;font-size:18px;padding:0 12px;gap:6px;min-width:0;flex:1 1 40%}
+  .rec-btn .ic{font-size:20px}
+  .j-btn b{font-size:26px}
+  .cue-btn{min-height:56px;font-size:18px;flex:1 1 40%}
+  .j-q{font-size:20px}
+}
+.speak{min-height:40px;padding:0 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);font-weight:700;font-size:15px;color:var(--green);line-height:1.6}
+/* 「わたしは／いつ／どこで／なにを した」の枠 */
+.frame{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;margin-bottom:12px}
+.slot{position:relative;display:inline-grid;place-items:center;min-width:84px;min-height:54px;padding:2px 12px;border-radius:14px;border:3px dashed #c9d3cb;background:#fafbf8;color:#8a978e;font-family:var(--font-display);font-size:20px;line-height:1.6}
+.slot b{font-weight:900}
+.slot small{display:block;font-family:var(--font-body);font-size:13px;font-weight:700;line-height:1.3;margin-top:-2px;opacity:.85}
+.slot.s-me{border-style:solid;border-color:#9aa79f;background:#fff;color:var(--ink)}
+.slot.s-when.on{border:3px solid #e08a1e;background:#fff3e0;color:#a85d00}
+.slot.s-where.on{border:3px solid #3f8f5a;background:#e6f4ea;color:#1f6b3b}
+.slot.s-what.on{border:3px solid #2f6fb3;background:#e7f0fb;color:#1f4f85}
+.slot.on{box-shadow:0 3px 0 rgba(0,0,0,.08);transform:translateY(-1px)}
+.slot.done{border-style:solid}
+.slot i{position:absolute;top:-10px;right:-8px;width:26px;height:26px;border-radius:50%;background:var(--ok);color:#fff;font-style:normal;font-size:15px;line-height:26px;text-align:center;font-family:var(--font-body)}
+.slot.s-when.done{border-color:#e08a1e;color:#a85d00}.slot.s-where.done{border-color:#3f8f5a;color:#1f6b3b}.slot.s-what.done{border-color:#2f6fb3;color:#1f4f85}
+.frame .arrow{color:#b9c2bc;font-size:22px;font-weight:700}
+.q-card{display:grid;justify-items:center;gap:8px;background:#fbfaf6;border:2px solid #3b3b3b;border-radius:16px;padding:14px 12px}
+.q-step{font-size:14px;font-weight:700;color:#fff;background:var(--green);border-radius:999px;padding:0 12px;line-height:2}
+.q-step rt{color:#fff}
+.q-text{font-family:var(--font-display);font-weight:900;font-size:26px;line-height:1.9;text-align:center}
+.q-sub{font-weight:700;color:var(--green);background:var(--soft);border-radius:10px;padding:2px 12px;line-height:2;text-align:center}
+.hint{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px;background:#fff7e6;border:2px solid #f0c98a;border-radius:14px;padding:8px 10px}
+.h-ttl{font-weight:700;color:#a8620a;font-size:15px;align-self:center}
+.h-chip{background:#fff;border:2px solid #f0c98a;border-radius:999px;padding:0 12px;font-weight:700;font-size:18px;line-height:2}
+.recap{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}
+.recap.end{margin-top:4px}
+.recap-b{min-height:48px;padding:0 14px;border-radius:12px;border:2px solid var(--line);background:#fff;font-weight:700;font-size:17px;display:inline-flex;gap:8px;align-items:center}
+.recap-b.s-when{border-color:#e08a1e;color:#a85d00}.recap-b.s-where{border-color:#3f8f5a;color:#1f6b3b}.recap-b.s-what{border-color:#2f6fb3;color:#1f4f85}.recap-b.s-all{border-color:var(--green);color:var(--green)}
+.recap-b:disabled{opacity:.4}
+.recap-n{text-align:center;color:var(--muted);font-size:15px;font-weight:700;margin-top:4px}
+.next-step{min-height:62px;padding:0 22px;border-radius:999px;border:0;background:var(--green);color:#fff;font-weight:900;font-size:20px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 5px 0 #1b3d2d}
+.next-step rt{color:#fff}
+.j-btn.tri{background:#c77d12;box-shadow:0 5px 0 #8a560c}
+@media (max-width:560px){
+  .slot{min-width:0;min-height:44px;font-size:15px;padding:2px 8px;border-width:2.5px;border-radius:12px}
+  .slot.s-when.on,.slot.s-where.on,.slot.s-what.on{border-width:2.5px}
+  .frame{gap:3px;flex-wrap:nowrap}
+  .frame .arrow{font-size:14px}
+  .slot i{width:22px;height:22px;line-height:22px;font-size:13px;top:-9px;right:-6px}
+  .q-text{font-size:21px}
+  .h-chip{font-size:16px}
+  .next-step{min-height:56px;font-size:18px;flex:1 1 40%;justify-content:center}
+  .j-btn{flex:1 1 30%;font-size:16px;padding:0 6px;flex-direction:column;gap:0;min-height:72px}
+  .j-btn b{font-size:24px}
+}

@@ -1,0 +1,7 @@
+# 組み立てると できるもの（source 枝には入れない）
+src/gg/
+work/グリーン・グリーン_ことばの練習.html
+work/deliver/netlify/
+test_shots/
+__pycache__/
+*.pyc

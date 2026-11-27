@@ -1,0 +1,18 @@
+.model-label{display:inline-block;font-size:16px;font-weight:700;color:var(--muted);background:var(--paper);border-radius:999px;padding:0 14px;line-height:2.2;margin-bottom:8px}
+.model{display:grid;place-items:center;margin:0 auto;width:min(210px,56vw);min-height:150px;border-radius:22px;border:3px solid var(--green);background:var(--card);padding:10px}
+.model .emo{font-size:104px}
+.model .shape{width:130px;height:130px}
+.model .swatch{width:130px;height:130px;border-radius:18px}
+.model-word{font-size:clamp(34px,8vw,50px);font-weight:700;line-height:1.7}
+.model.word.w2p,.model.model-word.w2p{width:auto;min-width:min(260px,70vw);padding:10px 26px}
+.shape{width:64px;height:64px;fill:var(--green);display:block}
+.swatch{display:block;width:64px;height:64px;border-radius:14px;border:2px solid rgba(0,0,0,.18)}
+.card-pick .shape,.card-pick .swatch{width:70px;height:70px}
+.choices.ea-word-p2w .lbl{font-size:26px}
+@media (max-width:560px){
+  .model{min-height:120px}
+  .model .emo{font-size:80px}
+  .model .shape,.model .swatch{width:100px;height:100px}
+  .card-pick .shape,.card-pick .swatch{width:54px;height:54px}
+  .choices.ea-word-p2w .lbl{font-size:20px}
+}

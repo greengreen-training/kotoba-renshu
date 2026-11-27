@@ -1,0 +1,17 @@
+/* ===== グリーン・グリーン ことばの練習：ほかの練習と色・文字をそろえる ===== */
+:root[data-theme="light"],:root{
+  --bg:#f3f7f0; --surface:#ffffff; --surface-2:#f6faf3; --ink:#1d2d25; --muted:#4d5f55; --line:#d3e3d0;
+  --primary:#2d5b45; --primary-ink:#ffffff; --primary-soft:#e5f0dc; --focus:#85b348;
+  --primary-deep:#1b3d2d; --primary-glow:rgba(45,91,69,.32); --primary-fill:rgba(255,255,255,.22);
+  --ok:#2e7d4f; --ok-bg:#e2f3e7; --ng:#c0392b; --ng-bg:#fbe6e3; --late:#b06a00; --late-bg:#fdf0da;
+  --font-display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic",sans-serif;
+  --font-body:"BIZ UDPGothic","UD デジタル 教科書体 N-R","Hiragino Sans","Meiryo",sans-serif;
+  color-scheme:light;
+}
+.hero h1,.set-title{color:var(--primary)}
+.btn-primary,.btn-start{box-shadow:0 4px 0 var(--primary-deep)}
+/* タブレット：選択肢を画面のふちから離して、少し真ん中に寄せる */
+@media (min-width:601px) and (min-height:521px){
+  .answer{width:100%;max-width:760px;margin-inline:auto;padding-inline:3%}
+  .play{padding-bottom:max(36px,6vh)}
+}
