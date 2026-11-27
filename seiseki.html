@@ -271,15 +271,27 @@ details p{font-size:13px;color:var(--muted);margin-top:4px;word-break:break-all}
 .fb-note{border:2px dashed #c8d8c0;border-radius:14px;padding:12px 16px;font-size:18px;line-height:2;white-space:pre-wrap;min-height:70px}
 .fb-foot{font-size:12px;color:var(--muted);text-align:right}
 @media (max-width:560px){ .fb-sheet{padding:18px 14px} .fb-kpi .v{font-size:30px} .fb-kpis{gap:6px} }
-/* 回数ごと・問題ごとの変わり方 */
-.seq-chart{max-width:100%;height:auto}
-.seq-ln{fill:none;stroke:#c9d3cc;stroke-width:1.5}
-.seq-avg{fill:none;stroke:var(--green);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
-.seq-chart circle{stroke:#fff;stroke-width:1.5}
-.seq-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px}
-.seq-legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px;vertical-align:-1px}
-.seq-legend i.avg{width:18px;height:4px;border-radius:2px;background:var(--green);vertical-align:3px}
-.seq details summary{cursor:pointer;font-weight:700;color:var(--green);font-size:14px}
+/* 課題ごとの記録・音の分析 */
+.prac-recs summary{cursor:pointer;font-weight:700;color:var(--green);font-size:14px}
+.prac-recs .tblwrap{max-height:420px;overflow:auto}
+.ph{display:grid;gap:10px}
+.ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.ph-g{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px}
+.ph-g h4{margin:0 0 4px;font-size:15px;color:var(--green)}
+.ph-t{width:100%;border-collapse:collapse}
+.ph-t th,.ph-t td{padding:3px 4px;font-size:13.5px;text-align:left;border-bottom:1px solid #edf2ea;white-space:nowrap}
+.ph-t th{font-weight:700;width:1%;background:none;color:var(--ink,#1f2a22)}
+.ph-t.err th{white-space:normal;width:auto;min-width:8em;line-height:1.5}
+.ph-t.err .ph-bar{width:30%}
+.ph-t td.num{text-align:right;font-variant-numeric:tabular-nums}
+.ph-t td.n{color:var(--muted);font-size:12px}
+.ph-t tr.few{opacity:.55}
+.ph-bar{width:99%}
+.ph-bar span{display:block;height:10px;border-radius:999px;background:#e5eee0;overflow:hidden;min-width:60px}
+.ph-bar i{display:block;height:100%;background:var(--green);border-radius:999px}
+.ph-bar.err i{background:#e08a1e}
+.ph-pairs{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;font-size:14px}
+/* 問題ごとの変わり方 */
 .qa-ctl{align-items:center;gap:8px}
 .qa-ctl select{min-height:38px;border:1.5px solid var(--line);border-radius:8px;background:#fff;padding:2px 6px}
 .qa-wrap{max-height:560px;overflow:auto}
@@ -3307,16 +3319,15 @@ function renderDetail() {
       const list = byApp[a], pct = r => (r.max ? (r.score / r.max) * 100 : 0);
       if (list.every(r => !r.max)) {   // 録音の練習：点数はないので、練習した日と回数
         return `<div class="prac"><h3>${esc(a)}</h3><p class="sub">${list.length}回 練習（録音の練習なので点数はありません）</p>
-          ${miniCal(mineAll.filter(r => r.app === a))}</div>`;
+          ${miniCal(mineAll.filter(r => r.app === a))}${pracRecs(list)}</div>`;
       }
       const last = list[0], best = list.reduce((m, r) => Math.max(m, pct(r)), 0);
       return `<div class="prac"><h3>${esc(a)}</h3>
         <p class="sub">${list.length}回　さいご ${fmtN(last.score)}/${last.max}点（${esc(last.level)}）　いちばん良い ${Math.round(best)}%</p>
-        ${chartSVG(list)}${legend}</div>`; }).join('')}</div>
-    ${seqHTML(mine)}
+        ${chartSVG(list)}${legend}${pracRecs(list)}</div>`; }).join('')}</div>
+    ${phonHTML(mine)}
     ${qaHTML(mine)}
     ${recsHTML()}
-    ${mine.length ? `<h3 class="sec-h">すべての記録（行を押すと、問題ごとに「どう まちがえたか・何秒かかったか」が 出ます）</h3>${recTable(mine)}` : ''}
   </div>`;
   bindRecRows(box);
   box.querySelectorAll('[data-cal]').forEach(b => b.addEventListener('click', () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + Number(b.dataset.cal), 1); calDay = null; renderDetail(); }));
@@ -3325,35 +3336,133 @@ function renderDetail() {
   if (tm) tm.addEventListener('click', () => { showTab('menu'); startEdit(selected); window.scrollTo(0, 0); });
   box.querySelectorAll('[data-aud]').forEach(b => b.addEventListener('click', () => playAudio(b)));
   const qs = $('qaSel'); if (qs) qs.addEventListener('change', () => { qaApp = qs.value; renderDetail(); const q = $('qaBox'); if (q) q.scrollIntoView({ block: 'nearest' }); });
+  const ps = $('phSel'); if (ps) ps.addEventListener('change', () => { phApp = ps.value; renderDetail(); const q = $('phBox'); if (q) q.scrollIntoView({ block: 'nearest' }); });
   const qm = $('qaMiss'); if (qm) qm.addEventListener('change', () => { qaMiss = qm.checked; renderDetail(); const q = $('qaBox'); if (q) q.scrollIntoView({ block: 'nearest' }); });
 }
 
-/* ---------- 回数ごと（練習の しゅるいに 関係なく、練習した順の点数） ---------- */
-function seqHTML(list) {
-  const pts = list.filter(r => r.max).sort((a, b) => a.at - b.at);
-  if (pts.length < 2) return '';
-  const W = 680, H = 200, L = 46, R = 12, T = 12, B = 28, w = W - L - R, h = H - T - B;
-  const x = i => L + (i * w) / (pts.length - 1);
-  const y = v => T + h - (v / 100) * h;
-  const pct = r => (r.score / r.max) * 100;
-  let g = '';
-  [0, 50, 100].forEach(v => { g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}%</text>`; });
-  g += `<text class="axis" x="${L}" y="${H - 8}">1回目</text><text class="axis" x="${W - R}" y="${H - 8}" text-anchor="end">${pts.length}回目</text>`;
-  /* 5回ごとの 平均（ならした線） */
-  const avg = pts.map((p, i) => { const s = pts.slice(Math.max(0, i - 4), i + 1); return s.reduce((a, r) => a + pct(r), 0) / s.length; });
-  g += `<polyline class="seq-ln" points="${pts.map((p, i) => `${x(i)},${y(pct(p))}`).join(' ')}"/>`;
-  g += `<polyline class="seq-avg" points="${avg.map((v, i) => `${x(i)},${y(v)}`).join(' ')}"/>`;
-  pts.forEach((p, i) => { g += `<circle cx="${x(i)}" cy="${y(pct(p))}" r="${pts.length > 60 ? 3.5 : 5}" style="fill:var(--st${stageOf(p.app)})"><title>${i + 1}回目　${fmtDT(p.at)}　${esc(p.app)}（${esc([p.type, p.level].filter(Boolean).join('・'))}）　${fmtN(p.score)} / ${p.max}点（${Math.round(pct(p))}%）</title></circle>`; });
-  const legend = STAGE.map((st, i) => pts.some(p => stageOf(p.app) === i + 1) ? `<span><i style="background:var(--st${i + 1})"></i>${esc(st[0])}</span>` : '').join('');
-  const rowsH = pts.map((p, i) => ({ p, i })).reverse().map(({ p, i }) => `<tr><td class="num">${i + 1}</td><td>${fmtDT(p.at)}</td><td>${esc(p.app)}</td><td>${esc([p.type, p.level].filter(Boolean).join('・'))}</td><td class="num">${fmtN(p.score)} / ${p.max}</td><td class="num"><b>${Math.round(pct(p))}%</b></td><td class="marks">${marksHTML(p.marks)}</td></tr>`).join('');
-  return `<div class="seq cal">
-    <h3 class="sec-h" style="margin:0">回数ごとの 点数（練習の しゅるいに 関係なく、練習した順）</h3>
-    <p class="note">点の色は 練習の まとまり、太い線は 5回ごとの 平均です。点に 指を あてると くわしく 出ます。</p>
-    <svg class="chart seq-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="回数ごとの点数">${g}</svg>
-    <div class="legend seq-legend">${legend}<span><i class="avg"></i>5回ごとの 平均</span></div>
-    <details><summary>表で見る（${pts.length}回分・新しい順）</summary>
-      <div class="tblwrap"><table><thead><tr><th class="num">回</th><th>練習した日時</th><th>練習</th><th>しゅるい・難しさ</th><th class="num">点数</th><th class="num">正答率</th><th>〇△×</th></tr></thead><tbody>${rowsH}</tbody></table></div>
-    </details></div>`;
+/* ---------- 音の分析（音を選ぶ練習・ことば並べ替え・50音ならべ） ----------
+   記録の「問題ごと」から、ことば単位（モーラ数・特殊モーラ）と、字単位（子音・母音・位置）の正答率、誤りの種類を出す。
+   字単位は「何文字目で 何を えらんだか」が残る版（2026-11-27〜）の記録だけ。古い記録は ことば単位だけに使う。
+   アプリ側の書き方（common.js の missAt・itemTarget）と合わせてある */
+const PH_WORD_APPS = ['音を選ぶ練習', '音を選ぶ練習（上級）', 'ことば並べ替え（初級）', 'ことば並べ替え（上級）'];
+const PH_APPS = PH_WORD_APPS.concat(['50音ならべ']);
+const PH_SMALL = 'ゃゅょぁぃぅぇぉゎ';
+const phHira = s => String(s).replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+const phMorae = w => { const out = []; [...phHira(w)].forEach(c => { if (PH_SMALL.includes(c) && out.length) out[out.length - 1] += c; else out.push(c); }); return out; };
+const PH_ROWS = { '':'あいうえお', k:'かきくけこ', g:'がぎぐげご', s:'さしすせそ', z:'ざじずぜぞ', t:'たちつてと', d:'だぢづでど', n:'なにぬねの', h:'はひふへほ', b:'ばびぶべぼ', p:'ぱぴぷぺぽ', m:'まみむめも', r:'らりるれろ' };
+const PH_C = { '':['子音なし（母音だけ）', '母音', '有声'], k:['軟口蓋', '破裂音', '無声'], g:['軟口蓋', '破裂音', '有声'], s:['歯茎', '摩擦音', '無声'], z:['歯茎', '破擦音・摩擦音', '有声'],
+  t:['歯茎', '破裂音', '無声'], d:['歯茎', '破裂音', '有声'], n:['歯茎', '鼻音', '有声'], h:['声門', '摩擦音', '無声'], b:['両唇', '破裂音', '有声'], p:['両唇', '破裂音', '無声'],
+  m:['両唇', '鼻音', '有声'], y:['硬口蓋', '接近音', '有声'], r:['歯茎', 'はじき音', '有声'], w:['両唇・軟口蓋', '接近音', '有声'] };
+const PH_X = { し:['歯茎硬口蓋', '摩擦音', '無声'], ち:['歯茎硬口蓋', '破擦音', '無声'], つ:['歯茎', '破擦音', '無声'], じ:['歯茎硬口蓋', '破擦音・摩擦音', '有声'], ぢ:['歯茎硬口蓋', '破擦音・摩擦音', '有声'],
+  づ:['歯茎', '破擦音・摩擦音', '有声'], に:['硬口蓋', '鼻音', '有声'], ひ:['硬口蓋', '摩擦音', '無声'], ふ:['両唇', '摩擦音', '無声'] };
+const PH_SP = { ん:'撥音（ん）', っ:'促音（っ）', ー:'長音（ー）' };
+/* 1字の 音の しるし：{ sp:特殊, row:子音の行, v:母音, place, manner, voice } */
+function phChar(ch) {
+  const c = phHira(ch);
+  if (PH_SP[c]) return { sp: PH_SP[c] };
+  if (PH_SMALL.includes(c)) return { sp: '拗音の小さい字' };
+  const yv = { や:'あ', ゆ:'う', よ:'お', わ:'あ', を:'お' }[c];
+  if (yv) { const row = 'やゆよ'.includes(c) ? 'y' : 'w'; const f = PH_C[row]; return { row, v: yv, place: f[0], manner: f[1], voice: f[2] }; }
+  for (const [row, ks] of Object.entries(PH_ROWS)) {
+    const i = ks.indexOf(c); if (i < 0) continue;
+    const f = PH_X[c] || PH_C[row];
+    return { row, v: 'あいうえお'[i], place: f[0], manner: f[1], voice: f[2] };
+  }
+  return null;
+}
+/* 「た（2文字目は か）」「こ（順番ちがい・3文字目は こ）」「た（正しくは か）」を読む。古い書き方は null */
+function parseWrong(s) {
+  const m = String(s).match(/^(.+?)（(順番ちがい・)?(?:(\d+)文字目は|正しくは) (.+?)）$/);
+  return m ? { chosen: m[1], order: !!m[2], pos: m[3] ? Number(m[3]) - 1 : null, target: m[4] } : null;
+}
+const PH_SEIDAKU = ['kg', 'sz', 'td', 'hb', 'hp', 'bp'];
+function phErrType(w) {
+  if (w.order) return '順番ちがい（ことばの中の 別の字）';
+  const a = phChar(w.target), b = phChar(w.chosen);
+  if (!a || !b) return 'そのほか';
+  if (a.sp || b.sp) return '特殊モーラ・拗音の 取りちがえ';
+  if (a.row === b.row) return '母音だけ ちがう（子音は同じ）';
+  if (a.v === b.v) {
+    if (PH_SEIDAKU.some(p => p.includes(a.row) && p.includes(b.row) && a.row !== b.row)) return '清音・濁音・半濁音の 取りちがえ';
+    if (a.manner === b.manner) return '子音の 構音点だけ ちがう';
+    return '子音の 構音法が ちがう';
+  }
+  return '子音も 母音も ちがう';
+}
+let phApp = '';
+function phonHTML(list) {
+  const base = r => baseApp(r.app);
+  const recs = list.filter(r => PH_APPS.includes(base(r)) && r.items && /[〇△×]/.test(r.items));
+  if (!recs.length) return '';
+  const apps = PH_APPS.filter(a => recs.some(r => base(r) === a));
+  if (phApp && !apps.includes(phApp)) phApp = '';
+  const use = recs.filter(r => !phApp || base(r) === phApp);
+  const pt = mk => mk === '〇' ? 1 : mk === '△' ? 0.5 : 0;
+  const W = {}, C = {}, E = {}, P2 = {};
+  const add = (T, group, key, v) => { const g = T[group] = T[group] || {}; const k = g[key] = g[key] || { n: 0, s: 0 }; k.n++; k.s += v; };
+  let wordN = 0, charN = 0, oldN = 0;
+  use.forEach(r => String(r.items).split('／').filter(Boolean).map(parseItem).forEach(x => {
+    if (!x.mk) return;
+    const app = base(r);
+    const wrongs = x.wrong ? x.wrong.split('、').map(s => s.trim()).filter(Boolean) : [];
+    const parsed = wrongs.map(parseWrong), structured = parsed.every(Boolean);
+    parsed.filter(Boolean).forEach(w => { const t = phErrType(w); E[t] = (E[t] || 0) + 1; if (!w.order) { const k = phHira(w.target) + ' → ' + phHira(w.chosen); P2[k] = (P2[k] || 0) + 1; } });
+    if (PH_WORD_APPS.includes(app)) {
+      /* ことば単位 */
+      const word = phHira(x.label), mo = phMorae(word);
+      if (!mo.length || !mo.every(m => phChar(m[0]))) return;
+      wordN++;
+      add(W, 'モーラ数', mo.length >= 6 ? '6モーラ以上' : mo.length + 'モーラ', pt(x.mk));
+      [['撥音（ん）', /ん/], ['促音（っ）', /っ/], ['長音（ー）', /ー/], ['拗音（ゃ・ゅ・ょ）', /[ゃゅょ]/]].forEach(([nm, re]) => add(W, nm, re.test(word) ? 'ある' : 'ない', pt(x.mk)));
+      /* 字単位：何文字目を聞いたかが わかる記録だけ */
+      const chars = [...word], all = app.startsWith('ことば並べ替え') || (app === '音を選ぶ練習' && /全部/.test(r.type));
+      const tgt = all ? chars.map((_, i) => i) : x.target ? x.target.split('・').map(n => Number(n) - 1).filter(i => i >= 0 && i < chars.length) : null;
+      if (!tgt || !tgt.length || (x.mk !== '〇' && !structured) || (x.mk !== '〇' && !parsed.length && !x.late)) { if (x.mk !== '〇') oldN++; return; }
+      const errAt = new Set(parsed.filter(w => w.pos != null).map(w => w.pos));
+      const last = errAt.size ? Math.max(...errAt) : -1;
+      tgt.forEach(i => {
+        if (x.mk === '×' && all && i > last) return;          // 2回まちがえて 終わった あとの字は 聞いていない
+        const f = phChar(chars[i]); if (!f) return;
+        const ok = errAt.has(i) ? 0 : 1; charN++;
+        add(C, '位置', i === 0 ? '語頭' : i === chars.length - 1 ? '語尾' : '語中', ok);
+        if (f.sp) { add(C, '特殊モーラ・拗音', f.sp, ok); return; }
+        add(C, '構音法', f.manner, ok); add(C, '構音点', f.place, ok); add(C, '有声・無声', f.voice, ok); add(C, '母音', f.v, ok);
+      });
+    } else {
+      /* 50音ならべ：空きのマスの字（位置は なし） */
+      const tg = x.label.split('・').filter(Boolean);
+      if (x.mk !== '〇' && (!structured || !parsed.length)) { oldN++; return; }
+      const errK = parsed.map(w => w.target);
+      const lastI = errK.length ? Math.max(...errK.map(k => tg.indexOf(k))) : -1;
+      tg.forEach((k, i) => {
+        if (x.mk === '×' && i > lastI) return;
+        const f = phChar(k); if (!f || f.sp) return;
+        const ok = errK.includes(k) ? 0 : 1; charN++;
+        add(C, '構音法', f.manner, ok); add(C, '構音点', f.place, ok); add(C, '有声・無声', f.voice, ok); add(C, '母音', f.v, ok);
+      });
+    }
+  }));
+  const ORD = { 'モーラ数':['2モーラ','3モーラ','4モーラ','5モーラ','6モーラ以上'], 'あるなし':['ある','ない'], '位置':['語頭','語中','語尾'], '母音':['あ','い','う','え','お'], '有声・無声':['有声','無声'],
+    '構音法':['母音','破裂音','摩擦音','破擦音','破擦音・摩擦音','鼻音','はじき音','接近音'], '構音点':['両唇','歯茎','歯茎硬口蓋','硬口蓋','軟口蓋','声門','両唇・軟口蓋','子音なし（母音だけ）'] };
+  const sortK = (g, ks) => { const o = ORD[g] || ORD[ks.every(k => k === 'ある' || k === 'ない') ? 'あるなし' : ''] || []; return ks.sort((a, b) => (o.indexOf(a) + 1 || 99) - (o.indexOf(b) + 1 || 99) || a.localeCompare(b, 'ja')); };
+  const tbl = (T, groups) => groups.filter(g => T[g]).map(g => `<div class="ph-g"><h4>${esc(g)}</h4><table class="ph-t"><tbody>${sortK(g, Object.keys(T[g])).map(k => {
+      const v = T[g][k], p = Math.round(v.s / v.n * 100);
+      return `<tr class="${v.n < 5 ? 'few' : ''}"><th>${esc(k)}</th><td class="ph-bar"><span><i style="width:${p}%"></i></span></td><td class="num"><b>${p}%</b></td><td class="num n">${v.n}${v.n < 5 ? '（少ない）' : ''}</td></tr>`; }).join('')}</tbody></table></div>`).join('');
+  const eTot = Object.values(E).reduce((a, b) => a + b, 0);
+  const errH = eTot ? `<div class="ph-g"><h4>誤りの種類（まちがえて えらんだ ${eTot}回の 内訳）</h4><table class="ph-t err"><tbody>${Object.entries(E).sort((a, b) => b[1] - a[1]).map(([k, n]) =>
+      `<tr><th>${esc(k)}</th><td class="ph-bar err"><span><i style="width:${Math.round(n / eTot * 100)}%"></i></span></td><td class="num"><b>${n}回</b></td><td class="num n">${Math.round(n / eTot * 100)}%</td></tr>`).join('')}</tbody></table></div>`
+    + `<div class="ph-g"><h4>よくある 取りちがえ（正しい字 → えらんだ字）</h4><p class="ph-pairs">${Object.entries(P2).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([k, n]) => `<span>${esc(k)}　<b>${n}回</b></span>`).join('') || '—'}</p></div>` : '';
+  return `<div class="ph cal" id="phBox">
+    <h3 class="sec-h" style="margin:0">音の 分析（音を選ぶ練習・ことば並べ替え・50音ならべ）</h3>
+    <div class="row qa-ctl no-print"><label for="phSel">練習</label><select id="phSel"><option value="">まとめて</option>${apps.map(a => `<option${a === phApp ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select>
+      <span class="note">この期間：ことば ${wordN}問・字 ${charN}字（〇=1、△=0.5、×=0 の 正答率。復習の記録も ふくみます）</span></div>
+    ${wordN ? `<p class="note"><b>ことば単位</b>：問題の ことばの 長さや 特殊モーラで 分けた 正答率です。</p><div class="ph-grid">${tbl(W, ['モーラ数', '撥音（ん）', '促音（っ）', '長音（ー）', '拗音（ゃ・ゅ・ょ）'])}</div>` : ''}
+    ${charN ? `<p class="note"><b>字単位</b>：聞かれた 字ごとの 正答率です（その字で まちがえて えらんだら 不正解）。50音ならべは 位置なし。</p><div class="ph-grid">${tbl(C, ['構音法', '構音点', '有声・無声', '母音', '位置', '特殊モーラ・拗音'])}</div>`
+      : '<p class="note">字単位の 分析は、2026年11月27日より あとの 記録から 出ます（どの字で まちがえたかを 記録するように したため）。</p>'}
+    ${errH ? `<div class="ph-grid">${errH}</div>` : ''}
+    ${oldN ? `<p class="note">前の版の 記録 ${oldN}問は、どの字で まちがえたかが わからないので、字単位・誤りの種類には 入れていません。</p>` : ''}
+    <p class="note">構音点・構音法は 日本語の ふつうの 発音（し＝歯茎硬口蓋、ふ＝両唇 など）で 分けています。「（少ない）」は 5回より 少ないので、目安です。</p>
+  </div>`;
 }
 
 /* ---------- 問題ごとの 変わり方（同じ問題の 〇△× が 日付の順に 並ぶ） ---------- */
@@ -3398,8 +3507,8 @@ function qaHTML(list) {
 function parseItem(t) {
   const m = String(t).match(/^(.*?)([〇△×])(?:（(.*)）)?$/);
   if (!m) return { label: String(t), mk: '', sec: null, late: false, wrong: '' };
-  const ex = m[3] || '', sec = ex.match(/([\d.]+)秒/), w = ex.match(/えらんだ：(.+)$/);
-  return { label: m[1], mk: m[2], sec: sec ? Number(sec[1]) : null, late: /時間切れ/.test(ex), wrong: w ? w[1] : '' };
+  const ex = m[3] || '', sec = ex.match(/([\d.]+)秒/), w = ex.match(/えらんだ：(.+)$/), tg = ex.match(/ねらい：([\d・]+?)(?:・えらんだ|$)/);
+  return { label: m[1], mk: m[2], sec: sec ? Number(sec[1]) : null, late: /時間切れ/.test(ex), wrong: w ? w[1] : '', target: tg ? tg[1] : '' };
 }
 function itemsTable(items) {
   const list = String(items || '').split('／').filter(Boolean).map(parseItem);
@@ -3420,6 +3529,10 @@ function recRows(list) {
       <td class="num">${fmtSec(r.sec)}</td></tr>
       ${hasQ ? `<tr class="q-row" hidden><td colspan="6">${itemsTable(r.items)}</td></tr>` : ''}`;
   }).join('');
+}
+/* 課題ごとの カードの中の 記録（たたんでおく） */
+function pracRecs(list) {
+  return `<details class="prac-recs"><summary>記録を 見る（${list.length}回・新しい順）</summary><p class="note">行を押すと、問題ごとに「どう まちがえたか・何秒かかったか」が 出ます。</p>${recTable(list)}</details>`;
 }
 function recTable(list) {
   return `<div class="tblwrap"><table>
