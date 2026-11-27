@@ -3441,8 +3441,8 @@ const STAGE = [['絵と形', ['絵合わせ']], ['音と文字', ['音を選ぶ�
   ['会話', ['セリフをえらびましょう', 'セリフをいいましょう', '挨拶語のトレーニング']]];
 const SHORT = { '音を選ぶ練習（上級）':'音（上級）', '五十音れんしゅう（録音）':'五十音 録音', 'ことば並べ替え（初級）':'並べ替え 初', 'ことば並べ替え（上級）':'並べ替え 上',
   '語想起タイムアタック':'語想起', 'セリフをえらびましょう':'セリフ えらぶ', 'セリフをいいましょう':'セリフ いう', '挨拶語のトレーニング':'挨拶語', '音を選ぶ練習':'音を選ぶ', '動詞の練習（上級）':'動詞（上級）' };
-const stageOf = app => { const i = STAGE.findIndex(s => s[1].includes(app)); return i < 0 ? 0 : i + 1; };
-const shortOf = app => SHORT[app] || app.replace(/の練習$/, '');
+const stageOf = app => { const a = String(app).replace(/（復習）$/, ''); const i = STAGE.findIndex(s => s[1].includes(a)); return i < 0 ? 0 : i + 1; };
+const shortOf = app => { const fk = /（復習）$/.test(app), a = app.replace(/（復習）$/, ''); return (SHORT[a] || a.replace(/の練習$/, '')) + (fk ? '（復習）' : ''); };
 const dayKey = d => d.getFullYear() + '-' + z2(d.getMonth() + 1) + '-' + z2(d.getDate());
 let calFor = null, calMonth = null, calDay = null;
 function calendarHTML(all, auds) {
@@ -3837,7 +3837,9 @@ const FBNAME = {
   '名詞の練習':'名詞[めいし]の 練習[れんしゅう]', '助詞の練習':'助詞[じょし]の 練習[れんしゅう]', '動詞の練習':'動詞[どうし]の 練習[れんしゅう]', '動詞の練習（上級）':'動詞[どうし]の 練習[れんしゅう]（上級[じょうきゅう]）', '文をつくろう':'文[ぶん]を つくろう',
   'セリフをえらびましょう':'セリフを えらびましょう', 'セリフをいいましょう':'セリフを 言[い]いましょう', '挨拶語のトレーニング':'挨拶語[あいさつご]の トレーニング',
 };
-const fbName = app => RB(FBNAME[app] || app);
+/* まちがえた問題の復習の記録は「〇〇（復習）」の名前で届く */
+const FK_SUF = '（復習）', baseApp = app => String(app).endsWith(FK_SUF) ? String(app).slice(0, -FK_SUF.length) : app;
+const fbName = app => { const b = baseApp(app); return RB(FBNAME[b] || b) + (b !== app ? RB('（復習[ふくしゅう]）') : ''); };
 const WK = '日月火水木金土';
 const mdW = d => `${d.getMonth() + 1}月${d.getDate()}日（${WK[d.getDay()]}）`;
 function weekStart(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
