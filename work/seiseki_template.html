@@ -243,7 +243,31 @@ details p{font-size:13px;color:var(--muted);margin-top:4px;word-break:break-all}
 .fb-bar span i{display:block;height:100%;background:var(--green);border-radius:999px}
 .fb-bar b{width:3.2em;text-align:right}
 .fb-up{color:#c0392b;font-weight:700}.fb-down{color:#2a5f9e;font-weight:700}
-.fb-hw li{font-size:16px;line-height:2}
+.fb-sheet{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.fb-top h1 .fb-when{display:inline-block;font-size:17px;color:#1f2a22;margin-left:12px;font-weight:700;white-space:nowrap}
+.fb-hw{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.fb-hw li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:17px;line-height:2;border:2px solid #e2ebdd;border-radius:12px;padding:6px 12px}
+.fb-hw li.ok{border-color:#9fcf8a;background:#f3faee}
+.fb-hw li.ng{border-color:#f0c48a;background:#fff8ee}
+.fb-hw .nm{flex:1 1 200px}
+.fb-hw .cnt{font-weight:700;white-space:nowrap}
+.fb-ok,.fb-ng{display:inline-block;border-radius:999px;padding:0 14px;font-size:18px;font-weight:700;white-space:nowrap}
+.fb-ok{background:var(--green);color:#fff}
+.fb-ng{background:#fff;color:#b35a00;border:2px solid #e08a1e}
+.fb-hw-sum{font-size:16px;margin-left:10px;color:#1f2a22}
+.fb-trend{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fb-tc{border:2px solid #e2ebdd;border-radius:14px;padding:8px 10px 6px}
+.fb-tc .k{font-size:15px;font-weight:700;text-align:center;line-height:1.9}
+.fb-tc .bars{display:flex;align-items:flex-end;gap:4px;height:120px;border-bottom:2px solid #9aa89f}
+.fb-tc .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;min-width:0}
+.fb-tc .bar b{font-size:13px;line-height:1.4}
+.fb-tc .bar i{display:block;width:72%;background:#bcd9ad;border-radius:4px 4px 0 0;min-height:2px}
+.fb-tc .bar.now i{background:var(--green)}
+.fb-tc .bar.now b{color:var(--green);font-size:15px}
+.fb-tc .lbs{display:flex;gap:4px}
+.fb-tc .lbs span{flex:1;text-align:center;font-size:11px;line-height:1.5;color:#46574b;min-width:0;white-space:nowrap}
+.fb-tc .lbs span.now{font-weight:700;color:#1f2a22}
+@media (max-width:560px){ .fb-trend{grid-template-columns:1fr} }
 .fb-note{border:2px dashed #c8d8c0;border-radius:14px;padding:12px 16px;font-size:18px;line-height:2;white-space:pre-wrap;min-height:70px}
 .fb-foot{font-size:12px;color:var(--muted);text-align:right}
 @media (max-width:560px){ .fb-sheet{padding:18px 14px} .fb-kpi .v{font-size:30px} .fb-kpis{gap:6px} }
@@ -391,6 +415,7 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
         <div class="field"><span class="lbl-t">期間</span><div class="seg"><label><input type="radio" name="fbKind" value="week" checked><span>週ごと</span></label><label><input type="radio" name="fbKind" value="month"><span>月ごと</span></label></div></div>
         <div class="field" style="min-width:240px"><label for="fbWhen">いつの分</label><select id="fbWhen"></select></div>
       </div>
+      <label class="m-on" style="margin-top:10px"><input type="checkbox" id="fbGraph" checked><span>練習した日・回数・時間を、前の週（月）と くらべる <b>グラフ</b>も 出す（2週目・2か月目から 出ます）</span></label>
       <div class="field" id="fbNameBox" style="margin-top:10px" hidden><label for="fbName">資料に出す名前（名前のメモ。この端末だけに保存し、送信はしません）</label>
         <div class="row" id="fbNameRow"></div></div>
       <div class="field" style="margin-top:10px"><label for="fbNote">職員からの ひとこと（そのまま 資料に 入ります。漢字には 印刷のときに 読みがなが 付きません）</label>
@@ -406,7 +431,7 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
       <h2>利用者を加える</h2>
       <div class="grid2">
         <div class="field"><label for="newId">利用者番号（英数字。例：A01）</label><input id="newId" maxlength="20" autocomplete="off" placeholder="A01"></div>
-        <div class="field"><label for="newName">名前のメモ（この端末だけに保存・送信はしません）</label><input id="newName" maxlength="30" autocomplete="off" placeholder="例：山田さん"></div>
+        <div class="field"><label for="newName">名前のメモ（この端末だけに保存・送信はしません）</label><input id="newName" maxlength="30" autocomplete="off" placeholder="例：山田 花子"></div>
       </div>
       <div class="row" style="margin-top:10px">
         <button class="btn primary" id="addUser" type="button">リンクとQRを作る</button>
@@ -1260,7 +1285,7 @@ function renderFb() {
     $('fbNameRow').innerHTML = nameEditorHTML(D.u, 'fbName') + (nm[D.u] ? '' : '<span class="msg err">名前が まだ ありません。入れて［名前を保存］を押すと、資料に出ます（入れないときは 手書き用の空欄に なります）。</span>');
   }
   if (!D) { box.innerHTML = '<p class="msg no-print" style="margin-top:12px">利用者を えらんで ください。</p>'; return; }
-  const who = nm[D.u] ? (/(さん|様|さま|くん|君|ちゃん)$/.test(nm[D.u]) ? nm[D.u] : nm[D.u] + ' さん') : '　　　　　　　　 さん';
+  const who = nm[D.u] ? nm[D.u].replace(/\s*(さん|様|さま|くん|君|ちゃん)$/, '') + ' 様' : '　　　　　　　　 様';
   const unit = D.kind === 'week' ? '週[しゅう]' : '月[つき]';
   const cmp = (now, before, u) => {
     if (!D.before.length) return '';
@@ -1277,6 +1302,26 @@ function renderFb() {
     for (let k = 1; k <= n; k++) { const d = new Date(D.P.s.getFullYear(), D.P.s.getMonth(), k), on = D.days.has(dayKey(d));
       daysH += `<span class="fb-day${on ? ' on' : ''}">${k}<i aria-label="${on ? '練習した' : ''}"></i></span>`; }
   }
+  /* これまでの 週（月）と くらべる グラフ：はじめて 練習した 週（月）から 数えて 2つめ以降の 期間だけ */
+  let trendH = '';
+  const mine = rows.filter(r => r.user === D.u);
+  if ($('fbGraph').checked && mine.length) {
+    const first = new Date(Math.min(...mine.map(r => +r.at)));
+    const step = k => D.kind === 'week' ? new Date(D.P.s.getFullYear(), D.P.s.getMonth(), D.P.s.getDate() + 7 * k) : new Date(D.P.s.getFullYear(), D.P.s.getMonth() + k, 1);
+    const firstS = D.kind === 'week' ? weekStart(first) : new Date(first.getFullYear(), first.getMonth(), 1);
+    const ps = [];
+    for (let k = -5; k <= 0; k++) { const s = step(k); if (s >= firstS) ps.push({ s, e: step(k + 1), now: k === 0 }); }
+    if (ps.length >= 2) {
+      ps.forEach(p => { const l = mine.filter(r => r.at >= p.s && r.at < p.e);
+        p.days = new Set(l.map(r => dayKey(r.at))).size; p.n = l.length; p.min = Math.round(l.reduce((a, r) => a + r.sec, 0) / 60);
+        p.lb = D.kind === 'week' ? `${p.s.getMonth() + 1}/${p.s.getDate()}〜` : `${p.s.getMonth() + 1}月`; });
+      const chart = (k, f, u) => { const mx = Math.max(1, ...ps.map(f));
+        return `<div class="fb-tc"><div class="k">${RB(k)}</div><div class="bars">${ps.map(p => `<span class="bar${p.now ? ' now' : ''}"><b>${f(p)}${u}</b><i style="height:${Math.round(f(p) / mx * 82)}%"></i></span>`).join('')}</div>`
+          + `<div class="lbs">${ps.map(p => `<span${p.now ? ' class="now"' : ''}>${p.lb}</span>`).join('')}</div></div>`; };
+      trendH = `<div><h2 class="fb-h">${RB(D.kind === 'week' ? 'これまでの 週[しゅう]と くらべて' : 'これまでの 月[つき]と くらべて')}</h2><div class="fb-trend">`
+        + chart('練習[れんしゅう]した 日[ひ]', p => p.days, '日') + chart('練習[れんしゅう]した 回数[かいすう]', p => p.n, '回') + chart('練習[れんしゅう]した 時間[じかん]', p => p.min, '分') + '</div></div>';
+    }
+  }
   const pct = a => a.mx ? Math.round((a.sc / a.mx) * 100) : null;
   const tbl = D.order.map(app => {
     const a = D.apps[app], p = pct(a), pa = D.papps[app], pp = pa ? pct(pa) : null;
@@ -1289,23 +1334,26 @@ function renderFb() {
   let hwH = '';
   if (hasHW(m)) {
     const c = hwCounts(D.u);
-    hwH = `<h2 class="fb-h">${RB('宿題[しゅくだい]')}${m.due ? `（${RB(fmtDue(m.due))}まで）` : ''}</h2><ul class="fb-hw">${m.items.map((it, i) => {
-      const a = APPDEF[it.app]; const t = a ? a.title : it.app;
-      return `<li>${fbName(t)}　${it.times ? `${c[i]} / ${it.times}回 ${c[i] >= it.times ? '<b class="fb-up">✓ できました</b>' : ''}` : `${c[i]}回`}</li>`; }).join('')}</ul>`;
+    const goal = m.items.filter(it => it.times), done = m.items.filter((it, i) => it.times && c[i] >= it.times);
+    hwH = `<div><h2 class="fb-h">${RB('宿題[しゅくだい]')}${m.due ? `（${RB(fmtDue(m.due))}まで）` : ''}${goal.length ? `<span class="fb-hw-sum">${RB(`${goal.length}つの うち ${done.length}つ 達成[たっせい]`)}</span>` : ''}</h2><ul class="fb-hw">${m.items.map((it, i) => {
+      const a = APPDEF[it.app]; const t = a ? a.title : it.app, ok = it.times && c[i] >= it.times;
+      return `<li class="${it.times ? (ok ? 'ok' : 'ng') : ''}"><span class="nm">${fbName(t)}</span><span class="cnt">${it.times ? `${c[i]} / ${it.times}回` : `${c[i]}回`}</span>`
+        + (it.times ? (ok ? `<span class="fb-ok">✓ ${RB('達成[たっせい]')}</span>` : `<span class="fb-ng">${RB(`未達成[みたっせい]（あと ${it.times - c[i]}回）`)}</span>`) : '') + '</li>'; }).join('')}</ul></div>`;
   }
   const note = $('fbNote').value.trim();
   const logo = (document.querySelector('.head img') || {}).src || '';
   box.innerHTML = `<article class="fb-sheet">
     <div class="fb-top">${logo ? `<img src="${logo}" alt="">` : ''}<div class="t"><span class="org">ことばのリハビリデイサービス　グリーン・グリーン</span>
-      <h1>${RB('ことばの 練習[れんしゅう] ふりかえり')}</h1></div></div>
-    <p class="fb-who${nm[D.u] ? '' : ' blank'}">${esc(who)}<small>${esc(D.P.label.replace(/（(今週|先週|今月|先月)）$/, ''))}</small></p>
+      <h1>${RB('ご自宅[じたく]での 課題[かだい]　ふりかえり')}<span class="fb-when">${esc(D.P.label.replace(/（(今週|先週|今月|先月)）$/, ''))}</span></h1></div></div>
+    <p class="fb-who${nm[D.u] ? '' : ' blank'}">${esc(who)}</p>
     <div class="fb-kpis">
       <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 日[ひ]')}</div><div class="v">${D.days.size}<small>日</small></div><div class="c">${cmp(D.days.size, D.pdays.size, '日')}</div></div>
       <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 回数[かいすう]')}</div><div class="v">${D.list.length}<small>回</small></div><div class="c">${cmp(D.list.length, D.before.length, '回')}</div></div>
       <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 時間[じかん]')}</div><div class="v">${D.min}<small>分</small></div><div class="c">${cmp(D.min, D.pmin, '分')}</div></div>
     </div>
     <div><h2 class="fb-h">${RB('練習[れんしゅう]した 日[ひ]')}</h2><div class="fb-days${D.kind === 'month' ? ' fb-month' : ''}">${daysH}</div></div>
-    ${D.order.length ? `<div><h2 class="fb-h">${RB('練習[れんしゅう]ごとの ようす')}</h2>
+    ${trendH}
+    ${D.order.length ? `<div><h2 class="fb-h">${RB('項目[こうもく]ごとの 成績[せいせき]')}</h2>
       <table class="fb-tbl"><thead><tr><th>${RB('練習[れんしゅう]')}</th><th style="text-align:right">${RB('回数[かいすう]')}</th><th>${RB('できた 割合[わりあい]')}</th>${D.before.length ? `<th>${RB('前[まえ]と くらべて')}</th>` : ''}</tr></thead><tbody>${tbl}</tbody></table></div>`
       : `<p>${RB('この 期間[きかん]は 練習[れんしゅう]の 記録[きろく]が ありません。')}</p>`}
     ${hwH}
@@ -1328,6 +1376,7 @@ function fbSuggest() {
 }
 $('fbUser').addEventListener('change', renderFb);
 $('fbWhen').addEventListener('change', renderFb);
+$('fbGraph').addEventListener('change', renderFb);
 document.querySelectorAll('input[name=fbKind]').forEach(r => r.addEventListener('change', () => { $('fbWhen').dataset.kind = ''; renderFb(); }));
 $('fbNote').addEventListener('input', () => { const o = $('fbNoteOut'); if (o) o.textContent = $('fbNote').value.trim(); });
 $('fbAuto').addEventListener('click', () => { const t = fbSuggest(); if (!t) { $('fbMsg').className = 'msg err'; $('fbMsg').textContent = '利用者を えらんで ください。'; return; } $('fbNote').value = t; $('fbMsg').textContent = ''; renderFb(); });
