@@ -505,7 +505,8 @@ function out_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 const okUser_ = u =&gt; /^[A-Za-z0-9_-]{1,20}$/.test(String(u || ''));
-const okKey_ = k =&gt; k === STAFF_PASSWORD &amp;&amp; STAFF_PASSWORD !== 'ここを職員用のパスワードに変える';
+/* パスワードを書きかえ忘れたとき（「ここを…」のまま）は受け付けない。置きかえでこの行が変わらないよう、最初の3文字だけで見る */
+const okKey_ = k =&gt; k === STAFF_PASSWORD &amp;&amp; String(STAFF_PASSWORD).indexOf('ここを') !== 0;
 const iso_ = v =&gt; (v instanceof Date ? v.toISOString() : v);
 
 /* 文字の長さをそろえ、表計算の式として読まれないようにする */
