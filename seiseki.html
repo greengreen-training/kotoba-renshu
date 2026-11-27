@@ -218,6 +218,9 @@ details p{font-size:13px;color:var(--muted);margin-top:4px;word-break:break-all}
 .fb-top .org{font-size:13px;color:var(--muted)}
 .fb-top h1{margin:0;font-size:26px;line-height:1.7;color:var(--green)}
 .fb-who{font-size:24px;font-weight:700;line-height:1.8}
+.fb-who.blank{border-bottom:2px solid #9aa89f;display:inline-block;padding-right:6px}
+.nm-edit{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;margin-left:auto}
+.nm-in{min-height:38px;border:1.5px solid var(--line);border-radius:8px;padding:2px 10px;font:inherit;font-size:15px;width:12em;max-width:100%;background:#fff}
 .fb-who small{font-size:16px;font-weight:400;margin-left:10px;color:#46574b}
 .fb-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .fb-kpi{border:2px solid #d5e6cc;border-radius:14px;padding:10px 12px;text-align:center;background:#f6fbf3}
@@ -351,7 +354,7 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
       <p class="msg" id="mMsg" style="margin-top:8px"></p>
     </div>
     <div class="box" id="mEdit" hidden>
-      <div class="detail-head"><span class="id" id="mId"></span><span class="nm" id="mName"></span></div>
+      <div class="detail-head"><span class="id" id="mId"></span><span class="nm" id="mName"></span><span class="nm-edit" id="mNameEdit"></span></div>
       <p class="m-now" id="mNow"></p>
       <div class="voice-box">
         <label class="m-on"><input type="checkbox" id="mVoice"><span>🎙 <b>声も送る</b>：録音の練習（セリフをいいましょう・五十音れんしゅう・挨拶語のトレーニング・文をつくろう・語想起タイムアタック）で録った声を、職員に送ります</span></label>
@@ -388,6 +391,8 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
         <div class="field"><span class="lbl-t">期間</span><div class="seg"><label><input type="radio" name="fbKind" value="week" checked><span>週ごと</span></label><label><input type="radio" name="fbKind" value="month"><span>月ごと</span></label></div></div>
         <div class="field" style="min-width:240px"><label for="fbWhen">いつの分</label><select id="fbWhen"></select></div>
       </div>
+      <div class="field" id="fbNameBox" style="margin-top:10px" hidden><label for="fbName">資料に出す名前（名前のメモ。この端末だけに保存し、送信はしません）</label>
+        <div class="row" id="fbNameRow"></div></div>
       <div class="field" style="margin-top:10px"><label for="fbNote">職員からの ひとこと（そのまま 資料に 入ります。漢字には 印刷のときに 読みがなが 付きません）</label>
         <textarea id="fbNote" rows="3" placeholder="例：毎日 声を 出して 練習できましたね。来週も いっしょに がんばりましょう。"></textarea></div>
       <div class="row" style="margin-top:10px"><button class="btn primary" id="fbPrint" type="button">印刷する（PDF にも できます）</button><button class="btn" id="fbAuto" type="button">ひとことの 例を 入れる</button><span class="msg" id="fbMsg"></span></div>
@@ -3267,7 +3272,8 @@ function renderDetail() {
   const usedLv = LV.filter(l => mine.some(r => lvOf(r.level) === l));
   const legend = `<div class="legend">${usedLv.map(l => `<span><svg viewBox="0 0 14 14">${marker(l.shape, 7, 7, 4.5, l.color)}</svg>${l.name}</span>`).join('')}</div>`;
   box.innerHTML = `<div class="box" style="display:grid;gap:14px">
-    <div class="detail-head"><span class="id">${esc(selected)}</span>${nm ? `<span class="nm">${esc(nm)}</span>` : ''}</div>
+    <div class="detail-head"><span class="id">${esc(selected)}</span>${nm ? `<span class="nm">${esc(nm)}</span>` : ''}
+      <span class="nm-edit no-print">${nameEditorHTML(selected, 'dName')}</span></div>
     <div class="m-now no-print">練習メニュー：${menus && menus[selected] && menus[selected].items.length ? '<b>' + esc(planText(menus[selected].items)) + '</b>' : (menus ? '決めていません（全部の練習が出ます）' : '—')}　<button class="btn small" id="toMenu" type="button">練習メニュー・宿題を決める・変える</button>${hwHTML(selected)}</div>
     <div class="kpis"><span><b>${mine.length}</b>回</span><span><b>${days}</b>日 練習</span><span>合計 <b>${Math.round(total / 60)}</b>分</span><span>（${$('range').selectedOptions[0].textContent}）</span></div>
     ${calendarHTML(mineAll, audios.filter(a => a.user === selected))}
@@ -3595,6 +3601,7 @@ function renderEditor() {
   box.hidden = false;
   $('mId').textContent = mUser;
   $('mName').textContent = names()[mUser] || '';
+  $('mNameEdit').innerHTML = nameEditorHTML(mUser, 'mNameIn');
   const cur = menus && menus[mUser];
   $('mVoice').checked = !!(cur && cur.voice);
   $('mVoice').disabled = menus === null;
@@ -3852,8 +3859,12 @@ function renderFb() {
   const box = $('fbSheet');
   if (!rows.length) { box.innerHTML = '<p class="msg no-print" style="margin-top:12px">先に「成績」タブで［最新の成績を読みこむ］を押してください。</p>'; return; }
   const D = fbData();
+  $('fbNameBox').hidden = !D;
+  if (D) {
+    $('fbNameRow').innerHTML = nameEditorHTML(D.u, 'fbName') + (nm[D.u] ? '' : '<span class="msg err">名前が まだ ありません。入れて［名前を保存］を押すと、資料に出ます（入れないときは 手書き用の空欄に なります）。</span>');
+  }
   if (!D) { box.innerHTML = '<p class="msg no-print" style="margin-top:12px">利用者を えらんで ください。</p>'; return; }
-  const who = nm[D.u] ? (/(さん|様|さま|くん|君|ちゃん)$/.test(nm[D.u]) ? nm[D.u] : nm[D.u] + ' さん') : D.u + ' さん';
+  const who = nm[D.u] ? (/(さん|様|さま|くん|君|ちゃん)$/.test(nm[D.u]) ? nm[D.u] : nm[D.u] + ' さん') : '　　　　　　　　 さん';
   const unit = D.kind === 'week' ? '週[しゅう]' : '月[つき]';
   const cmp = (now, before, u) => {
     if (!D.before.length) return '';
@@ -3891,7 +3902,7 @@ function renderFb() {
   box.innerHTML = `<article class="fb-sheet">
     <div class="fb-top">${logo ? `<img src="${logo}" alt="">` : ''}<div class="t"><span class="org">ことばのリハビリデイサービス　グリーン・グリーン</span>
       <h1>${RB('ことばの 練習[れんしゅう] ふりかえり')}</h1></div></div>
-    <p class="fb-who">${esc(who)}<small>${esc(D.P.label.replace(/（(今週|先週|今月|先月)）$/, ''))}</small></p>
+    <p class="fb-who${nm[D.u] ? '' : ' blank'}">${esc(who)}<small>${esc(D.P.label.replace(/（(今週|先週|今月|先月)）$/, ''))}</small></p>
     <div class="fb-kpis">
       <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 日[ひ]')}</div><div class="v">${D.days.size}<small>日</small></div><div class="c">${cmp(D.days.size, D.pdays.size, '日')}</div></div>
       <div class="fb-kpi"><div class="k">${RB('練習[れんしゅう]した 回数[かいすう]')}</div><div class="v">${D.list.length}<small>回</small></div><div class="c">${cmp(D.list.length, D.before.length, '回')}</div></div>
@@ -3930,6 +3941,32 @@ $('fbPrint').addEventListener('click', () => {
   window.print();
 });
 window.addEventListener('afterprint', () => document.body.classList.remove('print-fb'));
+
+/* ---------- 名前のメモ（この端末だけに保存。スプレッドシートには送らない） ---------- */
+function nameEditorHTML(u, idp) {
+  const nm = names()[u] || '';
+  return `<input id="${idp}" class="nm-in" maxlength="30" autocomplete="off" value="${esc(nm)}" placeholder="例：山田 花子" aria-label="${esc(u)} の名前">`
+    + `<button class="btn small" type="button" data-savename="${esc(u)}" data-for="${idp}">${nm ? '名前を変える' : '名前を保存'}</button>`;
+}
+function saveName(u, v) {
+  const n = names();
+  v = String(v || '').trim().slice(0, 30);
+  if (v) n[u] = v; else delete n[u];
+  ls.set(LS.names, n);
+  renderUsers(); renderDetail();
+  if (!$('p-fb').hidden) renderFb();
+  if (!$('p-links').hidden) renderCards();
+  if (!$('p-menu').hidden && mUser === u) renderEditor();
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-savename]'); if (!b) return;
+  const inp = $(b.dataset.for); if (!inp) return;
+  saveName(b.dataset.savename, inp.value);
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || !e.target.classList || !e.target.classList.contains('nm-in')) return;
+  const b = e.target.parentElement.querySelector('[data-savename]'); if (b) b.click();
+});
 
 /* ---------- CSV ---------- */
 $('csv').addEventListener('click', () => {
