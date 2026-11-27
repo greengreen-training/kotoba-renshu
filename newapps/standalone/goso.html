@@ -134,7 +134,7 @@ const $ = id => document.getElementById(id);
 const R = s => String(s).replace(/([一-鿿々〆ヶ]+)\[([ぁ-ゖー]+)\]/g, '<ruby>$1<rt>$2</rt></ruby>');
 const P = s => String(s).replace(/\[[ぁ-ゖー]+\]/g, '');
 const shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
-const SEC = 60, N = 3;
+const SEC = 60, N = 1;   // 1回に出す お題の数（ふつうは 1つ。職員が「お題の数」を決めたときは その数）
 
 /* ===== お題 =====
    カテゴリ：簡単＝よく使う 仲間、普通＝少し せまい 仲間、難しい＝ようす（色・形 など）で あつめる 仲間
@@ -214,7 +214,7 @@ function startSet(lv) {
   const all = curType === 'cat' ? [].concat(...['easy', 'normal', 'hard'].map(l => CATS[l])).map(c => ({ type: 'cat', w: c[0], ex: c[1] })) : [];
   const mine = MY.filter(o => o.type === curType).map(o => curType === 'cat' ? all.find(c => P(c.w) === o.w) : { type: 'onset', w: o.w }).filter(Boolean);
   const pool = mine.length ? mine : curType === 'cat' ? CATS[lv].map(c => ({ type: 'cat', w: c[0], ex: c[1] })) : ONSETS[lv].map(k => ({ type: 'onset', w: k }));
-  const n = NFIX || (mine.length ? Math.min(mine.length, 5) : N);
+  const n = NFIX || N;
   G = { type: curType, lv, items: (mine.length ? fillToN(mine, n) : shuffle(pool).slice(0, n)), i: 0, takes: [], t0: Date.now() };
   show('play'); renderOdai();
 }
@@ -302,6 +302,7 @@ function finish() {
   const lvName = LEVELS.find(l => l.key === G.lv).name, tName = G.type === 'cat' ? 'カテゴリ' : '語頭音[ごとうおん]';
   $('rMeta').innerHTML = R(tName + '・' + lvName);
   $('rTotal').textContent = G.items.length;
+  $('rTotal').parentNode.innerHTML = G.items.length > 1 ? R(`お題[だい] <span id="rTotal">${G.items.length}</span>つ、よく がんばりました！`) : R('よく がんばりました！') + '<span id="rTotal" hidden>1</span>';
   $('rList').innerHTML = G.items.map((o, i) => `<div class="r-row"><span class="w">${R(o.type === 'cat' ? o.w : '「' + o.w + '」で はじまる ことば')}</span><span></span>${G.takes[i] ? `<button type="button" data-take="${i}">▶ ${R('聞[き]く')}</button>` : '<span></span>'}</div>`).join('');
   $('rList').querySelectorAll('[data-take]').forEach(b => b.addEventListener('click', () => { const t = G.takes[Number(b.dataset.take)]; if (t) { stopAll(); player = new Audio(t.url); player.play().catch(() => {}); } }));
   $('rStamp').textContent = '💮';

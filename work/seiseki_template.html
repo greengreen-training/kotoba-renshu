@@ -1050,7 +1050,7 @@ function renderEditor() {
 }
 /* ✓ を入れた練習の 2行目：問題数・選択肢の数・宿題の回数・お題 */
 function moreHTML(d, i, a) {
-  const qDef = a.id === 'goso' ? '3つ' : a.id === 'bun' ? '難しさで 3〜5問' : '10問';
+  const qDef = a.id === 'goso' ? '1つ' : a.id === 'bun' ? '難しさで 3〜5問' : '10問';
   const o = a.opt, oDef = o ? (d.lv && o.def[d.lv] != null ? optText(a, o.def[d.lv]) : '難しさで 決まる数') : '';
   const sel = (f, cur, opts) => `<select data-i="${i}" data-f="${f}">${opts.map(([v, t]) => `<option value="${v}"${String(cur) === String(v) ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
   const parts = [];
@@ -1069,7 +1069,7 @@ function topicPanel(d, i) {
   const sel = new Set(d.topics);
   const groups = def.groups.map((g, gi) => ({ g, gi })).filter(x => !(d.app === 'goso' && d.type && x.g.type && x.g.type !== d.type));
   return `<div class="m-topics">
-    <p class="note">えらんだ お題だけが出ます。えらばないときは、いつもどおり 全部の中から出ます。${d.app === 'goso' ? '1回に出る お題の数は「お題の数」で決めます（決めないときは えらんだ数・5つまで）。' : d.app === 'nakama' ? 'お題が少ないときは、くり返して問題数をうめます。' : ''}</p>
+    <p class="note">えらんだ お題だけが出ます。えらばないときは、いつもどおり 全部の中から出ます。${d.app === 'goso' ? '1回に出る お題の数は「お題の数」で決めます（決めないときは 1つ。えらんだ お題の中から 1つ 出ます）。' : d.app === 'nakama' ? 'お題が少ないときは、くり返して問題数をうめます。' : ''}</p>
     ${groups.map(({ g, gi }) => `<fieldset class="m-tg"><legend>${esc(g.name)}</legend>
       <div class="m-tg-btns"><button type="button" class="btn small" data-tg="${i}:${gi}:all">この まとまりを 全部</button><button type="button" class="btn small" data-tg="${i}:${gi}:none">はずす</button></div>
       <div class="m-tps">${g.items.map(([k, label]) => `<label class="m-tp"><input type="checkbox" data-i="${i}" data-tk="${esc(k)}"${sel.has(k) ? ' checked' : ''}><span>${esc(label)}</span></label>`).join('')}</div></fieldset>`).join('')}

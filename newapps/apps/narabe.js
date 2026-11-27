@@ -24,13 +24,20 @@ function extraTiles(word, n) {
   return kata ? picks.map(toKata) : picks;
 }
 
+/* 字を まぜる。まぜた結果が ことばの順 そのまま（ほかの字を のぞいて 読むと 正解）に ならないように する */
+function mixTiles(word, tiles) {
+  const w = [...word], set = new Set(w);
+  for (let k = 0; k < 30; k++) { const t = shuffle(tiles); if (t.filter(c => set.has(c)).join('') !== w.join('')) return t; }
+  return shuffle(tiles);
+}
+
 const APP = {
   id:'gg.narabe',
   levelDesc(lv) { return { easy:'2〜3文字[もじ]・使[つか]う 字[じ]だけ', normal:'3〜4文字[もじ]・字[じ]が 1つ 多[おお]い', hard:'4〜6文字[もじ]・字[じ]が 2つ 多[おお]い' }[lv]; },
   make(lv) {
     const L = NB[lv];
     return sample(L.words, SET_SIZE).map(([emo, word]) => {
-      const tiles = shuffle(word.split('').concat(extraTiles(word, optN(L.extra, 0, 4))));
+      const tiles = mixTiles(word, word.split('').concat(extraTiles(word, optN(L.extra, 0, 4))));
       return { emo, word, tiles };
     });
   },

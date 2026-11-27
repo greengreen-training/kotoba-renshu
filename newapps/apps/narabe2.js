@@ -41,12 +41,19 @@ function extraTiles2(word, n) {
   return picks;
 }
 
+/* 字を まぜる。まぜた結果が ことばの順 そのまま（ほかの字を のぞいて 読むと 正解）に ならないように する */
+function mixTiles(word, tiles) {
+  const w = [...word], set = new Set(w);
+  for (let k = 0; k < 30; k++) { const t = shuffle(tiles); if (t.filter(c => set.has(c)).join('') !== w.join('')) return t; }
+  return shuffle(tiles);
+}
+
 const APP = {
   id:'gg.narabe2',
   levelDesc(lv) { return { easy:'3〜4文字[もじ]・使[つか]う 字[じ]だけ', normal:'4〜5文字[もじ]・まちがえやすい 字[じ]が 1つ 多[おお]い', hard:'5〜8文字[もじ]・まちがえやすい 字[じ]が 2つ 多[おお]い' }[lv]; },
   make(lv) {
     const L = NB2[lv];
-    return sample(L.words, SET_SIZE).map(([emo, word]) => ({ emo, word, tiles: shuffle([...word].concat(extraTiles2(word, optN(L.extra, 0, 4)))) }));
+    return sample(L.words, SET_SIZE).map(([emo, word]) => ({ emo, word, tiles: mixTiles(word, [...word].concat(extraTiles2(word, optN(L.extra, 0, 4)))) }));
   },
   instr() { return '絵[え]を 見[み]て、字[じ]を じゅんばんに えらんで ください（小[ちい]さい 字[じ]も 1まいです）'; },
   render(q, lv, api) {
