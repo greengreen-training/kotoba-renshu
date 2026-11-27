@@ -451,6 +451,8 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
  * ・成績一覧ページは、下のパスワードを付けて読みに来たときだけ、記録を返します。
  * ・個人別メニュー：成績一覧ページで決めた「その人がやる練習と難しさ」を「メニュー」シートに書き、
  *   利用者のアプリが開いたときに読みに来ます（決めるのはパスワードが必要、読むのは利用者番号だけ）。
+ * ・このスクリプトは、この先 アプリや成績一覧ページに新しい設定が増えても、貼り直さなくて よいように 作ってあります
+ *   （知らない設定も、決まった形のものなら そのまま保存して返します）。
  * ・宿題：個人別メニューには、お題・回数・期限も付けられます。利用者のアプリが読みに来たとき、
  *   メニューを決めた日から何回やったかも「記録」シートから数えて返します。
  * ・録音：成績一覧ページで「声も送る」にした人だけ、録音の練習の声が届きます。
@@ -462,9 +464,9 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
 const STAFF_PASSWORD = 'ここを職員用のパスワードに変える';
 
 const SHEET_NAME = '記録';
-const HEAD = ['受信日時', '練習した日時', '利用者番号', '練習', 'しゅるい', '難しさ', '点数', '満点', '〇△×', '問題ごと', 'かかった秒数', '記録ID', '練習ID'];
+const HEAD = ['受信日時', '練習した日時', '利用者番号', '練習', 'しゅるい', '難しさ', '点数', '満点', '〇△×', '問題ごと', 'かかった秒数', '記録ID', '練習ID', 'その他（アプリが使います）'];
 const MENU_SHEET = 'メニュー';
-const MENU_HEAD = ['利用者番号', '練習メニュー（成績一覧ページで変えます）', '変えた日時', '声を送る（成績一覧ページで変えます）', '宿題の期限（成績一覧ページで変えます）'];
+const MENU_HEAD = ['利用者番号', '練習メニュー（成績一覧ページで変えます）', '変えた日時', '声を送る（成績一覧ページで変えます）', '宿題の期限（成績一覧ページで変えます）', 'その他の設定（成績一覧ページで変えます）'];
 const LVJP = { easy: '簡単', normal: '普通', hard: '難しい' };
 const AUDIO_SHEET = '録音';
 const AUDIO_HEAD = ['受信日時', '録音した日時', '利用者番号', '練習', '内容', '秒数', 'ファイル名', 'ファイルID', '記録ID'];
@@ -524,10 +526,37 @@ function cleanTopics_(a) {
   });
   return out;
 }
+/* ---------- この先 増える設定のための「その他」 ----------
+   英字の名前（16文字まで）と、数・はい／いいえ・短い文字・短い一覧だけを そのまま通して保存する。
+   アプリや成績一覧ページに新しい設定を足しても、このスクリプトを貼り直さなくて すむように するため。 */
+const cleanStr_ = (v, n) =&gt; String(v).replace(/[\u0000-\u001f&lt;&gt;"\\]/g, '').slice(0, n);
+function cleanVal_(v) {
+  if (typeof v === 'number') return isFinite(v) ? v : undefined;
+  if (typeof v === 'boolean') return v;
+  if (typeof v === 'string') return cleanStr_(v, 80);
+  if (Array.isArray(v)) return v.slice(0, 60).map(x =&gt; (typeof x === 'number' &amp;&amp; isFinite(x)) ? x : typeof x === 'string' ? cleanStr_(x, 40) : null).filter(x =&gt; x !== null);
+  return undefined;
+}
+function cleanExtra_(o) {
+  const out = {};
+  if (!o || typeof o !== 'object' || Array.isArray(o)) return out;
+  Object.keys(o).slice(0, 30).forEach(k =&gt; {
+    if (!/^[a-z][A-Za-z0-9]{0,15}$/.test(k)) return;
+    const v = cleanVal_(o[k]);
+    if (v !== undefined) out[k] = v;
+  });
+  return JSON.stringify(out).length &lt;= 3000 ? out : {};
+}
+const parseExtra_ = v =&gt; { try { return cleanExtra_(JSON.parse(String(v || '{}'))); } catch (e) { return {}; } };
+const ITEM_KEYS = ['app', 'lv', 'type', 'topics', 'times', 'n', 'opts'];
 function cleanItems_(a) {
   if (!Array.isArray(a)) return [];
   return a.slice(0, 40).map(x =&gt; {
-    const it = { app: String((x &amp;&amp; x.app) || ''), lv: String((x &amp;&amp; x.lv) || ''), type: String((x &amp;&amp; x.type) || '') };
+    /* 知っている設定は ここで くわしく確かめる。知らない設定は「その他」と同じ ルールで そのまま通す */
+    const ex = cleanExtra_(x);
+    ITEM_KEYS.forEach(k =&gt; { delete ex[k]; });
+    const it = Object.assign({ app: String((x &amp;&amp; x.app) || ''), lv: String((x &amp;&amp; x.lv) || ''), type: String((x &amp;&amp; x.type) || '') }, ex);
+    it.app = String((x &amp;&amp; x.app) || ''); it.lv = String((x &amp;&amp; x.lv) || ''); it.type = String((x &amp;&amp; x.type) || '');
     const topics = cleanTopics_(x &amp;&amp; x.topics), times = Math.max(0, Math.min(30, Math.floor(Number(x &amp;&amp; x.times) || 0)));
     if (topics.length) it.topics = topics;
     if (times) it.times = times;
@@ -547,12 +576,12 @@ const yes_ = v =&gt; v === true || /^(はい|TRUE|1)$/i.test(String(v || ''));
 function readMenus_() {
   const sh = menuSheet_(), last = sh.getLastRow(), out = {};
   if (last &lt; 2) return out;
-  sh.getRange(2, 1, last - 1, 5).getValues().forEach(r =&gt; {
+  sh.getRange(2, 1, last - 1, 6).getValues().forEach(r =&gt; {
     const id = String(r[0]);
     if (!okUser_(id)) return;
     let items = [];
     try { items = cleanItems_(JSON.parse(String(r[1] || '[]'))); } catch (e) {}
-    out[id] = { items: items, at: r[2] instanceof Date ? r[2].toISOString() : String(r[2] || ''), voice: yes_(r[3]), due: cleanDue_(r[4]) };
+    out[id] = { items: items, at: r[2] instanceof Date ? r[2].toISOString() : String(r[2] || ''), voice: yes_(r[3]), due: cleanDue_(r[4]), extra: parseExtra_(r[5]) };
   });
   return out;
 }
@@ -564,10 +593,16 @@ function menuRow_(sh, user) {
   sh.getRange(last + 1, 1, 1, 3).setValues([[user, '[]', new Date()]]);
   return last + 1;
 }
-function saveMenu_(user, items, due) {
+function saveMenu_(user, items, due, extra) {
   const sh = menuSheet_(), row = menuRow_(sh, user);
   sh.getRange(row, 1, 1, 3).setValues([[user, JSON.stringify(items), new Date()]]);
   sh.getRange(row, 5).setValue(due || '');
+  if (extra) sh.getRange(row, 6).setValue(Object.keys(extra).length ? JSON.stringify(extra) : '');
+}
+/* その人の「その他の設定」だけを変える（メニューを決めた日時は変えない） */
+function saveExtra_(user, extra) {
+  const sh = menuSheet_(), row = menuRow_(sh, user);
+  sh.getRange(row, 6).setValue(Object.keys(extra).length ? JSON.stringify(extra) : '');
 }
 /* メニューを決めた日時から、その人が それぞれの練習を何回やったか（「記録」シートの 練習ID で数える）。
    同じ練習を ちがう難しさで2つ出しているときだけ、難しさも見る */
@@ -644,14 +679,16 @@ function doPost(e) {
 
     if (body.action === 'audio') return out_(saveAudio_(body));
 
-    if (body.action === 'setmenu' || body.action === 'setvoice') {
+    if (body.action === 'setmenu' || body.action === 'setvoice' || body.action === 'setextra') {
       if (!okKey_(body.key)) return out_({ ok: false, error: 'password' });
       if (!okUser_(body.user)) return out_({ ok: false, error: 'user' });
       const user = String(body.user);
       if (body.action === 'setvoice') { saveVoice_(user, !!body.voice); return out_({ ok: true, user: user, voice: !!body.voice }); }
+      if (body.action === 'setextra') { const ex = cleanExtra_(body.extra); saveExtra_(user, ex); return out_({ ok: true, user: user, extra: ex }); }
       const items = cleanItems_(body.items), due = items.length ? cleanDue_(body.due) : '';
-      saveMenu_(user, items, due);
-      return out_({ ok: true, user: user, items: items, due: due, homework: true });
+      const extra = body.extra !== undefined ? cleanExtra_(body.extra) : null;
+      saveMenu_(user, items, due, extra);
+      return out_({ ok: true, user: user, items: items, due: due, homework: true, extra: extra || undefined });
     }
 
     const recs = Array.isArray(body.records) ? body.records.slice(0, 100) : [];
@@ -670,7 +707,8 @@ function doPost(e) {
       if (isNaN(when.getTime())) when = new Date();
       rows.push([new Date(), when, user, text_(r.appName, 40), text_(r.typeName, 40), text_(r.levelName, 60),
         Number(r.score) || 0, Number(r.max) || 0, text_(r.marks, 60), text_(r.items, 2000), Number(r.sec) || 0, uid,
-        /^[a-z0-9]{1,20}$/.test(String(r.app || '')) ? String(r.app) : '']);
+        /^[a-z0-9]{1,20}$/.test(String(r.app || '')) ? String(r.app) : '',
+        (ex =&gt; Object.keys(ex).length ? JSON.stringify(ex) : '')(cleanExtra_(r.extra))]);
     });
     if (rows.length) sh.getRange(sh.getLastRow() + 1, 1, rows.length, HEAD.length).setValues(rows);
     return out_({ ok: true, saved: saved });
@@ -691,10 +729,10 @@ function doGet(e) {
   if (p.menu != null) {
     if (!okUser_(p.menu)) return out_({ ok: false, error: 'user' });
     const user = String(p.menu);
-    const m = readMenus_()[user] || { items: [], at: '', voice: false, due: '' };
+    const m = readMenus_()[user] || { items: [], at: '', voice: false, due: '', extra: {} };
     const hw = m.items.some(it =&gt; it.times) || !!m.due;
-    return out_({ ok: true, menu: true, user: user, items: m.items, at: m.at, voice: m.voice, due: m.due || '',
-      done: hw ? doneCounts_(user, m) : [] });
+    return out_({ ok: true, menu: true, user: user, items: m.items, at: m.at, voice: m.voice, due: m.due || '', extra: m.extra || {},
+      done: hw ? doneCounts_(user, m) : [], v: 3 });
   }
   if (!okKey_(p.key)) return out_({ ok: false, error: 'password' });
   const ash = audioSheet_(), alast = ash.getLastRow();
