@@ -3,7 +3,7 @@
 cd "$(dirname "$0")"
 bash ./serve.sh
 fail=0
-for t in validate.py test_apps.py test_suite.py test_hw_apps.py test_plan.py test_voice.py test_send.py test_cal.py test_homework.py; do
+for t in validate.py test_apps.py test_suite.py test_hw_apps.py test_plan.py test_voice.py test_send.py test_cal.py test_homework.py test_review.py; do
   echo "=== $t"
   out=$(timeout 900 python3 "$t" 2>&1); echo "$out" | tail -4
   if echo "$out" | grep -qE "Traceback|^NG|BAD \[.+\]|BAD [1-9]"; then fail=1; echo "!!! $t に失敗があります"; fi

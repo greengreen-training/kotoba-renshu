@@ -78,6 +78,7 @@
 ## 4. 組み立て・テスト・公開
 
 必要なもの：python3・node・Playwright（`pip install playwright` と `playwright install chromium`。Chrome があれば `CHROME=Chrome の場所` でも可）。
+- Claude の作業場所（claude.ai/code）では、作業用の設定「kotoba-renshu」を使う（github.io を開けて、Python の Playwright が入る）。Chromium は入っているので `CHROME=$(find /opt/pw-browsers -name chrome -type f | head -1)` を付けてテストする。
 
 ```bash
 # 元ファイルを取り出す
@@ -122,14 +123,21 @@ bash scripts/publish.sh ../kotoba-pages "変更の説明"   # main に入れて�
 
 難しさは どれも「簡単・普通・難しい」（五十音の録音・挨拶語は なし）。1回10問がふつう。
 
+### まちがえた問題の復習（2026-11-27〜）
+- 選ぶ形の練習（`common.js` を使うもの）には、自動で「まちがえた 問題の 復習」が付く。1回目でまちがえた問題（×・△）を、その端末に練習ごと・人ごと（`?t=1` のタブレットでは練習する人ごと）に 30問まで ためる。名前は使わず、送らない。
+- はじめの画面と結果の画面に、オレンジ色の［まちがえた 問題の 復習（○問）］が出る（1回10問まで）。復習やふだんの練習で〇（1回で正解）になると、その問題は消える。
+- 声でこたえる練習（文をつくろう・セリフをいいましょう）は `APP.noReview: true` で付けない。並べ替えは `APP.remake` で、復習のときに字をまぜ直す。
+- 復習の成績も送る。練習名は「〇〇（復習）」、ID は「〇〇fk」（例：`narabefk`）、難しさは「復習」。ID がちがうので、**宿題の回数には数えない**（受け取りスクリプトの貼り直しは要らない）。成績一覧・ふりかえりでは「（復習）」付きで別の行に出る。
+- テスト：`scripts/test_review.py`。
+
 ### 新しい練習を足すとき（ぬけやすいので順に）
-1. `newapps/apps/〇〇.js` を作る（`APP` に make・render・reveal・itemLabel など。`doushi2.js` が見本）。人ごとの設定は `SET_SIZE`（問題数）・`optN(いつもの数, 最小, 最大)`（選択肢の数）・`topicPool()`（お題）を使う。
+1. `newapps/apps/〇〇.js` を作る（`APP` に make・render・reveal・itemLabel など。`doushi2.js` が見本）。問題（make が返すもの）は JSON にできる形にする（復習で端末にためるため）。声の練習なら `noReview: true`。人ごとの設定は `SET_SIZE`（問題数）・`optN(いつもの数, 最小, 最大)`（選択肢の数）・`topicPool()`（お題）を使う。
 2. `scripts/build_apps.py` の `APPS` に足す。
 3. `scripts/build.py` の `order` と `labels` に足す。
 4. `work/template.html`：メニューのカード、`APPS`（名前と「練習中か」）、種類があれば `TYPENAME`、職員向けの説明の ID 一覧。
 5. `work/seiseki_template.html`：`CATALOG`（問題数・選択肢の範囲・種類・お題）、`STAGE`（カレンダーの色分け）、短い名前、ふりかえり用の読みがな付きの名前 `FBNAME`。
 6. お題を選べるなら `scripts/extract_topics.js` に足す。
-7. `scripts/validate.py`（データの点検）・`test_apps.py`・`test_suite.py` に足す。
+7. `scripts/validate.py`（データの点検）・`test_apps.py`・`test_suite.py`・`test_review.py`（選ぶ形なら）に足す。
 8. 組み立て → テスト → 公開 → 公開中のページで確かめる。
 
 ---
@@ -164,3 +172,4 @@ bash scripts/publish.sh ../kotoba-pages "変更の説明"   # main に入れて�
 - 〜2026-11-24：各練習を1つのアプリにまとめた。個人別メニュー、成績一覧、録音の送信を作った。
 - 2026-11-26：公開先を Netlify から GitHub Pages に移した。古い Netlify のアドレスには `tools/netlify_hikkoshi` を置くと、前の QR から自動で移る（番号も引きつぐ）。
 - 2026-11-26〜27：宿題（お題・回数・期限）、人ごとの問題数・選択肢、まとめて設定、成績の「回数ごと」「問題ごとの変わり方」、ふりかえり資料（週・月・印刷）、動詞の練習（上級）、名前のメモをどの画面からでも付けられるようにした。受け取りスクリプトを、この先はほとんど貼り直さなくてよい形にした。
+- 2026-11-27：ふりかえり資料の見直し、並べ替えのまぜ方、語想起のお題を1つに、まちがえた問題の復習。

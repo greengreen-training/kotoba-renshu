@@ -176,6 +176,11 @@ try:
         sp.evaluate("""() => { const r = rows.find(x => x.user === '3'); const o = Object.assign({}, r); o.at = new Date(r.at.getTime() - 14 * 864e5); rows.push(o); renderFb(); }""")
         check("ふりかえり：2週目からグラフ", sp.locator(".fb-trend .fb-tc").count() == 3 and sp.locator(".fb-trend .fb-tc").first.locator(".bar").count() == 3 and sp.locator(".fb-trend .bar.now").count() == 3, sp.locator(".fb-trend .bar").count())
         sp.locator(".fb-sheet").screenshot(path=f"{SHOTS}/fb_week_graph.png")
+        # 復習の記録（「〇〇（復習）」・ID に fk）は、項目ごとの成績に 読みがな付きで出て、宿題の回数には 数えない
+        hw0 = sp.evaluate("JSON.stringify(hwCounts('3'))")
+        sp.evaluate("""() => { const r = rows.find(x => x.user === '3' && x.appId); const o = Object.assign({}, r); o.app = r.app + '（復習）'; o.appId = r.appId + 'fk'; o.level = '復習'; rows.push(o); renderFb(); }""")
+        fkrow = [t for t in sp.locator(".fb-tbl tbody tr td:first-child").all_inner_texts() if "復習" in t]
+        check("ふりかえり：復習の記録", len(fkrow) == 1 and sp.locator(".fb-tbl tbody tr td:first-child ruby", has_text="復習").count() == 1 and sp.evaluate("JSON.stringify(hwCounts('3'))") == hw0, [fkrow, hw0])
         sp.uncheck("#fbGraph"); sp.wait_for_timeout(200)
         check("ふりかえり：グラフを外せる", sp.locator(".fb-trend").count() == 0)
         sp.check("#fbGraph"); sp.wait_for_timeout(200)

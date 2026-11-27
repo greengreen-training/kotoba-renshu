@@ -31,6 +31,7 @@ function stopPlay() { if (player) { try { player.pause(); } catch (e) {} player 
 function stopAll() { stopPlay(); try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {} }
 
 const APP = {
+  noReview: true,   // 声で こたえる練習なので、まちがえた問題の復習は 付けない
   id:'gg.serifu2',
   levelDesc(lv) { return { easy:'相手[あいて]に こたえる 場面[ばめん]・ヒント：はじめの ことば', normal:'自分[じぶん]から 話[はな]す 場面[ばめん]も・ヒント：はじめの 1字[じ]', hard:'自分[じぶん]から 話[はな]す 場面[ばめん]も・ヒントなし' }[lv]; },
   make(lv) { return sample(topicPool(SCENES, sc => P(sc.t)) || SCENES.filter(sc => SAY[lv].modes.includes(sc.mode)), SET_SIZE).map(sc => Object.assign({}, sc)); },

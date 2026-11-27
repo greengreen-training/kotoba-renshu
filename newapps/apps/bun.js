@@ -44,6 +44,7 @@ function frameHTML(lv, cur, done, give) {
 }
 
 const APP = {
+  noReview: true,   // 声で こたえる練習なので、まちがえた問題の復習は 付けない
   id:'gg.bun',
   levelDesc(lv) { return { easy:'「〇〇を しました」と 言[い]う・5問[もん]', normal:'「いつ？」「どこで？」の 質問[しつもん]に こたえて、つなげて 長[なが]い 文[ぶん]に・3問[もん]', hard:'質問[しつもん]なしで「いつ・どこで・なにを」を 1つの 長[なが]い 文[ぶん]で・5問[もん]' }[lv]; },
   typeLabel:'問題[もんだい]の しゅるいを えらぶ',

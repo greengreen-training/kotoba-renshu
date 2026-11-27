@@ -1026,10 +1026,11 @@ window.addEventListener('message', e => {
   }
   if (!d || d.gg !== 'result' || !current) return;
   /* 宿題：決められた練習を1回終えたら、この端末でも すぐ数える */
-  try { const p = activePlan(), wid = SEND.who(); if (p && wid && currentFix && p.items.some(x => sameFix(x, currentFix))) HW.add(wid, p, currentFix); } catch (e) {}
+  try { const p = activePlan(), wid = SEND.who(); if (!d.review && p && wid && currentFix && p.items.some(x => sameFix(x, currentFix))) HW.add(wid, p, currentFix); } catch (e) {}
   const str = (v, n) => String(v == null ? '' : v).slice(0, n);
   SEND.add({
-    app: current, appName: APPS[current].title,
+    /* まちがえた問題の復習は、練習名に「（復習）」を付け、ID も分ける（宿題の回数に 数えない） */
+    app: d.review ? current + 'fk' : current, appName: APPS[current].title + (d.review ? '（復習）' : ''),
     typeName: str(d.typeName, 40), levelName: str(d.levelName, 60),
     score: Number(d.score) || 0, max: Number(d.max) || 0,
     marks: str(d.marks, 60),

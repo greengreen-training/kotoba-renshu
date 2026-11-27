@@ -41,6 +41,8 @@ const APP = {
       return { emo, word, tiles };
     });
   },
+  /* 復習のときは 字の まぜ方を 変えて 出す */
+  remake(q) { return Object.assign({}, q, { tiles: mixTiles(q.word, q.tiles) }); },
   instr() { return '絵[え]を 見[み]て、字[じ]を じゅんばんに えらんで ください'; },
   render(q, lv, api) {
     const chars = q.word.split('');

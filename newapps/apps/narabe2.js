@@ -55,6 +55,8 @@ const APP = {
     const L = NB2[lv];
     return sample(L.words, SET_SIZE).map(([emo, word]) => ({ emo, word, tiles: mixTiles(word, [...word].concat(extraTiles2(word, optN(L.extra, 0, 4)))) }));
   },
+  /* 復習のときは 字の まぜ方を 変えて 出す */
+  remake(q) { return Object.assign({}, q, { tiles: mixTiles(q.word, q.tiles) }); },
   instr() { return '絵[え]を 見[み]て、字[じ]を じゅんばんに えらんで ください（小[ちい]さい 字[じ]も 1まいです）'; },
   render(q, lv, api) {
     const chars = [...q.word];

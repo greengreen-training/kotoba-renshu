@@ -186,3 +186,8 @@ h1,h2,p{margin:0}
   .choices[data-n="8"]{--cols:3}
   .pair-prev{font-size:18px}
 }
+/* まちがえた問題の復習 */
+.fk-btn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 14px;width:100%;margin:6px 0 4px;border-color:#e08a1e;color:#8a4500;background:#fff8ee}
+.fk-btn rt{color:#8a4500}
+.fk-n{display:inline-block;min-width:2.4em;border-radius:999px;background:#e08a1e;color:#fff;font-size:18px;padding:0 10px;line-height:1.8}
+.fk-n rt{color:#fff}
