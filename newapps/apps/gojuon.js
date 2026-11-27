@@ -86,7 +86,7 @@ const APP = {
           cur++;
           if (cur >= q.ans.length) api.solve();
           else { $('gjb' + cur).classList.add('current'); api.note('あと ' + (q.ans.length - cur) + 'つ'); }
-        } else api.miss(b);
+        } else api.miss(b, missAt(o, q.ans[cur], null));
       });
       box.appendChild(b);
     });

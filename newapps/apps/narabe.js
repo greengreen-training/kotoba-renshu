@@ -67,8 +67,8 @@ const APP = {
         } else if (chars.slice(cur).includes(t)) {
           /* あとで使う字は押せるまま残す（まちがいの回数だけ数える） */
           b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
-          api.miss(null, t + '（順番ちがい）');
-        } else api.miss(b);
+          api.miss(null, missAt(t, chars[cur], cur, true));
+        } else api.miss(b, missAt(t, chars[cur], cur));
       });
       box.appendChild(b);
     });

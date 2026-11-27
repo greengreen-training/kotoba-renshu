@@ -80,8 +80,8 @@ const APP = {
           else { const nx = $('nb' + cur); nx.classList.add('current'); nx.textContent = '？'; }
         } else if (chars.slice(cur).includes(t)) {
           b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');   // あとで使う字は残す
-          api.miss(null, t + '（順番ちがい）');
-        } else api.miss(b);
+          api.miss(null, missAt(t, chars[cur], cur, true));
+        } else api.miss(b, missAt(t, chars[cur], cur));
       });
       box.appendChild(b);
     });

@@ -42,8 +42,8 @@ const APP = {
           else { soundTick(); const nx = $('oc' + fill); nx.classList.add('current'); nx.textContent = '？'; }
         } else {
           soundWrong();
-          if (all && morae.slice(fill).includes(o)) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); api.miss(null, o + '（順番ちがい）'); }
-          else api.miss(b);
+          if (all && morae.slice(fill).includes(o)) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); api.miss(null, missAt(o, morae[pos], pos, true)); }
+          else api.miss(b, missAt(o, morae[pos], pos));
         }
       });
       box.appendChild(b);
@@ -57,6 +57,8 @@ const APP = {
   },
   answerText(q) { return `こたえは 「${q.word}」 です`; },
   itemLabel(q) { return q.word; },
+  /* 音の分析：聞いた文字の場所（1つだけ聞くときは その文字目。全部のときは なし＝全部） */
+  itemTarget(q) { return S.type === 'all' ? '' : String(q.blank + 1); },
   onEnd(q) { setTimeout(() => speak(q.word), 450); },
   onQuit() { try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {} },
 };

@@ -69,6 +69,17 @@ def main():
             r = pg.evaluate("() => { localStorage.clear(); const qs = APP.make('easy', APP.types ? APP.types[0].key : null); fkSave(qs[0], 'easy', null, 0); renderTitle(); return fkList().length; }")
             check(f"{app} 声の練習には付かない", r == 0 and not pg.locator("#fkTitle").is_visible() and not errs, [r, errs[:2]])
             pg.close()
+        # 音の分析のための 記録の書き方（何文字目で 何を えらんだか・ねらい）
+        pg = b.new_page(); pg.goto(B + "narabe.html"); pg.wait_for_timeout(400)
+        w = pg.evaluate("() => { localStorage.clear(); start('easy'); const q = S.qs[0], c = [...q.word]; const btn = [...document.querySelectorAll('#choices .ch')].find(x => x.textContent !== c[0]); btn.click(); return S.wrong[0] || ''; }")
+        check("並べ替え：まちがえた字の書き方", bool(__import__("re").match(r"^.+（(順番ちがい・)?1文字目は .+）$", w)), w)
+        pg.goto(B + "oto.html"); pg.wait_for_timeout(400)
+        w = pg.evaluate("() => { localStorage.clear(); curType = 'single'; start('easy'); const q = S.qs[0], c = [...q.word][q.blank]; const btn = [...document.querySelectorAll('#choices .ch')].find(x => x.textContent !== c); btn.click(); return [S.wrong[0] || '', APP.itemTarget(q), q.blank + 1]; }")
+        check("音を選ぶ：まちがえた字の書き方・ねらい", bool(__import__("re").match(r"^.+（\d+文字目は .+）$", w[0])) and w[1] == str(w[2]), w)
+        pg.goto(B + "gojuon.html"); pg.wait_for_timeout(400)
+        w = pg.evaluate("() => { localStorage.clear(); start('easy'); const q = S.qs[0]; const btn = [...document.querySelectorAll('#choices .ch')].find(x => x.textContent !== q.ans[0]); btn.click(); return S.wrong[0] || ''; }")
+        check("50音ならべ：まちがえた字の書き方", bool(__import__("re").match(r"^.+（正しくは .+）$", w)), w)
+        pg.close()
         # ふだんの練習で〇になったら消える
         pg = b.new_page(); pg.goto(B + "meishi.html"); pg.wait_for_timeout(400)
         left = pg.evaluate("() => { localStorage.clear(); const q = APP.make('easy')[0]; S = { lv:'easy', qs:[q], i:0 }; fkSave(q, 'easy', null, 0); const a = fkList().length; fkSave(q, 'easy', null, 1); return [a, fkList().length]; }")

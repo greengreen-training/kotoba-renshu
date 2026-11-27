@@ -141,6 +141,9 @@ function renderQ() {
   APP.render(q, lvOf(q), API);
   window.scrollTo(0, 0);
 }
+/* 音の分析のための書き方：「た（2文字目は か）」「こ（順番ちがい・3文字目は こ）」「た（正しくは か）」
+   （成績一覧の「音の分析」が読む。書き方を変えるときは parseWrong も直す） */
+const missAt = (chosen, target, pos, order) => `${chosen}（${order ? '順番ちがい・' : ''}${pos != null ? (pos + 1) + '文字目は' : '正しくは'} ${target}）`;
 /* まちがえて選んだものの名前（職員が「問題ごと」で見る） */
 function optLabel(btn) {
   if (!btn) return '';
@@ -237,7 +240,8 @@ function report(score, n) {
       items: S.qs.map((q, i) => {
         let l = ''; try { l = APP.itemLabel ? APP.itemLabel(q, S) : ''; } catch (e) {}
         const d = S.det && S.det[i];
-        const more = d ? '（' + d.sec + '秒' + (d.wrong.length ? '・えらんだ：' + d.wrong.join('、') : '') + '）' : '';
+        let tg = ''; try { tg = APP.itemTarget ? String(APP.itemTarget(q) || '') : ''; } catch (e) {}
+        const more = d ? '（' + d.sec + '秒' + (tg ? '・ねらい：' + tg : '') + (d.wrong.length ? '・えらんだ：' + d.wrong.join('、') : '') + '）' : '';
         return String(l || ('問' + (i + 1))).replace(/[／]/g, '/') + mk(S.res[i]) + more;
       }),
       sec: Math.round((Date.now() - S.t0) / 1000),

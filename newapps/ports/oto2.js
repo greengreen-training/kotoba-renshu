@@ -69,7 +69,7 @@ const APP = {
           if (!left.some(i => morae[i] === o)) { b.classList.add('ok'); b.disabled = true; }
           if (!left.length) { $('leftNote').hidden = true; soundCorrect(); api.solve(); }
           else { soundTick(); $('leftNote').innerHTML = R('のこり') + ' <b>' + left.length + '</b>'; }
-        } else { soundWrong(); api.miss(b); }
+        } else { soundWrong(); const t = left.slice().sort((x, y) => x - y)[0]; api.miss(b, missAt(o, morae[t], t)); }
       });
       box.appendChild(b);
     });
@@ -83,6 +83,7 @@ const APP = {
   },
   answerText(q) { return `こたえは 「${q.word}」 です`; },
   itemLabel(q) { return q.word; },
+  itemTarget(q) { return q.blanks.slice().sort((x, y) => x - y).map(i => i + 1).join('・'); },
   onEnd(q) { setTimeout(() => speak(q.word), 450); },
   onQuit() { try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {} },
 };

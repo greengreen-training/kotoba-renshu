@@ -142,7 +142,23 @@ try:
         sp.click(".user[data-u='3']"); sp.wait_for_timeout(600)
         det = sp.inner_text("#detail")
         check("職員：詳しい画面の宿題", "1 / 1回" in det and "3 / 3回" in det, det[:500])
-        check("職員：回数ごと", sp.locator(".seq-chart circle").count() == 2, sp.locator(".seq-chart circle").count())
+        check("職員：課題ごとだけ（回数ごとは ない）", sp.locator(".seq-chart").count() == 0 and sp.locator(".prac").count() >= 1 and sp.locator(".prac .prac-recs").count() == sp.locator(".prac").count(), [sp.locator(".prac").count(), sp.locator(".prac .prac-recs").count()])
+        # 音の分析：答えの わかっている 記録を 足して、数字を 確かめる
+        sp.evaluate("""() => { const at = new Date();
+          rows.push({ at, user:'Z9', app:'ことば並べ替え（初級）', appId:'narabe', type:'', level:'普通', score:1.5, max:3, marks:'×〇△', sec:10, uid:'t1',
+            items:'ばす×（5秒・えらんだ：ぱ（1文字目は ば）、ま（1文字目は ば））／ねこ〇（2秒）／かさ△（3秒・えらんだ：た（1文字目は か））' });
+          rows.push({ at, user:'Z9', app:'音を選ぶ練習', appId:'onin', type:'一文字を 埋める', level:'普通', score:1, max:1, marks:'〇', sec:3, uid:'t2', items:'さかな〇（2秒・ねらい：2）' });
+          selected = 'Z9'; renderDetail(); }""")
+        ph = sp.inner_text("#phBox") if sp.locator("#phBox").count() else ""
+        row = lambda g, k: sp.locator("#phBox .ph-g", has=sp.locator("h4", has_text=g)).locator("tr", has=sp.locator("th", has_text=k)).first.inner_text().replace("\t", " ")
+        check("音の分析：出る", "音の 分析" in ph, ph[:200])
+        check("音の分析：字単位 破裂音（ば×・こ〇・か×・さかなの か〇）", sp.locator("#phSel").count() == 1 and "50%" in row("構音法", "破裂音") and " 4" in row("構音法", "破裂音") and "0%" in row("構音点", "両唇"), row("構音法", "破裂音") if ph else "")
+        check("音の分析：位置（語中＝さかなの か）", "100%" in row("位置", "語中") and " 1" in row("位置", "語中"), row("位置", "語中") if ph else "")
+        check("音の分析：誤りの種類", "清音・濁音・半濁音の 取りちがえ" in ph and "子音の 構音法が ちがう" in ph and "子音の 構音点だけ ちがう" in ph and "ば → ぱ" in ph, ph[-600:])
+        sp.select_option("#phSel", label="ことば並べ替え（初級）"); sp.wait_for_timeout(300)
+        check("音の分析：練習で しぼる", "2モーラ" in sp.inner_text("#phBox") and sp.input_value("#phSel") == "ことば並べ替え（初級）")
+        sp.locator("#phBox").screenshot(path=f"{SHOTS}/phon.png")
+        sp.evaluate("() => { rows = rows.filter(r => r.user !== 'Z9'); phApp = ''; selected = '3'; renderDetail(); }")
         check("職員：問題ごと", sp.locator("#qaBox .qa-t tbody tr").count() >= 2, sp.locator("#qaBox").inner_text()[:300] if sp.locator("#qaBox").count() else "なし")
         sp.select_option("#qaSel", label="ことば並べ替え（初級）") if sp.locator("#qaSel option", has_text="並べ替え").count() else None
         sp.wait_for_timeout(300)
