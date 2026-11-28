@@ -66,6 +66,7 @@
 | `work/deliver/成績受け取りスクリプト.gs` | 受け取りスクリプト（成績一覧ページの［スクリプトをコピー］にも入る） |
 | `scripts/build_*.py` `build.py` | 組み立て |
 | `scripts/extract_topics.js` | 宿題の「お題」の一覧を各練習のデータから作る（アプリと成績一覧の両方に入る） |
+| `scripts/st_import.py` | 成績ファイルを ST経過記録の「おうちの課題」の形に直す（Claude が読みこむとき使う） |
 | `scripts/gas_server.js` | 受け取りスクリプトを、Google の代わりのにせものの上で動かすテスト用サーバー |
 | `scripts/validate.py` `test_*.py` | テスト |
 | `scripts/*.sh` | 組み立て・テスト・公開をまとめて行う |
@@ -138,6 +139,16 @@ bash scripts/publish.sh ../kotoba-pages "変更の説明"   # main に入れて�
 - 字単位のために、アプリはまちがえた字を「た（2文字目は か）」「こ（順番ちがい・3文字目は こ）」「た（正しくは か）」と書き、聞いた字の場所を「ねらい：2」と書く（`common.js` の `missAt`・`APP.itemTarget`）。成績一覧の `parseWrong`・`parseItem` が読むので、書き方を変えるときは両方直す。これより前の記録は、ことば単位だけに使う。
 - 構音点・構音法の分け方は `seiseki_template.html` の `PH_C`・`PH_X`（し＝歯茎硬口蓋、ふ＝両唇 など）。
 
+### ST経過記録とのつなぎ（2026-11-28〜）
+- ST経過記録は claude.ai の Artifact（職員用。個人の検査記録が入っている）。アドレスは松本さんから聞く（ここには書かない）。データは Artifact のデータベースにあり、「おうちの課題」タブは `homeResults` コレクションを出す。
+- 結び方：**ことばの練習の利用者番号 ＝ グリーン・グリーンの名簿番号**（ST経過記録の利用者の `ggId`）。松本さんの決め。
+- 流れ：①成績一覧の成績タブで期間（と利用者）を選び［ST経過記録へ渡すファイル］→ JSON ができる（利用者番号と成績だけ。名前は入らない）。②松本さんがそのファイルを Claude にわたして「ST経過記録に読みこんで」と頼む。③Claude が次を行う。
+  1. `ArtifactData` の list で ST経過記録の `patients` と `homeResults` を `out_dir` に保存（中身を会話に出さない）。
+  2. `python3 -I scripts/st_import.py <ファイル> <patients のフォルダ> <出力フォルダ> <homeResults のフォルダ>` → 文書ごとの JSON（名前 `kr-<記録ID>`）と summary.json。すでにある記録は作らない。結べない番号・重なる番号は summary に出るので、松本さんに伝える。
+  3. `ArtifactData` の batch で `homeResults` に set（50件ずつ、`file_path` で）。新しい文書なので `if_version` は要らない。
+- 個人の記録はリポジトリ・公開の場所に書かない。作業のファイルは作業場所の一時フォルダだけに置き、終わったら消す。
+- テスト：`test_homework.py` の「ST用ファイル」「ST読みこみ」。
+
 ### 新しい練習を足すとき（ぬけやすいので順に）
 1. `newapps/apps/〇〇.js` を作る（`APP` に make・render・reveal・itemLabel など。`doushi2.js` が見本）。問題（make が返すもの）は JSON にできる形にする（復習で端末にためるため）。声の練習なら `noReview: true`。人ごとの設定は `SET_SIZE`（問題数）・`optN(いつもの数, 最小, 最大)`（選択肢の数）・`topicPool()`（お題）を使う。
 2. `scripts/build_apps.py` の `APPS` に足す。
@@ -181,3 +192,4 @@ bash scripts/publish.sh ../kotoba-pages "変更の説明"   # main に入れて�
 - 2026-11-26：公開先を Netlify から GitHub Pages に移した。古い Netlify のアドレスには `tools/netlify_hikkoshi` を置くと、前の QR から自動で移る（番号も引きつぐ）。
 - 2026-11-26〜27：宿題（お題・回数・期限）、人ごとの問題数・選択肢、まとめて設定、成績の「回数ごと」「問題ごとの変わり方」、ふりかえり資料（週・月・印刷）、動詞の練習（上級）、名前のメモをどの画面からでも付けられるようにした。受け取りスクリプトを、この先はほとんど貼り直さなくてよい形にした。
 - 2026-11-27：ふりかえり資料の見直し、並べ替えのまぜ方、語想起のお題を1つに、まちがえた問題の復習、成績タブを課題ごとに、音の分析。
+- 2026-11-28：ST経過記録へ渡すファイルと読みこみ（`scripts/st_import.py`）。

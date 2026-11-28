@@ -189,12 +189,12 @@ try:
         sp.evaluate("""() => { const it = menus['3'].items.find(x => x._t); it.times = it._t; delete it._t; renderFb(); }""")
         check("ふりかえり：1週目はグラフなし", sp.locator(".fb-trend").count() == 0)
         # 2週前の記録を1つ足すと、グラフ（3週ぶん・いまの週が濃い色）が出る
-        sp.evaluate("""() => { const r = rows.find(x => x.user === '3'); const o = Object.assign({}, r); o.at = new Date(r.at.getTime() - 14 * 864e5); rows.push(o); renderFb(); }""")
+        sp.evaluate("""() => { const r = rows.find(x => x.user === '3'); const o = Object.assign({}, r); o.at = new Date(r.at.getTime() - 14 * 864e5); o.uid = r.uid + 'w2'; rows.push(o); renderFb(); }""")
         check("ふりかえり：2週目からグラフ", sp.locator(".fb-trend .fb-tc").count() == 3 and sp.locator(".fb-trend .fb-tc").first.locator(".bar").count() == 3 and sp.locator(".fb-trend .bar.now").count() == 3, sp.locator(".fb-trend .bar").count())
         sp.locator(".fb-sheet").screenshot(path=f"{SHOTS}/fb_week_graph.png")
         # 復習の記録（「〇〇（復習）」・ID に fk）は、項目ごとの成績に 読みがな付きで出て、宿題の回数には 数えない
         hw0 = sp.evaluate("JSON.stringify(hwCounts('3'))")
-        sp.evaluate("""() => { const r = rows.find(x => x.user === '3' && x.appId); const o = Object.assign({}, r); o.app = r.app + '（復習）'; o.appId = r.appId + 'fk'; o.level = '復習'; rows.push(o); renderFb(); }""")
+        sp.evaluate("""() => { const r = rows.find(x => x.user === '3' && x.appId); const o = Object.assign({}, r); o.app = r.app + '（復習）'; o.appId = r.appId + 'fk'; o.uid = r.uid + 'fk'; o.level = '復習'; rows.push(o); renderFb(); }""")
         fkrow = [t for t in sp.locator(".fb-tbl tbody tr td:first-child").all_inner_texts() if "復習" in t]
         check("ふりかえり：復習の記録", len(fkrow) == 1 and sp.locator(".fb-tbl tbody tr td:first-child ruby", has_text="復習").count() == 1 and sp.evaluate("JSON.stringify(hwCounts('3'))") == hw0, [fkrow, hw0])
         sp.uncheck("#fbGraph"); sp.wait_for_timeout(200)
@@ -210,6 +210,26 @@ try:
         sp.emulate_media(media="print"); sp.evaluate("document.body.classList.add('print-fb')")
         check("ふりかえり：印刷では資料だけ", sp.locator("#fbSheet").is_visible() and not sp.locator(".tabs").is_visible() and not sp.locator("#fbUser").is_visible())
         sp.emulate_media(media="screen"); sp.evaluate("document.body.classList.remove('print-fb')")
+        # ---------- ST経過記録へ渡すファイル（名前は入らない）→ st_import.py で「おうちの課題」の形に ----------
+        sp.click("#t-data"); sp.wait_for_timeout(300)
+        with sp.expect_download() as dl:
+            sp.click("#stFile")
+        stf = f"{SHOTS}/st_file.json"; dl.value.save_as(stf)
+        txt = open(stf, encoding="utf-8").read(); stj = json.loads(txt)
+        check("ST用ファイル：名前なし・番号と成績", "山田" not in txt and "花子" not in txt and stj["kind"] == "kotoba-renshu-records" and len(stj["records"]) >= 3 and all(x["user"] for x in stj["records"]), len(stj["records"]))
+        import subprocess, tempfile, glob as _g
+        tmp = tempfile.mkdtemp(); _os.makedirs(f"{tmp}/pat"); _os.makedirs(f"{tmp}/have")
+        json.dump({"name": "（テスト）", "ggId": 3}, open(f"{tmp}/pat/p-3.json", "w"))
+        json.dump({"name": "（テスト）", "ggId": 4}, open(f"{tmp}/pat/p-4.json", "w"))
+        first = stj["records"][0]; json.dump({}, open(f"{tmp}/have/kr-{first['uid']}.json", "w"))
+        out = subprocess.run(["python3", "-I", f"{ROOT}/scripts/st_import.py", stf, f"{tmp}/pat", f"{tmp}/out", f"{tmp}/have"], capture_output=True, text=True)
+        sm = json.load(open(f"{tmp}/out/summary.json", encoding="utf-8"))
+        docs = [json.load(open(f, encoding="utf-8")) for f in _g.glob(f"{tmp}/out/kr-*.json")]
+        mine3 = [x for x in stj["records"] if str(x["user"]) == "3"]
+        check("ST読みこみ：番号で結ぶ・二重に入れない", sm["skipped_existing"] == 1 and sm["made"] == len(mine3) - 1 and all(d["patientId"] == "p-3" for d in docs), [out.stdout, out.stderr[-300:], sm["made"], len(mine3)])
+        d0 = next((d for d in docs if d["max"] and d["items"]), None)
+        check("ST読みこみ：録音の練習は点数なし", all(d["score"] is None and d["max"] is None for d in docs if d["appId"].startswith("goso")) and any(d["appId"].startswith("goso") for d in docs))
+        check("ST読みこみ：おうちの課題の形", d0 is not None and d0["date"][:4] == "2026" and d0["t"] > 0 and all("q" in i for i in d0["items"]) and any("r" in i for i in d0["items"]) and "山田" not in json.dumps(docs, ensure_ascii=False), d0)
         up.screenshot(path=f"{SHOTS}/app_plan.png", full_page=True)
         check("ページのエラーなし", not errs, errs[:5])
         b.close()
