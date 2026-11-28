@@ -370,6 +370,7 @@ pre.code{max-height:260px;overflow:auto;background:#f6faf3;border:1.5px solid va
         </select>
       </div>
       <button class="btn small" id="csv" type="button">表（CSV）を保存</button>
+      <button class="btn small" id="stFile" type="button" title="利用者番号と成績だけのファイルです（名前は入りません）。Claude にわたすと、ST経過記録の「おうちの課題」に読みこめます">ST経過記録へ渡すファイル</button>
       <span class="msg" id="loadMsg"></span>
     </div>
     <div id="users"></div>
@@ -4142,6 +4143,26 @@ $('csv').addEventListener('click', () => {
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
   a.download = `ことばの練習_成績_${selected || '全員'}.csv`;
   document.body.appendChild(a); a.click(); a.remove();
+});
+
+/* ---------- ST経過記録へ渡すファイル（JSON） ----------
+   利用者番号と成績だけ（名前のメモは入れない）。ST経過記録の「おうちの課題」には、Claude が
+   scripts/st_import.py で直して読みこむ（利用者番号＝グリーン・グリーンの名簿番号で結ぶ）。期間と「えらんだ利用者」は成績タブに合わせる */
+function stFileData() {
+  const list = (selected ? rows.filter(r => r.user === selected) : rows).filter(inRange).sort((a, b) => a.at - b.at);
+  return { kind: 'kotoba-renshu-records', version: 1, createdAt: new Date().toISOString(), range: $('range').selectedOptions[0].textContent, user: selected || '',
+    records: list.map(r => ({ uid: r.uid, user: r.user, appId: r.appId, app: r.app, type: r.type, level: r.level, at: r.at.toISOString(),
+      score: r.score, max: r.max, marks: r.marks, items: r.items, sec: r.sec })) };
+}
+$('stFile').addEventListener('click', () => {
+  if (!rows.length) { $('loadMsg').className = 'msg err'; $('loadMsg').textContent = '先に［最新の成績を読みこむ］を押してください。'; return; }
+  const d = stFileData();
+  if (!d.records.length) { $('loadMsg').className = 'msg err'; $('loadMsg').textContent = 'この期間の記録がありません。'; return; }
+  const a = document.createElement('a'), day = new Date();
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(d)], { type: 'application/json' }));
+  a.download = `ことばの練習_ST経過記録用_${selected || '全員'}_${day.getFullYear()}${String(day.getMonth() + 1).padStart(2, '0')}${String(day.getDate()).padStart(2, '0')}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  $('loadMsg').className = 'msg'; $('loadMsg').textContent = `${d.records.length}回分のファイルを作りました。Claude にわたして「ST経過記録に読みこんで」と頼んでください（名前は入っていません）。`;
 });
 
 /* ---------- 利用者のリンク・QR ---------- */
